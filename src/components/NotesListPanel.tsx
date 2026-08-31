@@ -1,5 +1,5 @@
 import React from 'react';
-import { Note, SortOption, NOTE_COLORS, NoteColor } from '../types';
+import { Note, SortOption, NOTE_COLORS, NoteColor, FolderItem, DEFAULT_FOLDERS } from '../types';
 import { BrandLogo } from './BrandLogo';
 import {
   Search,
@@ -13,7 +13,8 @@ import {
   Tag,
   X,
   FileText,
-  Menu
+  Menu,
+  Folder as FolderIcon
 } from 'lucide-react';
 
 interface NotesListPanelProps {
@@ -21,7 +22,7 @@ interface NotesListPanelProps {
   allNotesCount: number;
   activeNoteId: string | null;
   onSelectNote: (note: Note) => void;
-  onNewNote: () => void;
+  onNewNote: (folder?: string) => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
   sortBy: SortOption;
@@ -35,6 +36,7 @@ interface NotesListPanelProps {
   onOpenCommandPalette: () => void;
   isCollapsed?: boolean;
   onOpenSidebarMobile?: () => void;
+  folders?: FolderItem[];
 }
 
 export const NotesListPanel: React.FC<NotesListPanelProps> = ({
@@ -54,9 +56,13 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
   onTogglePin,
   onDeleteNote,
   onOpenCommandPalette,
-  onOpenSidebarMobile
+  onOpenSidebarMobile,
+  folders = DEFAULT_FOLDERS
 }) => {
   const [viewStyle, setViewStyle] = React.useState<'preview' | 'compact'>('preview');
+
+  const currentFolderObj = folders.find((f) => f.id === activeFolder);
+  const folderIcon = currentFolderObj ? currentFolderObj.icon : '📁';
 
   // Separate pinned and unpinned notes
   const pinnedNotes = notes.filter((n) => n.is_pinned);
@@ -97,8 +103,17 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                 <Menu className="w-5 h-5 text-[#2DD4BF]" />
               </button>
             )}
-            <h2 className="font-outfit text-base font-bold text-white tracking-tight truncate max-w-[160px] sm:max-w-[200px]">
-              {activeFolder ? activeFolder : activeTag ? `#${activeTag}` : 'All Notes'}
+            <h2 className="font-outfit text-base font-bold text-white tracking-tight truncate max-w-[160px] sm:max-w-[200px] flex items-center gap-1.5">
+              {activeFolder ? (
+                <>
+                  <span>{folderIcon}</span>
+                  <span className="truncate">{activeFolder}</span>
+                </>
+              ) : activeTag ? (
+                `#${activeTag}`
+              ) : (
+                'All Notes'
+              )}
             </h2>
             <span className="font-jetbrains text-xs px-2 py-0.5 rounded-full bg-white/[0.06] text-[#2DD4BF] font-semibold">
               {notes.length}
@@ -157,8 +172,8 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
 
             {/* Quick New Note */}
             <button
-              onClick={onNewNote}
-              title="Make a new note"
+              onClick={() => onNewNote(activeFolder || undefined)}
+              title={activeFolder ? `New note in ${activeFolder}` : "Make a new note"}
               className="p-2 rounded-xl text-slate-900 bg-[#2DD4BF] hover:bg-[#5EEAD4] transition-colors cursor-pointer shadow-[0_0_12px_rgba(45,212,191,0.3)]"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
@@ -199,9 +214,9 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
         {(activeTag || activeFolder || searchQuery) && (
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
             {activeFolder && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/[0.06] text-white text-[11px] font-medium border border-white/[0.08]">
-                <span>📁 {activeFolder}</span>
-                <button onClick={onClearFolder} className="hover:text-rose-400 ml-0.5">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#2DD4BF]/10 text-[#2DD4BF] text-[11px] font-medium border border-[#2DD4BF]/25">
+                <span>{folderIcon} {activeFolder}</span>
+                <button onClick={onClearFolder} className="hover:text-rose-400 ml-0.5 cursor-pointer">
                   <X className="w-3 h-3" />
                 </button>
               </span>
@@ -209,7 +224,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
             {activeTag && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#2DD4BF]/10 text-[#2DD4BF] text-[11px] font-medium border border-[#2DD4BF]/20">
                 <span>#{activeTag}</span>
-                <button onClick={onClearTag} className="hover:text-rose-400 ml-0.5">
+                <button onClick={onClearTag} className="hover:text-rose-400 ml-0.5 cursor-pointer">
                   <X className="w-3 h-3" />
                 </button>
               </span>
@@ -217,7 +232,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
             {searchQuery && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/[0.06] text-slate-300 text-[11px] font-medium border border-white/[0.08]">
                 <span>"{searchQuery}"</span>
-                <button onClick={() => onSearchChange('')} className="hover:text-rose-400 ml-0.5">
+                <button onClick={() => onSearchChange('')} className="hover:text-rose-400 ml-0.5 cursor-pointer">
                   <X className="w-3 h-3" />
                 </button>
               </span>
@@ -230,19 +245,29 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
         {notes.length === 0 ? (
           <div className="h-64 flex flex-col items-center justify-center text-center px-4">
-            <BrandLogo size="lg" className="mb-3" />
-            <h3 className="font-outfit text-sm font-bold text-slate-200">No notes here yet!</h3>
-            <p className="text-xs text-slate-400 mt-1 max-w-[200px]">
+            {activeFolder ? (
+              <div className="w-12 h-12 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-2xl mb-2">
+                {folderIcon}
+              </div>
+            ) : (
+              <BrandLogo size="lg" className="mb-3" />
+            )}
+            <h3 className="font-outfit text-sm font-bold text-slate-200">
+              {activeFolder ? `No notes in ${activeFolder} yet!` : 'No notes here yet!'}
+            </h3>
+            <p className="text-xs text-slate-400 mt-1 max-w-[220px]">
               {searchQuery || activeTag
                 ? 'Try searching for something else or clear your search.'
+                : activeFolder
+                ? `Create a note in ${activeFolder} to keep your ideas organized.`
                 : 'Tap below to make your first fun note! ✨'}
             </p>
             <button
-              onClick={onNewNote}
+              onClick={() => onNewNote(activeFolder || undefined)}
               className="mt-3.5 px-4 py-2 rounded-xl bg-[#2DD4BF] text-slate-950 font-outfit font-bold text-xs flex items-center gap-1.5 shadow-[0_0_15px_rgba(45,212,191,0.3)] hover:bg-[#5EEAD4] transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
-              New Note ✨
+              {activeFolder ? `Add Note in ${activeFolder} ✨` : 'New Note ✨'}
             </button>
           </div>
         ) : (

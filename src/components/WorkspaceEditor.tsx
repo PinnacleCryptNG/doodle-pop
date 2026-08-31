@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Note, SyncStatus, NOTE_COLORS, NoteColor } from '../types';
+import { Note, SyncStatus, NOTE_COLORS, NoteColor, FolderItem, DEFAULT_FOLDERS } from '../types';
 import Markdown from 'react-markdown';
 import { BrandLogo } from './BrandLogo';
 import {
@@ -32,7 +32,9 @@ import {
   X,
   FileDown,
   BookOpen,
-  ArrowLeft
+  ArrowLeft,
+  ChevronDown,
+  Folder as FolderIcon
 } from 'lucide-react';
 
 interface WorkspaceEditorProps {
@@ -51,8 +53,10 @@ interface WorkspaceEditorProps {
   syncStatus: SyncStatus;
   pendingCount: number;
   onForceSync: () => void;
-  onNewNote: () => void;
+  onNewNote: (folder?: string) => void;
   onBack?: () => void;
+  activeFolder?: string | null;
+  folders?: FolderItem[];
 }
 
 export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
@@ -64,16 +68,20 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
   pendingCount,
   onForceSync,
   onNewNote,
-  onBack
+  onBack,
+  activeFolder = null,
+  folders = DEFAULT_FOLDERS
 }) => {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [folder, setFolder] = useState<string>('Personal');
   const [isPinned, setIsPinned] = useState(false);
   const [colorTag, setColorTag] = useState<string>('default');
   const [tags, setTags] = useState<string[]>([]);
   const [newTagInput, setNewTagInput] = useState('');
   const [showTagInput, setShowTagInput] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showFolderDropdown, setShowFolderDropdown] = useState(false);
   const [editorMode, setEditorMode] = useState<'write' | 'split' | 'preview'>('write');
   const [isZenMode, setIsZenMode] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
@@ -87,6 +95,7 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
     if (note) {
       setTitle(note.title || '');
       setBody(note.body || '');
+      setFolder(note.folder || 'Personal');
       setIsPinned(note.is_pinned || false);
       setColorTag(note.color_tag || 'default');
       setTags(note.tags || []);
@@ -94,12 +103,13 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
     } else {
       setTitle('');
       setBody('');
+      setFolder(activeFolder || 'Personal');
       setIsPinned(false);
       setColorTag('default');
       setTags([]);
       setIsSaved(true);
     }
-  }, [note?.id]);
+  }, [note?.id, activeFolder]);
 
   // Debounced auto-save handler
   const triggerAutoSave = (updatedFields: {
@@ -108,6 +118,7 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
     is_pinned?: boolean;
     color_tag?: string;
     tags?: string[];
+    folder?: string;
   }) => {
     setIsSaved(false);
     if (autoSaveTimeoutRef.current) {
@@ -124,7 +135,7 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
         is_pinned: updatedFields.is_pinned !== undefined ? updatedFields.is_pinned : isPinned,
         color_tag: updatedFields.color_tag !== undefined ? updatedFields.color_tag : colorTag,
         tags: updatedFields.tags !== undefined ? updatedFields.tags : tags,
-        folder: note?.folder,
+        folder: updatedFields.folder !== undefined ? updatedFields.folder : folder,
       };
 
       await onSave(payload);
@@ -234,28 +245,42 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
   const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
 
   const activeColorObj = NOTE_COLORS[colorTag as NoteColor] || NOTE_COLORS.default;
+  const currentFolderItem = folders.find((f) => f.id === folder) || { id: folder, label: folder, icon: '📁', color: '#2DD4BF' };
 
   if (!note) {
+    const activeFolderObj = folders.find((f) => f.id === activeFolder);
+    const folderTitle = activeFolderObj ? activeFolderObj.label : activeFolder;
+    const folderIcon = activeFolderObj ? activeFolderObj.icon : '📁';
+
     return (
       <div className="flex-1 h-screen bg-[#121212] flex flex-col items-center justify-center text-center p-8">
         <div className="max-w-md w-full bg-[#1E1E2E] border border-white/[0.08] rounded-3xl p-8 shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col items-center">
-          <BrandLogo size="xl" className="mb-4 hover:scale-105 transition-transform" />
+          {activeFolder ? (
+            <div className="w-16 h-16 rounded-2xl bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-3xl mb-4 shadow-inner">
+              {folderIcon}
+            </div>
+          ) : (
+            <BrandLogo size="xl" className="mb-4 hover:scale-105 transition-transform" />
+          )}
+
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2DD4BF]/15 border border-[#2DD4BF]/30 text-[#2DD4BF] text-xs font-outfit font-bold mb-2">
-            <span>✨ Welcome to DoodlePop!</span>
+            <span>{activeFolder ? `📁 ${folderTitle}` : '✨ Welcome to DoodlePop!'}</span>
           </div>
           <h2 className="font-outfit text-2xl font-bold text-white tracking-tight">
-            Ready to write something fun?
+            {activeFolder ? `No notes in ${folderTitle} yet!` : 'Ready to write something fun?'}
           </h2>
           <p className="text-xs text-slate-400 mt-2 leading-relaxed font-sans max-w-[280px]">
-            Pick any note on the left, or tap the button below to start a brand new note!
+            {activeFolder
+              ? `Start your very first note in ${folderTitle} to keep everything organized and colorful.`
+              : 'Pick any note on the left, or tap the button below to start a brand new note!'}
           </p>
 
           <button
-            onClick={onNewNote}
+            onClick={() => onNewNote(activeFolder || undefined)}
             className="mt-6 px-6 py-3 rounded-2xl bg-gradient-to-r from-[#2DD4BF] to-[#14B8A6] hover:from-[#5EEAD4] hover:to-[#2DD4BF] text-slate-950 font-outfit font-bold text-xs tracking-wide transition-all shadow-[0_0_25px_rgba(45,212,191,0.35)] hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-2"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
-            Make a New Note ✨
+            {activeFolder ? `Create Note in ${folderTitle} ✨` : 'Make a New Note ✨'}
           </button>
         </div>
       </div>
@@ -271,8 +296,8 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
     >
       {/* TOP HEADER CONTROLS */}
       <header className="h-15 px-3 sm:px-6 bg-[#141418]/95 backdrop-blur-md border-b border-white/[0.08] flex items-center justify-between shrink-0 z-20 gap-2.5">
-        {/* Left: Mobile Back Button + Folder Name & Save Indicator */}
-        <div className="flex items-center gap-2 sm:gap-3.5 min-w-0">
+        {/* Left: Mobile Back Button + Folder Selector & Save Indicator */}
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           {onBack && (
             <button
               type="button"
@@ -285,15 +310,57 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
             </button>
           )}
 
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium truncate">
-            <span className="text-slate-400 hover:text-slate-300 transition-colors cursor-default whitespace-nowrap hidden xs:inline">
-              {note.folder || 'Personal'}
-            </span>
-            <span className="text-slate-600 font-normal hidden xs:inline">/</span>
-            <span className="text-slate-100 font-semibold truncate max-w-[110px] xs:max-w-[140px] sm:max-w-[240px] md:max-w-[320px]">
-              {title || 'Untitled Note'}
-            </span>
+          {/* Interactive Folder Selector */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowFolderDropdown((prev) => !prev)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 hover:text-white border border-white/[0.08] text-xs font-medium cursor-pointer transition-colors"
+              title="Organize note into a folder"
+            >
+              <span>{currentFolderItem.icon}</span>
+              <span className="truncate max-w-[85px] xs:max-w-[120px] sm:max-w-[150px] font-semibold">{currentFolderItem.label}</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
+            </button>
+
+            {showFolderDropdown && (
+              <div className="absolute left-0 top-full mt-1.5 w-48 bg-[#1A1A24] border border-white/[0.12] rounded-xl shadow-2xl py-1 z-50 animate-in fade-in zoom-in-95">
+                <div className="px-2.5 py-1 text-[10px] font-cabinet uppercase tracking-wider text-slate-400 font-bold border-b border-white/[0.06]">
+                  Move to Folder
+                </div>
+                <div className="max-h-48 overflow-y-auto py-1 space-y-0.5">
+                  {folders.map((f) => (
+                    <button
+                      key={f.id}
+                      type="button"
+                      onClick={() => {
+                        setFolder(f.id);
+                        setShowFolderDropdown(false);
+                        triggerAutoSave({ folder: f.id });
+                      }}
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 text-xs text-left cursor-pointer transition-colors ${
+                        folder === f.id
+                          ? 'bg-[#2DD4BF]/15 text-[#2DD4BF] font-semibold'
+                          : 'text-slate-300 hover:bg-white/[0.06] hover:text-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <span>{f.icon}</span>
+                        <span className="truncate">{f.label}</span>
+                      </div>
+                      {folder === f.id && <Check className="w-3 h-3 text-[#2DD4BF]" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
+
+          <span className="text-slate-600 font-normal hidden xs:inline">/</span>
+
+          <span className="text-slate-100 font-semibold truncate max-w-[100px] xs:max-w-[130px] sm:max-w-[200px] md:max-w-[280px] text-xs">
+            {title || 'Untitled Note'}
+          </span>
 
           <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[10px] sm:text-[11px] font-medium text-slate-300 whitespace-nowrap shrink-0">
             <div

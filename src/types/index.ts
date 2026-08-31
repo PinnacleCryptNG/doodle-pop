@@ -9,6 +9,20 @@ export interface User {
 
 export type NoteColor = 'default' | 'teal' | 'indigo' | 'amber' | 'emerald' | 'rose' | 'slate';
 
+export interface FolderItem {
+  id: string;
+  label: string;
+  icon: string;
+  color: string;
+}
+
+export const DEFAULT_FOLDERS: FolderItem[] = [
+  { id: 'Personal', label: 'Personal', icon: '🏠', color: '#2DD4BF' },
+  { id: 'School & Work', label: 'School & Work', icon: '📚', color: '#6366F1' },
+  { id: 'My Diary', label: 'My Diary', icon: '📝', color: '#F59E0B' },
+  { id: 'Fun & Ideas', label: 'Fun & Ideas', icon: '💡', color: '#EC4899' },
+];
+
 export interface Note {
   id: string;
   user_id: string;

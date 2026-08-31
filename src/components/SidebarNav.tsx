@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, SyncStatus } from '../types';
+import { User, SyncStatus, FolderItem, DEFAULT_FOLDERS } from '../types';
 import { BrandLogo } from './BrandLogo';
 import {
   FileText,
@@ -19,7 +19,8 @@ import {
   ChevronDown,
   ChevronRight,
   BookOpen,
-  X
+  X,
+  Check
 } from 'lucide-react';
 
 interface SidebarNavProps {
@@ -32,6 +33,9 @@ interface SidebarNavProps {
   onSelectTag: (tag: string | null) => void;
   activeFolder: string | null;
   onSelectFolder: (folder: string | null) => void;
+  folders?: FolderItem[];
+  folderCounts?: Record<string, number>;
+  onAddFolder?: (name: string, icon?: string, color?: string) => void;
   allTags: string[];
   totalNotes: number;
   pinnedCount: number;
@@ -54,6 +58,9 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
   onSelectTag,
   activeFolder,
   onSelectFolder,
+  folders = DEFAULT_FOLDERS,
+  folderCounts = {},
+  onAddFolder,
   allTags,
   totalNotes,
   pinnedCount,
@@ -67,13 +74,11 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
 }) => {
   const [foldersOpen, setFoldersOpen] = useState(true);
   const [tagsOpen, setTagsOpen] = useState(true);
+  const [isAddingFolder, setIsAddingFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [newFolderIcon, setNewFolderIcon] = useState('📁');
 
-  const defaultFolders = [
-    { id: 'Personal', label: 'Personal', icon: '🏠', color: '#2DD4BF' },
-    { id: 'School & Work', label: 'School & Work', icon: '📚', color: '#6366F1' },
-    { id: 'My Diary', label: 'My Diary', icon: '📝', color: '#F59E0B' },
-    { id: 'Fun & Ideas', label: 'Fun & Ideas', icon: '💡', color: '#EC4899' },
-  ];
+  const folderEmojiPresets = ['📁', '🚀', '🎨', '🎮', '🦄', '⚽', '🌟', '📚', '💡', '🎵'];
 
   const handleSelectView = (v: string) => {
     onSelectView(v);
@@ -93,6 +98,19 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
   const handleNewNote = () => {
     onNewNote();
     if (onCloseMobile) onCloseMobile();
+  };
+
+  const handleCreateCustomFolder = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newFolderName.trim();
+    if (!trimmed) return;
+
+    if (onAddFolder) {
+      onAddFolder(trimmed, newFolderIcon, '#2DD4BF');
+    }
+    handleSelectFolder(trimmed);
+    setNewFolderName('');
+    setIsAddingFolder(false);
   };
 
   return (
@@ -188,7 +206,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                 handleSelectTag(null);
                 handleSelectFolder(null);
               }}
-              title="All Notes"
+              title={`All Notes (${totalNotes})`}
               className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 activeView === 'all' && !activeTag && !activeFolder
                   ? 'bg-[#1E1E2E] text-white shadow-xs border border-white/[0.08]'
@@ -220,7 +238,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                 handleSelectTag(null);
                 handleSelectFolder(null);
               }}
-              title="Starred Notes"
+              title={`Starred Notes (${pinnedCount})`}
               className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 activeView === 'pinned' && !activeTag && !activeFolder
                   ? 'bg-[#1E1E2E] text-white shadow-xs border border-white/[0.08]'
@@ -268,7 +286,34 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
             </button>
           </div>
 
-          {/* Folders */}
+          {/* Collapsed Mode Folders Quick Access */}
+          {isCollapsed && !isMobile && (
+            <div className="pt-2 border-t border-white/[0.06] space-y-1">
+              {folders.map((folder) => {
+                const count = folderCounts[folder.id] ?? 0;
+                const isFolderActive = activeFolder === folder.id;
+                return (
+                  <button
+                    key={folder.id}
+                    onClick={() => {
+                      handleSelectFolder(isFolderActive ? null : folder.id);
+                      handleSelectTag(null);
+                    }}
+                    title={`${folder.label} (${count} notes)`}
+                    className={`w-full p-2 rounded-lg flex items-center justify-center text-sm transition-all cursor-pointer ${
+                      isFolderActive
+                        ? 'bg-[#2DD4BF]/20 text-white ring-1 ring-[#2DD4BF]'
+                        : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
+                    }`}
+                  >
+                    <span>{folder.icon}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Folders (Expanded / Mobile) */}
           {(!isCollapsed || isMobile) && (
             <div className="space-y-1">
               <div className="flex items-center justify-between px-2.5 mb-1 text-slate-400">
@@ -284,44 +329,114 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                   <span>Folders</span>
                 </button>
                 <button
+                  id="add-folder-btn"
                   onClick={() => {
-                    const name = window.prompt('Enter folder name:');
-                    if (name && name.trim()) {
-                      handleSelectFolder(name.trim());
-                    }
+                    setIsAddingFolder((prev) => !prev);
+                    setFoldersOpen(true);
                   }}
-                  title="Add Folder"
-                  className="hover:text-white transition-colors cursor-pointer"
+                  title="Create a new folder"
+                  className="p-1 rounded-md text-slate-400 hover:text-[#2DD4BF] hover:bg-white/[0.06] transition-colors cursor-pointer flex items-center gap-1"
                 >
-                  <Plus className="w-3 h-3 text-slate-400 hover:text-white" />
+                  <Plus className="w-3.5 h-3.5" />
                 </button>
               </div>
 
+              {/* Inline Folder Creator */}
+              {isAddingFolder && (
+                <form
+                  onSubmit={handleCreateCustomFolder}
+                  className="p-2.5 rounded-xl bg-[#1A1A26] border border-[#2DD4BF]/40 shadow-lg space-y-2 mb-2 animate-in fade-in zoom-in-95 duration-150"
+                >
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#2DD4BF]">
+                    New Folder
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-base">{newFolderIcon}</span>
+                    <input
+                      type="text"
+                      value={newFolderName}
+                      onChange={(e) => setNewFolderName(e.target.value)}
+                      placeholder="Folder name..."
+                      autoFocus
+                      className="flex-1 bg-[#121212] border border-white/[0.1] focus:border-[#2DD4BF] rounded-lg px-2 py-1 text-xs text-white placeholder-slate-500 focus:outline-hidden"
+                    />
+                  </div>
+                  {/* Quick emoji selection */}
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    {folderEmojiPresets.map((emoji) => (
+                      <button
+                        type="button"
+                        key={emoji}
+                        onClick={() => setNewFolderIcon(emoji)}
+                        className={`text-xs p-1 rounded hover:bg-white/[0.1] transition-transform ${
+                          newFolderIcon === emoji ? 'scale-125 bg-white/[0.15]' : ''
+                        }`}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-end gap-1.5 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingFolder(false)}
+                      className="px-2 py-1 rounded text-[10px] text-slate-400 hover:text-white"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={!newFolderName.trim()}
+                      className="px-2.5 py-1 rounded-md bg-[#2DD4BF] text-slate-950 font-bold text-[10px] flex items-center gap-1 disabled:opacity-50 hover:bg-[#5EEAD4] cursor-pointer"
+                    >
+                      <Check className="w-3 h-3 stroke-[3]" />
+                      Add
+                    </button>
+                  </div>
+                </form>
+              )}
+
               {foldersOpen && (
                 <div className="space-y-0.5">
-                  {defaultFolders.map((folder) => (
-                    <button
-                      key={folder.id}
-                      onClick={() => {
-                        handleSelectFolder(activeFolder === folder.id ? null : folder.id);
-                        handleSelectTag(null);
-                      }}
-                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
-                        activeFolder === folder.id
-                          ? 'bg-[#1E1E2E] text-white border border-white/[0.08]'
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <span className="text-xs">{folder.icon}</span>
-                        <span className="truncate">{folder.label}</span>
-                      </div>
-                      <div
-                        className="w-1.5 h-1.5 rounded-full"
-                        style={{ backgroundColor: folder.color }}
-                      />
-                    </button>
-                  ))}
+                  {folders.map((folder) => {
+                    const count = folderCounts[folder.id] ?? 0;
+                    const isFolderActive = activeFolder === folder.id;
+
+                    return (
+                      <button
+                        key={folder.id}
+                        onClick={() => {
+                          handleSelectFolder(isFolderActive ? null : folder.id);
+                          handleSelectTag(null);
+                        }}
+                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition-all cursor-pointer group ${
+                          isFolderActive
+                            ? 'bg-[#1E1E2E] text-white border border-[#2DD4BF]/40 shadow-xs font-semibold'
+                            : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="text-sm shrink-0">{folder.icon}</span>
+                          <span className="truncate">{folder.label}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span
+                            className={`font-jetbrains text-[10px] px-1.5 py-0.5 rounded transition-colors ${
+                              isFolderActive
+                                ? 'bg-[#2DD4BF]/20 text-[#2DD4BF] font-bold'
+                                : 'bg-white/[0.06] text-slate-400 group-hover:text-slate-300'
+                            }`}
+                          >
+                            {count}
+                          </span>
+                          <div
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{ backgroundColor: folder.color || '#2DD4BF' }}
+                          />
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>

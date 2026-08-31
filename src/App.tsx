@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { useNotes } from './hooks/useNotes';
-import { Note } from './types';
+import { Note, FolderItem, DEFAULT_FOLDERS } from './types';
 import { SidebarNav } from './components/SidebarNav';
 import { NotesListPanel } from './components/NotesListPanel';
 import { WorkspaceEditor } from './components/WorkspaceEditor';
@@ -44,14 +44,82 @@ function NotesDashboard() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
+  // Custom user-defined folders stored locally
+  const [customFolders, setCustomFolders] = useState<FolderItem[]>(() => {
+    try {
+      const raw = localStorage.getItem('doodlepop_custom_folders');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const handleAddFolder = (name: string, icon = '📁', color = '#2DD4BF') => {
+    const newFolder: FolderItem = {
+      id: name,
+      label: name,
+      icon,
+      color,
+    };
+    setCustomFolders((prev) => {
+      if (prev.some((f) => f.id.toLowerCase() === name.toLowerCase())) return prev;
+      const next = [...prev, newFolder];
+      try {
+        localStorage.setItem('doodlepop_custom_folders', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+    setActiveFolder(name);
+    setFilterTag(null);
+    setActiveView('all');
+  };
+
+  // Combine default folders, custom user folders, and any folders found on notes
+  const allFolders = useMemo(() => {
+    const map = new Map<string, FolderItem>();
+    DEFAULT_FOLDERS.forEach((f) => map.set(f.id, f));
+    customFolders.forEach((f) => map.set(f.id, f));
+
+    notes.forEach((n) => {
+      if (n.folder && !map.has(n.folder)) {
+        map.set(n.folder, {
+          id: n.folder,
+          label: n.folder,
+          icon: '📁',
+          color: '#A78BFA',
+        });
+      }
+    });
+
+    return Array.from(map.values());
+  }, [customFolders, notes]);
+
+  // Compute live note counts per folder
+  const folderCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    allFolders.forEach((f) => {
+      counts[f.id] = notes.filter(
+        (n) => n.folder === f.id || (Array.isArray(n.tags) && n.tags.includes(f.id.toLowerCase()))
+      ).length;
+    });
+    return counts;
+  }, [allFolders, notes]);
+
   // Automatically select the first note on initial load if none selected
   useEffect(() => {
     if (!activeNote && notes.length > 0) {
-      setActiveNote(notes[0]);
+      if (activeFolder) {
+        const matching = notes.filter(
+          (n) => n.folder === activeFolder || (Array.isArray(n.tags) && n.tags.includes(activeFolder.toLowerCase()))
+        );
+        setActiveNote(matching[0] || null);
+      } else {
+        setActiveNote(notes[0]);
+      }
     } else if (activeNote && !notes.some((n) => n.id === activeNote.id)) {
       setActiveNote(notes[0] || null);
     }
-  }, [notes, activeNote]);
+  }, [notes, activeFolder]);
 
   // Global Keyboard Shortcuts (Cmd+N, Cmd+K)
   useEffect(() => {
@@ -67,19 +135,44 @@ function NotesDashboard() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [user]);
+  }, [user, activeFolder]);
 
-  const handleCreateNewNote = async () => {
+  const handleCreateNewNote = async (overrideFolder?: string) => {
+    const targetFolder = overrideFolder || activeFolder || 'Personal';
+    let folderColor = 'teal';
+    if (targetFolder === 'School & Work') folderColor = 'indigo';
+    else if (targetFolder === 'My Diary') folderColor = 'amber';
+    else if (targetFolder === 'Fun & Ideas') folderColor = 'rose';
+
     const newNote = await createNote({
       title: 'Untitled Note',
       body: '',
       is_pinned: false,
-      color_tag: 'teal',
-      tags: activeFolder ? [activeFolder.toLowerCase()] : [],
+      color_tag: folderColor,
+      folder: targetFolder,
+      tags: targetFolder !== 'Personal' ? [targetFolder.toLowerCase()] : [],
     });
     setActiveNote(newNote);
     setMobileView('editor');
     setIsMobileSidebarOpen(false);
+  };
+
+  const handleSelectFolder = (folderId: string | null) => {
+    setActiveFolder(folderId);
+    setFilterTag(null);
+    setActiveView('all');
+    if (folderId) {
+      const matching = notes.filter(
+        (n) => n.folder === folderId || (Array.isArray(n.tags) && n.tags.includes(folderId.toLowerCase()))
+      );
+      if (matching.length > 0) {
+        setActiveNote(matching[0]);
+      } else {
+        setActiveNote(null);
+      }
+    } else {
+      setActiveNote(notes[0] || null);
+    }
   };
 
   const handleSelectNote = (note: Note) => {
@@ -115,6 +208,7 @@ function NotesDashboard() {
         is_pinned: data.is_pinned,
         color_tag: data.color_tag,
         tags: data.tags,
+        folder: data.folder || activeFolder || 'Personal',
       });
       if (created) {
         setActiveNote(created);
@@ -177,17 +271,16 @@ function NotesDashboard() {
             setActiveView('all');
           }}
           activeFolder={activeFolder}
-          onSelectFolder={(f) => {
-            setActiveFolder(f);
-            setFilterTag(null);
-            setActiveView('all');
-          }}
+          onSelectFolder={handleSelectFolder}
+          folders={allFolders}
+          folderCounts={folderCounts}
+          onAddFolder={handleAddFolder}
           allTags={allTags}
           totalNotes={rawNotesCount}
           pinnedCount={pinnedNotesCount}
           syncStatus={syncStatus}
           pendingCount={pendingCount}
-          onNewNote={handleCreateNewNote}
+          onNewNote={() => handleCreateNewNote()}
           onLogout={() => setShowLogoutConfirm(true)}
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         />
@@ -224,17 +317,18 @@ function NotesDashboard() {
               }}
               activeFolder={activeFolder}
               onSelectFolder={(f) => {
-                setActiveFolder(f);
-                setFilterTag(null);
-                setActiveView('all');
+                handleSelectFolder(f);
                 setIsMobileSidebarOpen(false);
               }}
+              folders={allFolders}
+              folderCounts={folderCounts}
+              onAddFolder={handleAddFolder}
               allTags={allTags}
               totalNotes={rawNotesCount}
               pinnedCount={pinnedNotesCount}
               syncStatus={syncStatus}
               pendingCount={pendingCount}
-              onNewNote={handleCreateNewNote}
+              onNewNote={() => handleCreateNewNote()}
               onLogout={() => {
                 setIsMobileSidebarOpen(false);
                 setShowLogoutConfirm(true);
@@ -269,11 +363,12 @@ function NotesDashboard() {
           activeTag={filterTag}
           onClearTag={() => setFilterTag(null)}
           activeFolder={activeFolder}
-          onClearFolder={() => setActiveFolder(null)}
+          onClearFolder={() => handleSelectFolder(null)}
           onTogglePin={togglePin}
           onDeleteNote={(note) => setDeletingNote(note)}
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
           onOpenSidebarMobile={() => setIsMobileSidebarOpen(true)}
+          folders={allFolders}
         />
       </div>
 
@@ -293,6 +388,8 @@ function NotesDashboard() {
           onForceSync={forceSync}
           onNewNote={handleCreateNewNote}
           onBack={() => setMobileView('list')}
+          activeFolder={activeFolder}
+          folders={allFolders}
         />
       </div>
 
