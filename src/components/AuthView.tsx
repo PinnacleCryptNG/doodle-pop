@@ -12,11 +12,13 @@ import {
   RefreshCw,
   KeyRound,
   Mail,
-  Lock
+  Lock,
+  Sparkles,
+  Zap,
 } from 'lucide-react';
 
 export const AuthView: React.FC = () => {
-  const { signUp, login, verifyEmail, resendVerificationCode, error, clearError } = useAuth();
+  const { signUp, login, guestLogin, verifyEmail, resendVerificationCode, error, clearError } = useAuth();
   const [mode, setMode] = useState<'signup' | 'login' | 'verify'>('signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -491,6 +493,27 @@ export const AuthView: React.FC = () => {
                     ) : (
                       'Sign In'
                     )}
+                  </button>
+                </div>
+
+                {/* Quick Guest / Instant Access Button */}
+                <div className="pt-3">
+                  <div className="relative flex py-2 items-center">
+                    <div className="flex-grow border-t border-slate-700/60"></div>
+                    <span className="flex-shrink mx-3 text-[11px] font-medium text-slate-500 uppercase tracking-widest">
+                      or
+                    </span>
+                    <div className="flex-grow border-t border-slate-700/60"></div>
+                  </div>
+
+                  <button
+                    id="guest-login-button"
+                    type="button"
+                    onClick={() => guestLogin()}
+                    className="w-full py-2.5 px-4 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-600/50 hover:border-[#2DD4BF]/50 text-slate-200 hover:text-white font-medium text-xs transition-all flex items-center justify-center gap-2 cursor-pointer group shadow-sm"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-[#2DD4BF] group-hover:scale-110 transition-transform" />
+                    <span>Quick Start as Guest (Offline Mode)</span>
                   </button>
                 </div>
               </form>

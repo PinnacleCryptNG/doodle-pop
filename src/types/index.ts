@@ -2,6 +2,9 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  full_name?: string;
+  is_email_verified?: boolean;
+  created_at?: string;
 }
 
 export type NoteColor = 'default' | 'teal' | 'indigo' | 'amber' | 'emerald' | 'rose' | 'slate';

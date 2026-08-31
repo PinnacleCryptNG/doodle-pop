@@ -34,6 +34,7 @@ interface AuthContextType {
     message?: string;
     error?: string;
   }>;
+  guestLogin: () => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
 }
@@ -181,6 +182,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const guestLogin = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await api.guestLogin();
+      setUser(res.user);
+      localStorage.setItem('notes_user_session', JSON.stringify(res.user));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = async () => {
     setLoading(true);
     try {
@@ -206,6 +219,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         verifyEmail,
         resendVerificationCode,
         login,
+        guestLogin,
         logout,
         clearError,
       }}
