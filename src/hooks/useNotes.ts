@@ -5,64 +5,6 @@ import { offlineStorage } from '../services/offlineStorage';
 import { syncManager } from '../services/syncManager';
 import { useAuth } from './useAuth';
 
-const createDefaultStarterNotes = (userId: string): Note[] => {
-  const now = new Date().toISOString();
-  return [
-    {
-      id: `starter_1_${userId}`,
-      user_id: userId,
-      title: 'Welcome to DoodlePop! ✨',
-      body: '# Welcome to your Fun Notes & Ideas Hub! 🎉\n\nDoodlePop is designed to be super easy, colorful, and fun!\n\n### 🚀 Cool Things You Can Do:\n- 📁 **Organize with Folders:** Tap any folder on the left (School & Work, My Diary, Fun & Ideas, Personal) to keep your notes organized.\n- ⭐ **Star Your Favorites:** Click the star icon to pin important notes to the top.\n- 🎨 **Pick Bright Colors:** Change card colors with the color picker.\n- 🏷️ **Add Tags:** Add hashtags like `#project`, `#doodle`, or `#story`.\n- 🔒 **Super Safe & Private:** Your notes sync securely to your account and work offline too!',
-      is_pinned: true,
-      color_tag: 'teal',
-      tags: ['welcome', 'guide'],
-      folder: 'Personal',
-      created_at: now,
-      updated_at: now,
-      _syncStatus: 'synced',
-    },
-    {
-      id: `starter_2_${userId}`,
-      user_id: userId,
-      title: '📚 Science Fair Volcano & Solar System',
-      body: '## 🌋 Science Fair Project Plan\n\n### Supplies Needed:\n- [x] Baking soda & red food dye\n- [x] Vinegar and papier-mâché base\n- [ ] Cardboard presentation board\n\n### 🪐 Solar System Fun Fact:\nDid you know Jupiter has 95 moons? The largest one, Ganymede, is even bigger than the planet Mercury!',
-      is_pinned: false,
-      color_tag: 'indigo',
-      tags: ['science', 'homework', 'school'],
-      folder: 'School & Work',
-      created_at: new Date(Date.now() - 3600000).toISOString(),
-      updated_at: new Date(Date.now() - 3600000).toISOString(),
-      _syncStatus: 'synced',
-    },
-    {
-      id: `starter_3_${userId}`,
-      user_id: userId,
-      title: '📝 Today was an Awesome Day!',
-      body: '## Dear Diary 💫\n\nToday we built the coolest blanket fort and watched movies with popcorn.\n\n### 🌟 Best Moments Today:\n1. Got an A on the math puzzle!\n2. Drew a funny cat comic strip.\n3. Learned a new song on guitar.\n\n*Goal for tomorrow:* Read 2 chapters of my favorite mystery book!',
-      is_pinned: false,
-      color_tag: 'amber',
-      tags: ['diary', 'memories'],
-      folder: 'My Diary',
-      created_at: new Date(Date.now() - 7200000).toISOString(),
-      updated_at: new Date(Date.now() - 7200000).toISOString(),
-      _syncStatus: 'synced',
-    },
-    {
-      id: `starter_4_${userId}`,
-      user_id: userId,
-      title: '💡 Super Hero Story & Video Game Concept',
-      body: '## 🦸 The Chronicles of Pixel Hero\n\n### Character Abilities:\n- **Neon Dash:** Zooms at lightning speed leaving a cyan trail!\n- **Gravity Hop:** Double jump over lava obstacles.\n- **Shield Bubble:** Protects against laser traps.\n\n### Level 1 Boss:\n*The Glitch Monster* — must throw 3 energy stars to defeat him and unlock the secret portal!',
-      is_pinned: false,
-      color_tag: 'rose',
-      tags: ['ideas', 'games', 'drawing'],
-      folder: 'Fun & Ideas',
-      created_at: new Date(Date.now() - 10800000).toISOString(),
-      updated_at: new Date(Date.now() - 10800000).toISOString(),
-      _syncStatus: 'synced',
-    },
-  ];
-};
-
 export function useNotes() {
   const { user } = useAuth();
   
@@ -72,22 +14,16 @@ export function useNotes() {
       if (typeof window === 'undefined') return [];
       const userKey = user ? `notes_cache_${user.id}` : 'notes_cache_global';
       const raw = localStorage.getItem(userKey) || localStorage.getItem('notes_cache_global');
-      return raw ? JSON.parse(raw) : [];
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as Note[];
+      // Purge any old starter demo notes so folders remain clean and empty
+      return parsed.filter((n) => !n.id.startsWith('starter_'));
     } catch {
       return [];
     }
   });
 
-  const [loading, setLoading] = useState<boolean>(() => {
-    try {
-      if (typeof window === 'undefined') return false;
-      const userKey = user ? `notes_cache_${user.id}` : 'notes_cache_global';
-      const raw = localStorage.getItem(userKey) || localStorage.getItem('notes_cache_global');
-      return !raw || JSON.parse(raw).length === 0;
-    } catch {
-      return false;
-    }
-  });
+  const [loading, setLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('created_desc');
   const [filterTag, setFilterTag] = useState<string | null>(null);
@@ -116,15 +52,12 @@ export function useNotes() {
     try {
       // 1. Instant load from local IndexedDB & LocalStorage cache
       let cached = await offlineStorage.getUserNotes(user.id);
-      
-      // If user is brand new with zero notes, create inspiring starter notes across folders
-      if (!cached || cached.length === 0) {
-        const starter = createDefaultStarterNotes(user.id);
-        cached = starter;
-        await offlineStorage.saveUserNotes(user.id, starter);
+      if (cached) {
+        cached = cached.filter((n) => !n.id.startsWith('starter_'));
+        await offlineStorage.saveUserNotes(user.id, cached);
       }
 
-      if (cached && cached.length > 0) {
+      if (cached) {
         setNotes(cached);
         setLoading(false);
       }
@@ -134,15 +67,17 @@ export function useNotes() {
       // 2. Fetch fresh from server if online
       if (navigator.onLine) {
         const synced = await syncManager.syncNotes(user.id);
-        if (synced && synced.length > 0) {
-          setNotes(synced);
+        if (synced) {
+          const cleanSynced = synced.filter((n) => !n.id.startsWith('starter_'));
+          setNotes(cleanSynced);
         } else {
           // Fallback direct get
           try {
             const res = await api.getNotes();
-            if (res.notes && res.notes.length > 0) {
-              setNotes(res.notes);
-              await offlineStorage.saveUserNotes(user.id, res.notes);
+            if (res.notes) {
+              const cleanNotes = res.notes.filter((n: Note) => !n.id.startsWith('starter_'));
+              setNotes(cleanNotes);
+              await offlineStorage.saveUserNotes(user.id, cleanNotes);
             }
           } catch (e) {
             console.warn('Direct fetch notes error, using cached:', e);

@@ -441,52 +441,6 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
               )}
             </div>
           )}
-
-          {/* Tags */}
-          {(!isCollapsed || isMobile) && allTags.length > 0 && (
-            <div className="space-y-1">
-              <button
-                onClick={() => setTagsOpen(!tagsOpen)}
-                className="w-full flex items-center justify-between px-2.5 mb-1 font-cabinet text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-300 cursor-pointer"
-              >
-                <div className="flex items-center gap-1.5">
-                  {tagsOpen ? (
-                    <ChevronDown className="w-3 h-3 text-slate-400" />
-                  ) : (
-                    <ChevronRight className="w-3 h-3 text-slate-400" />
-                  )}
-                  <span>Tags</span>
-                </div>
-                <span className="font-jetbrains text-[9px] text-slate-400">
-                  {allTags.length}
-                </span>
-              </button>
-
-              {tagsOpen && (
-                <div className="space-y-0.5 max-h-36 overflow-y-auto pr-1">
-                  {allTags.map((tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => {
-                        handleSelectTag(activeTag === tag ? null : tag);
-                        handleSelectFolder(null);
-                      }}
-                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
-                        activeTag === tag
-                          ? 'bg-[#2DD4BF]/10 text-[#2DD4BF] border border-[#2DD4BF]/25 font-semibold'
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <Hash className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span className="truncate">{tag}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
 

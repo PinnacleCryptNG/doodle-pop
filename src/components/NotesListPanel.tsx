@@ -339,23 +339,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                           </p>
                         )}
 
-                        <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-white/[0.04]">
-                          <div className="flex items-center gap-1 overflow-hidden">
-                            {note.tags && note.tags.slice(0, 2).map((tag) => (
-                              <span
-                                key={tag}
-                                className="font-cabinet text-[9px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-300 border border-white/[0.06] truncate"
-                              >
-                                #{tag}
-                              </span>
-                            ))}
-                            {note.tags && note.tags.length > 2 && (
-                              <span className="text-[9px] text-slate-400 font-jetbrains">
-                                +{note.tags.length - 2}
-                              </span>
-                            )}
-                          </div>
-
+                        <div className="flex items-center justify-end mt-2.5 pt-2 border-t border-white/[0.04]">
                           <span className="font-jetbrains text-[10px] text-slate-400 shrink-0">
                             {formatRelativeTime(note.updated_at || note.created_at)}
                           </span>
@@ -461,18 +445,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                       </p>
                     )}
 
-                    <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-white/[0.04]">
-                      <div className="flex items-center gap-1 overflow-hidden">
-                        {note.tags && note.tags.slice(0, 2).map((tag) => (
-                          <span
-                            key={tag}
-                            className="font-cabinet text-[9px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400 border border-white/[0.05] truncate"
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-
+                    <div className="flex items-center justify-end mt-2 pt-1.5 border-t border-white/[0.04]">
                       <span className="font-jetbrains text-[10px] text-slate-400 shrink-0">
                         {formatRelativeTime(note.updated_at || note.created_at)}
                       </span>

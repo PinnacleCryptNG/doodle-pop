@@ -247,46 +247,6 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
   const activeColorObj = NOTE_COLORS[colorTag as NoteColor] || NOTE_COLORS.default;
   const currentFolderItem = folders.find((f) => f.id === folder) || { id: folder, label: folder, icon: '📁', color: '#2DD4BF' };
 
-  if (!note) {
-    const activeFolderObj = folders.find((f) => f.id === activeFolder);
-    const folderTitle = activeFolderObj ? activeFolderObj.label : activeFolder;
-    const folderIcon = activeFolderObj ? activeFolderObj.icon : '📁';
-
-    return (
-      <div className="flex-1 h-screen bg-[#121212] flex flex-col items-center justify-center text-center p-8">
-        <div className="max-w-md w-full bg-[#1E1E2E] border border-white/[0.08] rounded-3xl p-8 shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col items-center">
-          {activeFolder ? (
-            <div className="w-16 h-16 rounded-2xl bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-3xl mb-4 shadow-inner">
-              {folderIcon}
-            </div>
-          ) : (
-            <BrandLogo size="xl" className="mb-4 hover:scale-105 transition-transform" />
-          )}
-
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2DD4BF]/15 border border-[#2DD4BF]/30 text-[#2DD4BF] text-xs font-outfit font-bold mb-2">
-            <span>{activeFolder ? `📁 ${folderTitle}` : '✨ Welcome to DoodlePop!'}</span>
-          </div>
-          <h2 className="font-outfit text-2xl font-bold text-white tracking-tight">
-            {activeFolder ? `No notes in ${folderTitle} yet!` : 'Ready to write something fun?'}
-          </h2>
-          <p className="text-xs text-slate-400 mt-2 leading-relaxed font-sans max-w-[280px]">
-            {activeFolder
-              ? `Start your very first note in ${folderTitle} to keep everything organized and colorful.`
-              : 'Pick any note on the left, or tap the button below to start a brand new note!'}
-          </p>
-
-          <button
-            onClick={() => onNewNote(activeFolder || undefined)}
-            className="mt-6 px-6 py-3 rounded-2xl bg-gradient-to-r from-[#2DD4BF] to-[#14B8A6] hover:from-[#5EEAD4] hover:to-[#2DD4BF] text-slate-950 font-outfit font-bold text-xs tracking-wide transition-all shadow-[0_0_25px_rgba(45,212,191,0.35)] hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4 stroke-[2.5]" />
-            {activeFolder ? `Create Note in ${folderTitle} ✨` : 'Make a New Note ✨'}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <main
       id="workspace-editor"
@@ -507,13 +467,15 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
           </button>
 
           {/* Delete Button */}
-          <button
-            onClick={() => onDelete(note)}
-            title="Delete note"
-            className="w-8.5 h-8.5 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 hover:border-rose-500/35 transition-all cursor-pointer flex items-center justify-center shrink-0"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          {note && (
+            <button
+              onClick={() => onDelete(note)}
+              title="Delete note"
+              className="w-8.5 h-8.5 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 hover:border-rose-500/35 transition-all cursor-pointer flex items-center justify-center shrink-0"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </header>
 
@@ -646,49 +608,8 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
             value={title}
             onChange={(e) => handleTitleChange(e.target.value)}
             placeholder="Note title..."
-            className="w-full font-outfit text-3xl sm:text-4xl font-extrabold text-white placeholder-white/20 bg-transparent border-none focus:outline-hidden tracking-tight leading-tight mb-4"
+            className="w-full font-outfit text-3xl sm:text-4xl font-extrabold text-white placeholder-white/20 bg-transparent border-none focus:outline-hidden tracking-tight leading-tight mb-6"
           />
-
-          {/* Tag Manager */}
-          <div className="flex flex-wrap items-center gap-2 mb-6 pb-4 border-b border-white/[0.06]">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="group inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#1E1E2E] text-slate-200 text-xs font-cabinet border border-white/[0.08] shadow-xs"
-              >
-                <span className="text-[#2DD4BF] font-semibold">#</span>
-                <span>{tag}</span>
-                <button
-                  onClick={() => handleRemoveTag(tag)}
-                  className="opacity-60 group-hover:opacity-100 hover:text-rose-400 ml-0.5 cursor-pointer"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            ))}
-
-            {showTagInput ? (
-              <form onSubmit={handleAddTag} className="inline-flex items-center">
-                <input
-                  type="text"
-                  autoFocus
-                  value={newTagInput}
-                  onChange={(e) => setNewTagInput(e.target.value)}
-                  onBlur={() => handleAddTag()}
-                  placeholder="New tag..."
-                  className="w-28 px-2.5 py-1 rounded-lg bg-[#1E1E2E] border border-[#2DD4BF]/50 text-xs text-white placeholder-slate-400 focus:outline-hidden"
-                />
-              </form>
-            ) : (
-              <button
-                onClick={() => setShowTagInput(true)}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-400 hover:text-slate-200 text-xs font-medium transition-colors cursor-pointer border border-dashed border-white/[0.1]"
-              >
-                <Plus className="w-3 h-3" />
-                <span>Add Tag</span>
-              </button>
-            )}
-          </div>
 
           {/* MAIN WRITING / PREVIEW AREA */}
           <div className="flex-1 flex gap-8">
