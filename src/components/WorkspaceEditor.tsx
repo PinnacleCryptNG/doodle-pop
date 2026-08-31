@@ -267,21 +267,23 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
       }`}
     >
       {/* TOP HEADER CONTROLS */}
-      <header className="h-16 px-6 bg-[#141416] border-b border-white/[0.06] flex items-center justify-between shrink-0 z-20">
+      <header className="h-15 px-4 sm:px-6 bg-[#141418]/95 backdrop-blur-md border-b border-white/[0.08] flex items-center justify-between shrink-0 z-20 gap-3">
         {/* Left: Folder Name & Save Indicator */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-            <span>{note.folder || 'Personal'}</span>
-            <span className="text-slate-400">/</span>
-            <span className="text-slate-200 font-semibold truncate max-w-[180px]">
+        <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium truncate">
+            <span className="text-slate-400 hover:text-slate-300 transition-colors cursor-default whitespace-nowrap">
+              {note.folder || 'Personal'}
+            </span>
+            <span className="text-slate-600 font-normal">/</span>
+            <span className="text-slate-100 font-semibold truncate max-w-[140px] sm:max-w-[240px] md:max-w-[320px]">
               {title || 'Untitled Note'}
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-[10px] font-jetbrains text-slate-400">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] font-medium text-slate-300 whitespace-nowrap shrink-0">
             <div
-              className={`w-1.5 h-1.5 rounded-full ${
-                isSaved ? 'bg-[#2DD4BF]' : 'bg-amber-400 animate-pulse'
+              className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                isSaved ? 'bg-[#2DD4BF] shadow-[0_0_8px_rgba(45,212,191,0.6)]' : 'bg-amber-400 animate-pulse'
               }`}
             />
             <span>{isSaved ? 'Saved' : 'Saving...'}</span>
@@ -289,16 +291,16 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
         </div>
 
         {/* Right: Actions, View Mode & Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* View Mode Switcher */}
-          <div className="hidden sm:flex items-center p-0.5 rounded-lg bg-[#1E1E2E] border border-white/[0.08]">
+          <div className="hidden sm:inline-flex items-center p-1 rounded-xl bg-white/[0.04] border border-white/[0.08]">
             <button
               onClick={() => setEditorMode('write')}
               title="Write mode"
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                 editorMode === 'write'
-                  ? 'bg-[#2DD4BF]/15 text-[#2DD4BF] font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#2DD4BF]/15 text-[#2DD4BF] font-semibold border border-[#2DD4BF]/30 shadow-xs'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] border border-transparent'
               }`}
             >
               <Edit3 className="w-3.5 h-3.5" />
@@ -307,10 +309,10 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
             <button
               onClick={() => setEditorMode('split')}
               title="Side by side view"
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                 editorMode === 'split'
-                  ? 'bg-[#2DD4BF]/15 text-[#2DD4BF] font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#2DD4BF]/15 text-[#2DD4BF] font-semibold border border-[#2DD4BF]/30 shadow-xs'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] border border-transparent'
               }`}
             >
               <Columns className="w-3.5 h-3.5" />
@@ -319,10 +321,10 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
             <button
               onClick={() => setEditorMode('preview')}
               title="Read mode"
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                 editorMode === 'preview'
-                  ? 'bg-[#2DD4BF]/15 text-[#2DD4BF] font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#2DD4BF]/15 text-[#2DD4BF] font-semibold border border-[#2DD4BF]/30 shadow-xs'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] border border-transparent'
               }`}
             >
               <Eye className="w-3.5 h-3.5" />
@@ -330,49 +332,51 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
             </button>
           </div>
 
+          <div className="w-[1px] h-5 bg-white/[0.08] mx-0.5 hidden sm:block" />
+
           {/* Star Note Button */}
           <button
             onClick={handleTogglePinLocal}
             title={isPinned ? 'Unstar this note' : 'Star this note'}
-            className={`p-2 rounded-lg transition-colors cursor-pointer border ${
+            className={`w-8.5 h-8.5 rounded-xl transition-all cursor-pointer border flex items-center justify-center shrink-0 ${
               isPinned
-                ? 'bg-amber-400/15 text-amber-400 border-amber-400/30'
-                : 'bg-[#1E1E2E] text-slate-400 hover:text-white border-white/[0.08]'
+                ? 'bg-amber-400/15 text-amber-300 border-amber-400/35 shadow-[0_0_12px_rgba(251,191,36,0.2)]'
+                : 'bg-white/[0.03] text-slate-400 hover:text-white border-white/[0.08] hover:border-white/[0.16] hover:bg-white/[0.08]'
             }`}
           >
-            <Star className={`w-3.5 h-3.5 ${isPinned ? 'fill-amber-400' : ''}`} />
+            <Star className={`w-4 h-4 ${isPinned ? 'fill-amber-400 text-amber-400' : ''}`} />
           </button>
 
           {/* Color Palette Selector */}
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               onClick={() => setShowColorPicker(!showColorPicker)}
-              title="Pick a color for this note"
-              className="p-2 rounded-lg bg-[#1E1E2E] text-slate-400 hover:text-white border border-white/[0.08] transition-colors cursor-pointer flex items-center gap-1.5"
+              title="Pick a color theme for this note"
+              className="w-8.5 h-8.5 rounded-xl bg-white/[0.03] text-slate-400 hover:text-white border border-white/[0.08] hover:border-white/[0.16] hover:bg-white/[0.08] transition-all cursor-pointer flex items-center justify-center"
             >
               <div
-                className={`w-3 h-3 rounded-full ${
+                className={`w-3.5 h-3.5 rounded-full border border-white/20 shadow-xs ${
                   colorTag === 'teal' ? 'bg-[#2DD4BF]' : activeColorObj.dot
                 }`}
               />
             </button>
 
             {showColorPicker && (
-              <div className="absolute right-0 mt-2 w-48 bg-[#1E1E2E] border border-white/[0.1] rounded-xl shadow-2xl p-2 z-50 space-y-1">
-                <span className="font-cabinet text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 block mb-1">
-                  Pick a color
+              <div className="absolute right-0 mt-2 w-48 bg-[#181822] border border-white/[0.12] rounded-2xl shadow-2xl p-2 z-50 space-y-1 backdrop-blur-xl">
+                <span className="font-outfit text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 block py-1">
+                  Color Tag
                 </span>
                 {Object.values(NOTE_COLORS).map((c) => (
                   <button
                     key={c.id}
                     onClick={() => handleSelectColor(c.id)}
-                    className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs transition-colors cursor-pointer ${
                       colorTag === c.id
-                        ? 'bg-white/[0.08] text-white font-semibold'
-                        : 'text-slate-300 hover:bg-white/[0.04]'
+                        ? 'bg-white/[0.1] text-white font-semibold'
+                        : 'text-slate-300 hover:bg-white/[0.05]'
                     }`}
                   >
-                    <div className={`w-2.5 h-2.5 rounded-full ${c.dot}`} />
+                    <div className={`w-3 h-3 rounded-full ${c.dot} border border-white/10`} />
                     <span>{c.label}</span>
                   </button>
                 ))}
@@ -383,37 +387,37 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
           {/* Copy Note */}
           <button
             onClick={handleCopyMarkdown}
-            title="Copy note text"
-            className="p-2 rounded-lg bg-[#1E1E2E] text-slate-400 hover:text-white border border-white/[0.08] transition-colors cursor-pointer"
+            title="Copy markdown text"
+            className="w-8.5 h-8.5 rounded-xl bg-white/[0.03] text-slate-400 hover:text-white border border-white/[0.08] hover:border-white/[0.16] hover:bg-white/[0.08] transition-all cursor-pointer flex items-center justify-center shrink-0"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-[#2DD4BF]" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-4 h-4 text-[#2DD4BF]" /> : <Copy className="w-4 h-4" />}
           </button>
 
           {/* Export File */}
           <button
             onClick={handleExportFile}
-            title="Download note"
-            className="p-2 rounded-lg bg-[#1E1E2E] text-slate-400 hover:text-white border border-white/[0.08] transition-colors cursor-pointer"
+            title="Export note as .md"
+            className="w-8.5 h-8.5 rounded-xl bg-white/[0.03] text-slate-400 hover:text-white border border-white/[0.08] hover:border-white/[0.16] hover:bg-white/[0.08] transition-all cursor-pointer flex items-center justify-center shrink-0"
           >
-            <FileDown className="w-3.5 h-3.5" />
+            <FileDown className="w-4 h-4" />
           </button>
 
           {/* Fullscreen Mode Toggle */}
           <button
             onClick={() => setIsZenMode(!isZenMode)}
-            title={isZenMode ? 'Exit full screen' : 'Full screen'}
-            className="p-2 rounded-lg bg-[#1E1E2E] text-slate-400 hover:text-white border border-white/[0.08] transition-colors cursor-pointer"
+            title={isZenMode ? 'Exit full screen' : 'Full screen focus'}
+            className="w-8.5 h-8.5 rounded-xl bg-white/[0.03] text-slate-400 hover:text-white border border-white/[0.08] hover:border-white/[0.16] hover:bg-white/[0.08] transition-all cursor-pointer flex items-center justify-center shrink-0"
           >
-            {isZenMode ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            {isZenMode ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
 
           {/* Delete Button */}
           <button
             onClick={() => onDelete(note)}
             title="Delete note"
-            className="p-2 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 transition-colors cursor-pointer"
+            className="w-8.5 h-8.5 rounded-xl bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 hover:border-rose-500/35 transition-all cursor-pointer flex items-center justify-center shrink-0"
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
       </header>
@@ -422,35 +426,35 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
       {editorMode !== 'preview' && (
         <div
           id="markdown-toolbar"
-          className="px-6 py-2 bg-[#181822] border-b border-white/[0.06] flex items-center justify-between overflow-x-auto shrink-0"
+          className="px-4 sm:px-6 py-2 bg-[#171820]/90 border-b border-white/[0.06] flex items-center justify-between gap-3 overflow-x-auto shrink-0"
         >
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             {/* Text Formats */}
             <button
               onClick={() => insertMarkdown('**', '**', 'bold text')}
-              title="Bold"
-              className="p-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              title="Bold (**text**)"
+              className="h-7.5 w-7.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer flex items-center justify-center"
             >
               <Bold className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => insertMarkdown('*', '*', 'italic text')}
-              title="Italic"
-              className="p-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              title="Italic (*text*)"
+              className="h-7.5 w-7.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer flex items-center justify-center"
             >
               <Italic className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => insertMarkdown('~~', '~~', 'crossed out')}
-              title="Cross out text"
-              className="p-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              title="Strikethrough (~~text~~)"
+              className="h-7.5 w-7.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer flex items-center justify-center"
             >
               <Strikethrough className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => insertMarkdown('`', '`', 'code')}
-              title="Code text"
-              className="p-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              title="Inline Code (`code`)"
+              className="h-7.5 w-7.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer flex items-center justify-center"
             >
               <Code className="w-3.5 h-3.5" />
             </button>
@@ -459,23 +463,23 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
 
             {/* Headings */}
             <button
-              onClick={() => insertMarkdown('# ', '', 'Big Title')}
-              title="Big Title"
-              className="px-2 py-1 rounded-md text-xs font-bold text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer font-outfit"
+              onClick={() => insertMarkdown('# ', '', 'Heading 1')}
+              title="Heading 1"
+              className="h-7.5 px-2 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer font-outfit flex items-center justify-center"
             >
               H1
             </button>
             <button
-              onClick={() => insertMarkdown('## ', '', 'Medium Title')}
-              title="Medium Title"
-              className="px-2 py-1 rounded-md text-xs font-bold text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer font-outfit"
+              onClick={() => insertMarkdown('## ', '', 'Heading 2')}
+              title="Heading 2"
+              className="h-7.5 px-2 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer font-outfit flex items-center justify-center"
             >
               H2
             </button>
             <button
-              onClick={() => insertMarkdown('### ', '', 'Small Title')}
-              title="Small Title"
-              className="px-2 py-1 rounded-md text-xs font-bold text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer font-outfit"
+              onClick={() => insertMarkdown('### ', '', 'Heading 3')}
+              title="Heading 3"
+              className="h-7.5 px-2 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer font-outfit flex items-center justify-center"
             >
               H3
             </button>
@@ -485,51 +489,51 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
             {/* Lists & Blocks */}
             <button
               onClick={() => insertMarkdown('- ', '', 'List item')}
-              title="Bullet points"
-              className="p-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              title="Bullet list"
+              className="h-7.5 w-7.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer flex items-center justify-center"
             >
               <List className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => insertMarkdown('1. ', '', 'Numbered item')}
               title="Numbered list"
-              className="p-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              className="h-7.5 w-7.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer flex items-center justify-center"
             >
               <ListOrdered className="w-3.5 h-3.5" />
             </button>
             <button
-              onClick={() => insertMarkdown('- [ ] ', '', 'Task')}
-              title="Checklist item"
-              className="p-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              onClick={() => insertMarkdown('- [ ] ', '', 'Task item')}
+              title="Task Checklist"
+              className="h-7.5 w-7.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer flex items-center justify-center"
             >
               <CheckSquare className="w-3.5 h-3.5 text-[#2DD4BF]" />
             </button>
             <button
               onClick={() => insertMarkdown('> ', '', 'Quote')}
-              title="Quote block"
-              className="p-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              title="Blockquote"
+              className="h-7.5 w-7.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer flex items-center justify-center"
             >
               <Quote className="w-3.5 h-3.5" />
             </button>
             <button
-              onClick={() => insertMarkdown('[', '](https://example.com)', 'Link name')}
-              title="Add web link"
-              className="p-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              onClick={() => insertMarkdown('[', '](https://example.com)', 'link text')}
+              title="Link"
+              className="h-7.5 w-7.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer flex items-center justify-center"
             >
               <LinkIcon className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => insertMarkdown('\n---\n')}
-              title="Line separator"
-              className="p-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              title="Horizontal rule"
+              className="h-7.5 w-7.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer flex items-center justify-center"
             >
               <Minus className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <span className="font-jetbrains text-[10px] text-slate-400 hidden lg:inline">
-            Writing tools
-          </span>
+          <div className="hidden lg:flex items-center gap-2 text-[11px] text-slate-400 font-medium shrink-0">
+            <span>Markdown formatting enabled</span>
+          </div>
         </div>
       )}
 
