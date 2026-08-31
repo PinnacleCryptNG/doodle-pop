@@ -14,12 +14,13 @@ import {
   Mail,
   Lock,
   Sparkles,
-  Zap,
+  UserPlus,
+  LogIn
 } from 'lucide-react';
 
 export const AuthView: React.FC = () => {
   const { signUp, login, guestLogin, verifyEmail, resendVerificationCode, error, clearError } = useAuth();
-  const [mode, setMode] = useState<'signup' | 'login' | 'verify'>('signup');
+  const [mode, setMode] = useState<'login' | 'signup' | 'verify'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -209,41 +210,11 @@ export const AuthView: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Primary Mode Switcher Tab (Sign In vs Create Password / Sign Up) */}
-                <div className="p-1 rounded-2xl bg-slate-950/60 border border-white/[0.08] flex items-center gap-1 mb-4">
-                  <button
-                    id="tab-mode-login"
-                    type="button"
-                    onClick={() => toggleMode('login')}
-                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                      mode === 'login'
-                        ? 'bg-gradient-to-r from-[#8B5CF6]/30 to-[#06B6D4]/30 border border-[#8B5CF6]/50 text-white shadow-xs'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
-                    }`}
-                  >
-                    <Lock className="w-3.5 h-3.5" />
-                    <span>Log In</span>
-                  </button>
-                  <button
-                    id="tab-mode-signup"
-                    type="button"
-                    onClick={() => toggleMode('signup')}
-                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                      mode === 'signup'
-                        ? 'bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] text-white shadow-[0_0_20px_rgba(139,92,246,0.35)]'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
-                    }`}
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Create Password</span>
-                  </button>
-                </div>
-
                 <h1
                   id="auth-card-title"
                   className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl sm:text-[26px] font-bold tracking-tight text-white leading-tight"
                 >
-                  {mode === 'signup' ? 'Create Your Password' : 'Sign In with Password'}
+                  {mode === 'signup' ? 'Create an Account' : 'Welcome Back'}
                 </h1>
                 <p
                   id="auth-card-subtitle"
@@ -251,7 +222,7 @@ export const AuthView: React.FC = () => {
                 >
                   {mode === 'signup'
                     ? 'Enter your email and choose a secure password to get started.'
-                    : 'Enter your email and password to access your synced notes.'}
+                    : 'Sign in with your email and password to access your notes.'}
                 </p>
               </div>
             )}
@@ -410,18 +381,10 @@ export const AuthView: React.FC = () => {
                       htmlFor="password"
                       className="block text-xs font-medium text-slate-300"
                     >
-                      {mode === 'signup' ? 'Create Password' : 'Password'}
+                      {mode === 'signup' ? 'Password' : 'Password'}
                     </label>
-                    {mode === 'signup' ? (
+                    {mode === 'signup' && (
                       <span className="text-[11px] text-violet-300 font-medium">Min 8 characters</span>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => toggleMode('signup')}
-                        className="text-[11px] text-violet-400 hover:text-violet-300 transition-colors cursor-pointer"
-                      >
-                        Create new password?
-                      </button>
                     )}
                   </div>
                   <div className="relative">
@@ -433,7 +396,7 @@ export const AuthView: React.FC = () => {
                       name="password"
                       type={showPassword ? 'text' : 'password'}
                       required
-                      autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                      autoComplete={mode === 'signup' ? 'new-password' : 'off'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder={mode === 'signup' ? 'Create a secure password' : 'Enter your password'}
@@ -458,7 +421,7 @@ export const AuthView: React.FC = () => {
                       htmlFor="confirm-password"
                       className="block text-xs font-medium text-slate-300 mb-1.5"
                     >
-                      Confirm New Password
+                      Confirm Password
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
@@ -505,15 +468,44 @@ export const AuthView: React.FC = () => {
                         <span>Processing...</span>
                       </span>
                     ) : mode === 'signup' ? (
-                      'Create Account & Password'
+                      'Create Account'
                     ) : (
-                      'Sign In to Notes'
+                      'Sign In'
                     )}
                   </button>
                 </div>
 
+                {/* Switch between Sign In and Sign Up */}
+                <div className="text-center pt-2">
+                  {mode === 'login' ? (
+                    <p className="text-xs text-slate-400">
+                      Don't have an account?{' '}
+                      <button
+                        type="button"
+                        id="switch-to-signup-btn"
+                        onClick={() => toggleMode('signup')}
+                        className="font-semibold text-[#2DD4BF] hover:text-[#5EEAD4] underline underline-offset-2 transition-colors cursor-pointer"
+                      >
+                        Create an account
+                      </button>
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-400">
+                      Already have an account?{' '}
+                      <button
+                        type="button"
+                        id="switch-to-login-btn"
+                        onClick={() => toggleMode('login')}
+                        className="font-semibold text-[#8B5CF6] hover:text-[#A78BFA] underline underline-offset-2 transition-colors cursor-pointer"
+                      >
+                        Sign In
+                      </button>
+                    </p>
+                  )}
+                </div>
+
                 {/* Quick Guest / Instant Access Button */}
-                <div className="pt-3">
+                <div className="pt-2">
                   <div className="relative flex py-2 items-center">
                     <div className="flex-grow border-t border-slate-700/60"></div>
                     <span className="flex-shrink mx-3 text-[11px] font-medium text-slate-500 uppercase tracking-widest">
