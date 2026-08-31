@@ -1,0 +1,6 @@
+{
+  "name": "DoodlePop Notes",
+  "description": "Super fun and easy notes app with automatic saving, offline access, and playful notes for all your great ideas!",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

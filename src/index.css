@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #121212;
+    color: #E2E8F0;
+  }
+}
+
+.font-outfit {
+  font-family: 'Outfit', sans-serif;
+}
+
+.font-cabinet {
+  font-family: 'Cabinet Grotesk', 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-jetbrains {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.font-sora {
+  font-family: 'Sora', sans-serif;
+}
+
+.font-space {
+  font-family: 'Space Grotesk', monospace, sans-serif;
+}
+
+/* Notion/Craft custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(45, 212, 191, 0.3);
+}
+
+/* Markdown typography refinements in editor */
+.markdown-preview h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-top: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: #F8FAFC;
+  letter-spacing: -0.02em;
+}
+
+.markdown-preview h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #F1F5F9;
+}
+
+.markdown-preview h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-top: 0.75rem;
+  margin-bottom: 0.35rem;
+  color: #E2E8F0;
+}
+
+.markdown-preview p {
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+  color: #CBD5E1;
+}
+
+.markdown-preview ul {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: #CBD5E1;
+}
+
+.markdown-preview ol {
+  list-style-type: decimal;
+  padding-left: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: #CBD5E1;
+}
+
+.markdown-preview li {
+  margin-bottom: 0.25rem;
+}
+
+.markdown-preview blockquote {
+  border-left: 3px solid #2DD4BF;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #94A3B8;
+  font-style: italic;
+  background: rgba(45, 212, 191, 0.04);
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-radius: 0 6px 6px 0;
+}
+
+.markdown-preview code {
+  font-family: 'JetBrains Mono', monospace;
+  background: #1E1E2E;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: #2DD4BF;
+}
+
+.markdown-preview pre {
+  font-family: 'JetBrains Mono', monospace;
+  background: #181825;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.markdown-preview pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #E2E8F0;
+}
