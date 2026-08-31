@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { BrandLogo } from './BrandLogo';
 import {
   Eye,
   EyeOff,
@@ -176,14 +177,7 @@ export const AuthView: React.FC = () => {
             {/* Header */}
             {mode === 'verify' ? (
               <div className="text-left mb-6">
-                <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-[0_0_25px_rgba(139,92,246,0.3)] border border-[#8B5CF6]/40 mb-4 bg-slate-800">
-                  <img
-                    src="/src/assets/images/doodlepop_logo_1788192753040.jpg"
-                    alt="DoodlePop Logo"
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
+                <BrandLogo size="lg" className="mb-4" />
                 <h1
                   id="auth-card-title"
                   className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl font-bold tracking-tight text-white"
@@ -201,14 +195,7 @@ export const AuthView: React.FC = () => {
             ) : (
               <div className="text-left mb-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(45,212,191,0.35)] border border-[#2DD4BF]/40 bg-slate-800 shrink-0">
-                    <img
-                      src="/src/assets/images/doodlepop_logo_1788192753040.jpg"
-                      alt="DoodlePop Logo"
-                      className="w-full h-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
+                  <BrandLogo size="lg" />
                   <div>
                     <span className="font-outfit text-base font-extrabold text-white tracking-tight flex items-center gap-1">
                       Doodle<span className="text-[#2DD4BF]">Pop</span>

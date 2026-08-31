@@ -1,5 +1,6 @@
 import React from 'react';
 import { Note, SortOption, NOTE_COLORS, NoteColor } from '../types';
+import { BrandLogo } from './BrandLogo';
 import {
   Search,
   Star,
@@ -216,14 +217,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
       <div className="flex-1 overflow-y-auto p-2.5 space-y-3">
         {notes.length === 0 ? (
           <div className="h-64 flex flex-col items-center justify-center text-center px-4">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden border border-[#2DD4BF]/30 mb-3 shadow-[0_0_15px_rgba(45,212,191,0.2)]">
-              <img
-                src="/src/assets/images/doodlepop_logo_1788192753040.jpg"
-                alt="DoodlePop"
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-            </div>
+            <BrandLogo size="lg" className="mb-3" />
             <h3 className="font-outfit text-sm font-bold text-slate-200">No notes here yet!</h3>
             <p className="text-xs text-slate-400 mt-1 max-w-[200px]">
               {searchQuery || activeTag

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Note, SyncStatus, NOTE_COLORS, NoteColor } from '../types';
 import Markdown from 'react-markdown';
+import { BrandLogo } from './BrandLogo';
 import {
   Bold,
   Italic,
@@ -235,14 +236,7 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
     return (
       <div className="flex-1 h-screen bg-[#121212] flex flex-col items-center justify-center text-center p-8">
         <div className="max-w-md w-full bg-[#1E1E2E] border border-white/[0.08] rounded-3xl p-8 shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col items-center">
-          <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(45,212,191,0.25)] border-2 border-[#2DD4BF]/40 mb-4 hover:scale-105 transition-transform">
-            <img
-              src="/src/assets/images/doodlepop_logo_1788192753040.jpg"
-              alt="DoodlePop Mascot"
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-          </div>
+          <BrandLogo size="xl" className="mb-4 hover:scale-105 transition-transform" />
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2DD4BF]/15 border border-[#2DD4BF]/30 text-[#2DD4BF] text-xs font-outfit font-bold mb-2">
             <span>✨ Welcome to DoodlePop!</span>
           </div>

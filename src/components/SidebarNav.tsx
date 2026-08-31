@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, SyncStatus } from '../types';
+import { BrandLogo } from './BrandLogo';
 import {
   FileText,
   Star,
@@ -82,14 +83,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
         <div className="h-16 px-3.5 flex items-center justify-between border-b border-white/[0.06]">
           {!isCollapsed && (
             <div className="flex items-center gap-2.5 pl-1 overflow-hidden">
-              <div className="w-8 h-8 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(45,212,191,0.35)] shrink-0 border border-[#2DD4BF]/40 bg-[#1E1E2E]">
-                <img
-                  src="/src/assets/images/doodlepop_logo_1788192753040.jpg"
-                  alt="DoodlePop Logo"
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
+              <BrandLogo size="md" />
               <div className="flex flex-col truncate">
                 <span className="font-outfit text-sm font-extrabold tracking-tight text-white flex items-center gap-1 leading-none">
                   Doodle<span className="text-[#2DD4BF]">Pop</span>
@@ -107,14 +101,9 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
               <button
                 onClick={onToggleCollapse}
                 title="Open DoodlePop menu"
-                className="w-8 h-8 rounded-xl overflow-hidden border border-[#2DD4BF]/40 shadow-[0_0_12px_rgba(45,212,191,0.3)] hover:scale-105 transition-transform cursor-pointer"
+                className="hover:scale-105 transition-transform cursor-pointer"
               >
-                <img
-                  src="/src/assets/images/doodlepop_logo_1788192753040.jpg"
-                  alt="DoodlePop Logo"
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
+                <BrandLogo size="md" />
               </button>
             </div>
           )}
