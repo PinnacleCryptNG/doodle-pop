@@ -195,7 +195,7 @@ export const AuthView: React.FC = () => {
                 </p>
               </div>
             ) : (
-              <div className="text-left mb-6">
+              <div className="text-left mb-5">
                 <div className="flex items-center gap-3 mb-4">
                   <BrandLogo size="lg" />
                   <div>
@@ -209,41 +209,49 @@ export const AuthView: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Primary Mode Switcher Tab (Sign In vs Create Password / Sign Up) */}
+                <div className="p-1 rounded-2xl bg-slate-950/60 border border-white/[0.08] flex items-center gap-1 mb-4">
+                  <button
+                    id="tab-mode-login"
+                    type="button"
+                    onClick={() => toggleMode('login')}
+                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                      mode === 'login'
+                        ? 'bg-gradient-to-r from-[#8B5CF6]/30 to-[#06B6D4]/30 border border-[#8B5CF6]/50 text-white shadow-xs'
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Log In</span>
+                  </button>
+                  <button
+                    id="tab-mode-signup"
+                    type="button"
+                    onClick={() => toggleMode('signup')}
+                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                      mode === 'signup'
+                        ? 'bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] text-white shadow-[0_0_20px_rgba(139,92,246,0.35)]'
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Create Password</span>
+                  </button>
+                </div>
+
                 <h1
                   id="auth-card-title"
                   className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl sm:text-[26px] font-bold tracking-tight text-white leading-tight"
                 >
-                  {mode === 'signup' ? 'Join DoodlePop!' : 'Welcome back!'}
+                  {mode === 'signup' ? 'Create Your Password' : 'Sign In with Password'}
                 </h1>
                 <p
                   id="auth-card-subtitle"
                   className="mt-1.5 text-sm text-slate-400 font-['Inter',sans-serif]"
                 >
-                  {mode === 'signup' ? (
-                    <>
-                      Already have an account?{' '}
-                      <button
-                        id="auth-switch-to-signin"
-                        type="button"
-                        onClick={() => toggleMode('login')}
-                        className="font-semibold text-violet-400 hover:text-violet-300 underline underline-offset-4 transition-colors cursor-pointer"
-                      >
-                        Sign in
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      Don't have an account?{' '}
-                      <button
-                        id="auth-switch-to-signup"
-                        type="button"
-                        onClick={() => toggleMode('signup')}
-                        className="font-semibold text-violet-400 hover:text-violet-300 underline underline-offset-4 transition-colors cursor-pointer"
-                      >
-                        Sign up
-                      </button>
-                    </>
-                  )}
+                  {mode === 'signup'
+                    ? 'Enter your email and choose a secure password to get started.'
+                    : 'Enter your email and password to access your synced notes.'}
                 </p>
               </div>
             )}
@@ -402,10 +410,18 @@ export const AuthView: React.FC = () => {
                       htmlFor="password"
                       className="block text-xs font-medium text-slate-300"
                     >
-                      Password
+                      {mode === 'signup' ? 'Create Password' : 'Password'}
                     </label>
-                    {mode === 'signup' && (
-                      <span className="text-[11px] text-slate-400">Min 8 characters</span>
+                    {mode === 'signup' ? (
+                      <span className="text-[11px] text-violet-300 font-medium">Min 8 characters</span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => toggleMode('signup')}
+                        className="text-[11px] text-violet-400 hover:text-violet-300 transition-colors cursor-pointer"
+                      >
+                        Create new password?
+                      </button>
                     )}
                   </div>
                   <div className="relative">
@@ -420,7 +436,7 @@ export const AuthView: React.FC = () => {
                       autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder={mode === 'signup' ? 'Create a secure password' : 'Enter your password'}
                       className="w-full pl-10 pr-11 py-3 text-sm text-slate-100 bg-slate-950/70 border border-slate-700/80 rounded-xl placeholder-slate-500 focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/40 focus:shadow-[0_0_20px_rgba(139,92,246,0.25)] transition-all font-['Inter',sans-serif]"
                     />
                     <button
@@ -442,7 +458,7 @@ export const AuthView: React.FC = () => {
                       htmlFor="confirm-password"
                       className="block text-xs font-medium text-slate-300 mb-1.5"
                     >
-                      Confirm Password
+                      Confirm New Password
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
@@ -456,7 +472,7 @@ export const AuthView: React.FC = () => {
                         autoComplete="new-password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="••••••••"
+                        placeholder="Re-type your password"
                         className="w-full pl-10 pr-11 py-3 text-sm text-slate-100 bg-slate-950/70 border border-slate-700/80 rounded-xl placeholder-slate-500 focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/40 focus:shadow-[0_0_20px_rgba(139,92,246,0.25)] transition-all font-['Inter',sans-serif]"
                       />
                       <button
@@ -489,9 +505,9 @@ export const AuthView: React.FC = () => {
                         <span>Processing...</span>
                       </span>
                     ) : mode === 'signup' ? (
-                      'Create Account'
+                      'Create Account & Password'
                     ) : (
-                      'Sign In'
+                      'Sign In to Notes'
                     )}
                   </button>
                 </div>

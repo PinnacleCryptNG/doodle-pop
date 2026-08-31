@@ -18,7 +18,8 @@ import {
   Hash,
   ChevronDown,
   ChevronRight,
-  BookOpen
+  BookOpen,
+  X
 } from 'lucide-react';
 
 interface SidebarNavProps {
@@ -39,6 +40,8 @@ interface SidebarNavProps {
   onNewNote: () => void;
   onLogout: () => void;
   onOpenCommandPalette: () => void;
+  isMobile?: boolean;
+  onCloseMobile?: () => void;
 }
 
 export const SidebarNav: React.FC<SidebarNavProps> = ({
@@ -58,7 +61,9 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
   pendingCount,
   onNewNote,
   onLogout,
-  onOpenCommandPalette
+  onOpenCommandPalette,
+  isMobile = false,
+  onCloseMobile
 }) => {
   const [foldersOpen, setFoldersOpen] = useState(true);
   const [tagsOpen, setTagsOpen] = useState(true);
@@ -70,18 +75,38 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
     { id: 'Fun & Ideas', label: 'Fun & Ideas', icon: '💡', color: '#EC4899' },
   ];
 
+  const handleSelectView = (v: string) => {
+    onSelectView(v);
+    if (onCloseMobile) onCloseMobile();
+  };
+
+  const handleSelectFolder = (f: string | null) => {
+    onSelectFolder(f);
+    if (onCloseMobile) onCloseMobile();
+  };
+
+  const handleSelectTag = (t: string | null) => {
+    onSelectTag(t);
+    if (onCloseMobile) onCloseMobile();
+  };
+
+  const handleNewNote = () => {
+    onNewNote();
+    if (onCloseMobile) onCloseMobile();
+  };
+
   return (
     <aside
       id="main-sidebar"
-      className={`relative z-30 h-screen bg-[#121212] border-r border-white/[0.08] flex flex-col justify-between transition-all duration-300 select-none ${
-        isCollapsed ? 'w-[68px]' : 'w-64 sm:w-72'
+      className={`relative z-30 h-full bg-[#121212] border-r border-white/[0.08] flex flex-col justify-between transition-all duration-300 select-none ${
+        isMobile ? 'w-72 max-w-[85vw] shadow-2xl' : isCollapsed ? 'w-[68px]' : 'w-64 sm:w-72'
       }`}
     >
       {/* Top Header & Brand */}
       <div className="flex flex-col">
         {/* Workspace Brand & Collapse Toggle */}
         <div className="h-16 px-3.5 flex items-center justify-between border-b border-white/[0.06]">
-          {!isCollapsed && (
+          {(!isCollapsed || isMobile) && (
             <div className="flex items-center gap-2.5 pl-1 overflow-hidden">
               <BrandLogo size="md" />
               <div className="flex flex-col truncate">
@@ -96,7 +121,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
             </div>
           )}
 
-          {isCollapsed && (
+          {isCollapsed && !isMobile && (
             <div className="w-full flex justify-center">
               <button
                 onClick={onToggleCollapse}
@@ -108,15 +133,25 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
             </div>
           )}
 
-          {!isCollapsed && (
+          {isMobile ? (
             <button
-              id="sidebar-collapse-toggle"
-              onClick={onToggleCollapse}
+              onClick={onCloseMobile}
               title="Close menu"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
             >
-              <PanelLeftClose className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
+          ) : (
+            !isCollapsed && (
+              <button
+                id="sidebar-collapse-toggle"
+                onClick={onToggleCollapse}
+                title="Close menu"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+              >
+                <PanelLeftClose className="w-4 h-4" />
+              </button>
+            )
           )}
         </div>
 
@@ -124,14 +159,14 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
         <div className="p-3 border-b border-white/[0.06]">
           <button
             id="sidebar-new-note-btn"
-            onClick={onNewNote}
+            onClick={handleNewNote}
             className={`group relative w-full py-2.5 rounded-xl bg-gradient-to-r from-[#2DD4BF] to-[#14B8A6] hover:from-[#5EEAD4] hover:to-[#2DD4BF] text-slate-950 font-outfit font-semibold text-xs transition-all duration-200 shadow-[0_0_20px_rgba(45,212,191,0.25)] hover:shadow-[0_0_25px_rgba(45,212,191,0.4)] active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 ${
-              isCollapsed ? 'px-0' : 'px-3'
+              isCollapsed && !isMobile ? 'px-0' : 'px-3'
             }`}
             title="Make a new note"
           >
             <Plus className="w-4 h-4 text-slate-950 stroke-[2.5] shrink-0 group-hover:rotate-90 transition-transform duration-200" />
-            {!isCollapsed && <span className="font-bold tracking-tight">New Note</span>}
+            {(!isCollapsed || isMobile) && <span className="font-bold tracking-tight">New Note</span>}
           </button>
         </div>
 
@@ -139,7 +174,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
         <div className="px-2.5 py-3 space-y-5 overflow-y-auto max-h-[calc(100vh-260px)]">
           {/* Core Views */}
           <div className="space-y-0.5">
-            {!isCollapsed && (
+            {(!isCollapsed || isMobile) && (
               <span className="px-2.5 mb-1.5 block font-cabinet text-[10px] font-bold uppercase tracking-widest text-slate-400">
                 My Notes
               </span>
@@ -149,16 +184,16 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
             <button
               id="nav-view-all"
               onClick={() => {
-                onSelectView('all');
-                onSelectTag(null);
-                onSelectFolder(null);
+                handleSelectView('all');
+                handleSelectTag(null);
+                handleSelectFolder(null);
               }}
               title="All Notes"
               className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 activeView === 'all' && !activeTag && !activeFolder
                   ? 'bg-[#1E1E2E] text-white shadow-xs border border-white/[0.08]'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
-              } ${isCollapsed ? 'justify-center' : 'justify-between'}`}
+              } ${isCollapsed && !isMobile ? 'justify-center' : 'justify-between'}`}
             >
               <div className="flex items-center gap-2.5 truncate">
                 <FileText
@@ -168,9 +203,9 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                       : 'text-slate-400'
                   }`}
                 />
-                {!isCollapsed && <span className="truncate">All Notes</span>}
+                {(!isCollapsed || isMobile) && <span className="truncate">All Notes</span>}
               </div>
-              {!isCollapsed && (
+              {(!isCollapsed || isMobile) && (
                 <span className="font-jetbrains text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400">
                   {totalNotes}
                 </span>
@@ -181,16 +216,16 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
             <button
               id="nav-view-pinned"
               onClick={() => {
-                onSelectView('pinned');
-                onSelectTag(null);
-                onSelectFolder(null);
+                handleSelectView('pinned');
+                handleSelectTag(null);
+                handleSelectFolder(null);
               }}
               title="Starred Notes"
               className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 activeView === 'pinned' && !activeTag && !activeFolder
                   ? 'bg-[#1E1E2E] text-white shadow-xs border border-white/[0.08]'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
-              } ${isCollapsed ? 'justify-center' : 'justify-between'}`}
+              } ${isCollapsed && !isMobile ? 'justify-center' : 'justify-between'}`}
             >
               <div className="flex items-center gap-2.5 truncate">
                 <Star
@@ -200,9 +235,9 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                       : 'text-slate-400'
                   }`}
                 />
-                {!isCollapsed && <span className="truncate">Starred Notes</span>}
+                {(!isCollapsed || isMobile) && <span className="truncate">Starred Notes</span>}
               </div>
-              {!isCollapsed && (
+              {(!isCollapsed || isMobile) && (
                 <span className="font-jetbrains text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400">
                   {pinnedCount}
                 </span>
@@ -213,28 +248,28 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
             <button
               id="nav-view-recent"
               onClick={() => {
-                onSelectView('recent');
-                onSelectTag(null);
-                onSelectFolder(null);
+                handleSelectView('recent');
+                handleSelectTag(null);
+                handleSelectFolder(null);
               }}
               title="Recent Notes"
               className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 activeView === 'recent' && !activeTag && !activeFolder
                   ? 'bg-[#1E1E2E] text-white shadow-xs border border-white/[0.08]'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
-              } ${isCollapsed ? 'justify-center' : 'justify-start'}`}
+              } ${isCollapsed && !isMobile ? 'justify-center' : 'justify-start'}`}
             >
               <Clock
                 className={`w-4 h-4 shrink-0 ${
                   activeView === 'recent' ? 'text-[#2DD4BF]' : 'text-slate-400'
                 }`}
               />
-              {!isCollapsed && <span className="truncate">Recent Notes</span>}
+              {(!isCollapsed || isMobile) && <span className="truncate">Recent Notes</span>}
             </button>
           </div>
 
           {/* Folders */}
-          {!isCollapsed && (
+          {(!isCollapsed || isMobile) && (
             <div className="space-y-1">
               <div className="flex items-center justify-between px-2.5 mb-1 text-slate-400">
                 <button
@@ -252,7 +287,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                   onClick={() => {
                     const name = window.prompt('Enter folder name:');
                     if (name && name.trim()) {
-                      onSelectFolder(name.trim());
+                      handleSelectFolder(name.trim());
                     }
                   }}
                   title="Add Folder"
@@ -268,8 +303,8 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                     <button
                       key={folder.id}
                       onClick={() => {
-                        onSelectFolder(activeFolder === folder.id ? null : folder.id);
-                        onSelectTag(null);
+                        handleSelectFolder(activeFolder === folder.id ? null : folder.id);
+                        handleSelectTag(null);
                       }}
                       className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
                         activeFolder === folder.id
@@ -293,7 +328,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
           )}
 
           {/* Tags */}
-          {!isCollapsed && allTags.length > 0 && (
+          {(!isCollapsed || isMobile) && allTags.length > 0 && (
             <div className="space-y-1">
               <button
                 onClick={() => setTagsOpen(!tagsOpen)}
@@ -318,8 +353,8 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                     <button
                       key={tag}
                       onClick={() => {
-                        onSelectTag(activeTag === tag ? null : tag);
-                        onSelectFolder(null);
+                        handleSelectTag(activeTag === tag ? null : tag);
+                        handleSelectFolder(null);
                       }}
                       className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
                         activeTag === tag
@@ -342,7 +377,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
 
       {/* Bottom Profile, Quick Status & Logout */}
       <div className="p-3 border-t border-white/[0.06] bg-[#101010] space-y-2">
-        {!isCollapsed && (
+        {(!isCollapsed || isMobile) && (
           <div className="flex items-center justify-between px-1 py-1">
             <div className="flex items-center gap-2 overflow-hidden">
               <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#2DD4BF]/30 to-[#6366F1]/30 border border-white/[0.1] flex items-center justify-center text-[11px] font-bold text-white shrink-0">
@@ -369,7 +404,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
           </div>
         )}
 
-        {isCollapsed && (
+        {isCollapsed && !isMobile && (
           <div className="flex flex-col items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#2DD4BF]/30 to-[#6366F1]/30 border border-white/[0.1] flex items-center justify-center text-xs font-bold text-white">
               {user.email.charAt(0).toUpperCase()}

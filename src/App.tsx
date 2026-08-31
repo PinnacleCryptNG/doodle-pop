@@ -34,6 +34,9 @@ function NotesDashboard() {
   } = useNotes();
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [mobileView, setMobileView] = useState<'list' | 'editor'>('list');
+
   const [activeView, setActiveView] = useState<'all' | 'pinned' | 'recent' | string>('all');
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
   const [activeNote, setActiveNote] = useState<Note | null>(null);
@@ -75,6 +78,13 @@ function NotesDashboard() {
       tags: activeFolder ? [activeFolder.toLowerCase()] : [],
     });
     setActiveNote(newNote);
+    setMobileView('editor');
+    setIsMobileSidebarOpen(false);
+  };
+
+  const handleSelectNote = (note: Note) => {
+    setActiveNote(note);
+    setMobileView('editor');
   };
 
   const handleSaveNote = async (data: {
@@ -118,6 +128,9 @@ function NotesDashboard() {
       if (activeNote?.id === deletingNote.id) {
         const remaining = notes.filter((n) => n.id !== deletingNote.id);
         setActiveNote(remaining[0] || null);
+        if (remaining.length === 0) {
+          setMobileView('list');
+        }
       }
       setDeletingNote(null);
     }
@@ -144,78 +157,154 @@ function NotesDashboard() {
   const pinnedNotesCount = notes.filter((n) => n.is_pinned).length;
 
   return (
-    <div className="h-screen w-screen bg-[#121212] text-slate-100 flex overflow-hidden font-sans">
-      {/* 1. LEFT COLLAPSIBLE ICON NAVIGATION BAR */}
-      <SidebarNav
-        user={user!}
-        isCollapsed={isSidebarCollapsed}
-        onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-        activeView={activeView}
-        onSelectView={(v) => {
-          setActiveView(v);
-          setActiveFolder(null);
-          setFilterTag(null);
-        }}
-        activeTag={filterTag}
-        onSelectTag={(t) => {
-          setFilterTag(t);
-          setActiveFolder(null);
-          setActiveView('all');
-        }}
-        activeFolder={activeFolder}
-        onSelectFolder={(f) => {
-          setActiveFolder(f);
-          setFilterTag(null);
-          setActiveView('all');
-        }}
-        allTags={allTags}
-        totalNotes={rawNotesCount}
-        pinnedCount={pinnedNotesCount}
-        syncStatus={syncStatus}
-        pendingCount={pendingCount}
-        onNewNote={handleCreateNewNote}
-        onLogout={() => setShowLogoutConfirm(true)}
-        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
-      />
+    <div className="h-screen w-screen bg-[#121212] text-slate-100 flex overflow-hidden font-sans relative">
+      {/* 1. DESKTOP LEFT COLLAPSIBLE NAVIGATION BAR */}
+      <div className="hidden md:flex h-full shrink-0">
+        <SidebarNav
+          user={user!}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          activeView={activeView}
+          onSelectView={(v) => {
+            setActiveView(v);
+            setActiveFolder(null);
+            setFilterTag(null);
+          }}
+          activeTag={filterTag}
+          onSelectTag={(t) => {
+            setFilterTag(t);
+            setActiveFolder(null);
+            setActiveView('all');
+          }}
+          activeFolder={activeFolder}
+          onSelectFolder={(f) => {
+            setActiveFolder(f);
+            setFilterTag(null);
+            setActiveView('all');
+          }}
+          allTags={allTags}
+          totalNotes={rawNotesCount}
+          pinnedCount={pinnedNotesCount}
+          syncStatus={syncStatus}
+          pendingCount={pendingCount}
+          onNewNote={handleCreateNewNote}
+          onLogout={() => setShowLogoutConfirm(true)}
+          onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        />
+      </div>
 
-      {/* 2. MIDDLE LIST PANEL FOR NOTES / FOLDERS / PINNED GRID */}
-      <NotesListPanel
-        notes={displayNotes}
-        allNotesCount={rawNotesCount}
-        activeNoteId={activeNote?.id || null}
-        onSelectNote={(note) => setActiveNote(note)}
-        onNewNote={handleCreateNewNote}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        sortBy={sortBy}
-        onSortChange={setSortBy}
-        activeTag={filterTag}
-        onClearTag={() => setFilterTag(null)}
-        activeFolder={activeFolder}
-        onClearFolder={() => setActiveFolder(null)}
-        onTogglePin={togglePin}
-        onDeleteNote={(note) => setDeletingNote(note)}
-        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
-      />
+      {/* MOBILE DRAWER NAVIGATION OVERLAY */}
+      {isMobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          {/* Backdrop */}
+          <div
+            onClick={() => setIsMobileSidebarOpen(false)}
+            className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity duration-200"
+          />
 
-      {/* 3. WIDE MAIN WORKSPACE FEATURING RICH TEXT EDITOR */}
-      <WorkspaceEditor
-        note={activeNote}
-        onSave={handleSaveNote}
-        onDelete={(note) => setDeletingNote(note)}
-        onTogglePin={togglePin}
-        syncStatus={syncStatus}
-        pendingCount={pendingCount}
-        onForceSync={forceSync}
-        onNewNote={handleCreateNewNote}
-      />
+          {/* Drawer Content */}
+          <div className="relative z-10 h-full max-w-[85vw] shadow-2xl animate-in slide-in-from-left duration-200">
+            <SidebarNav
+              user={user!}
+              isCollapsed={false}
+              onToggleCollapse={() => setIsMobileSidebarOpen(false)}
+              activeView={activeView}
+              onSelectView={(v) => {
+                setActiveView(v);
+                setActiveFolder(null);
+                setFilterTag(null);
+                setIsMobileSidebarOpen(false);
+              }}
+              activeTag={filterTag}
+              onSelectTag={(t) => {
+                setFilterTag(t);
+                setActiveFolder(null);
+                setActiveView('all');
+                setIsMobileSidebarOpen(false);
+              }}
+              activeFolder={activeFolder}
+              onSelectFolder={(f) => {
+                setActiveFolder(f);
+                setFilterTag(null);
+                setActiveView('all');
+                setIsMobileSidebarOpen(false);
+              }}
+              allTags={allTags}
+              totalNotes={rawNotesCount}
+              pinnedCount={pinnedNotesCount}
+              syncStatus={syncStatus}
+              pendingCount={pendingCount}
+              onNewNote={handleCreateNewNote}
+              onLogout={() => {
+                setIsMobileSidebarOpen(false);
+                setShowLogoutConfirm(true);
+              }}
+              onOpenCommandPalette={() => {
+                setIsMobileSidebarOpen(false);
+                setIsCommandPaletteOpen(true);
+              }}
+              isMobile={true}
+              onCloseMobile={() => setIsMobileSidebarOpen(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 2. MIDDLE LIST PANEL FOR NOTES / FOLDERS / PINNED */}
+      <div
+        className={`h-full ${
+          mobileView === 'list' ? 'flex w-full md:w-auto' : 'hidden md:flex'
+        }`}
+      >
+        <NotesListPanel
+          notes={displayNotes}
+          allNotesCount={rawNotesCount}
+          activeNoteId={activeNote?.id || null}
+          onSelectNote={handleSelectNote}
+          onNewNote={handleCreateNewNote}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          activeTag={filterTag}
+          onClearTag={() => setFilterTag(null)}
+          activeFolder={activeFolder}
+          onClearFolder={() => setActiveFolder(null)}
+          onTogglePin={togglePin}
+          onDeleteNote={(note) => setDeletingNote(note)}
+          onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+          onOpenSidebarMobile={() => setIsMobileSidebarOpen(true)}
+        />
+      </div>
+
+      {/* 3. MAIN WORKSPACE / EDITOR CANVAS */}
+      <div
+        className={`h-full flex-1 overflow-hidden ${
+          mobileView === 'editor' ? 'flex w-full' : 'hidden md:flex'
+        }`}
+      >
+        <WorkspaceEditor
+          note={activeNote}
+          onSave={handleSaveNote}
+          onDelete={(note) => setDeletingNote(note)}
+          onTogglePin={togglePin}
+          syncStatus={syncStatus}
+          pendingCount={pendingCount}
+          onForceSync={forceSync}
+          onNewNote={handleCreateNewNote}
+          onBack={() => setMobileView('list')}
+        />
+      </div>
 
       {/* Cmd + K Command Palette */}
       <CommandPalette
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
         notes={notes}
-        onSelectNote={(n) => setActiveNote(n)}
+        onSelectNote={(n) => {
+          setActiveNote(n);
+          setMobileView('editor');
+        }}
         onNewNote={handleCreateNewNote}
         onFilterPinned={() => setActiveView('pinned')}
         onForceSync={forceSync}
@@ -277,4 +366,3 @@ export default function App() {
     </AuthProvider>
   );
 }
-

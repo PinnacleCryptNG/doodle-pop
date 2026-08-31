@@ -31,7 +31,8 @@ import {
   Plus,
   X,
   FileDown,
-  BookOpen
+  BookOpen,
+  ArrowLeft
 } from 'lucide-react';
 
 interface WorkspaceEditorProps {
@@ -51,6 +52,7 @@ interface WorkspaceEditorProps {
   pendingCount: number;
   onForceSync: () => void;
   onNewNote: () => void;
+  onBack?: () => void;
 }
 
 export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
@@ -61,7 +63,8 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
   syncStatus,
   pendingCount,
   onForceSync,
-  onNewNote
+  onNewNote,
+  onBack
 }) => {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
@@ -262,25 +265,37 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
   return (
     <main
       id="workspace-editor"
-      className={`flex-1 h-screen bg-[#121212] flex flex-col overflow-hidden relative ${
+      className={`flex-1 h-full bg-[#121212] flex flex-col overflow-hidden relative ${
         isZenMode ? 'fixed inset-0 z-50 bg-[#121212]' : ''
       }`}
     >
       {/* TOP HEADER CONTROLS */}
-      <header className="h-15 px-4 sm:px-6 bg-[#141418]/95 backdrop-blur-md border-b border-white/[0.08] flex items-center justify-between shrink-0 z-20 gap-3">
-        {/* Left: Folder Name & Save Indicator */}
-        <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+      <header className="h-15 px-3 sm:px-6 bg-[#141418]/95 backdrop-blur-md border-b border-white/[0.08] flex items-center justify-between shrink-0 z-20 gap-2.5">
+        {/* Left: Mobile Back Button + Folder Name & Save Indicator */}
+        <div className="flex items-center gap-2 sm:gap-3.5 min-w-0">
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              title="Back to all notes"
+              className="md:hidden inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 hover:text-white border border-white/[0.08] text-xs font-medium cursor-pointer shrink-0 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 text-[#2DD4BF]" />
+              <span className="font-outfit font-semibold">Notes</span>
+            </button>
+          )}
+
           <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium truncate">
-            <span className="text-slate-400 hover:text-slate-300 transition-colors cursor-default whitespace-nowrap">
+            <span className="text-slate-400 hover:text-slate-300 transition-colors cursor-default whitespace-nowrap hidden xs:inline">
               {note.folder || 'Personal'}
             </span>
-            <span className="text-slate-600 font-normal">/</span>
-            <span className="text-slate-100 font-semibold truncate max-w-[140px] sm:max-w-[240px] md:max-w-[320px]">
+            <span className="text-slate-600 font-normal hidden xs:inline">/</span>
+            <span className="text-slate-100 font-semibold truncate max-w-[110px] xs:max-w-[140px] sm:max-w-[240px] md:max-w-[320px]">
               {title || 'Untitled Note'}
             </span>
           </div>
 
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] font-medium text-slate-300 whitespace-nowrap shrink-0">
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[10px] sm:text-[11px] font-medium text-slate-300 whitespace-nowrap shrink-0">
             <div
               className={`w-1.5 h-1.5 rounded-full transition-colors ${
                 isSaved ? 'bg-[#2DD4BF] shadow-[0_0_8px_rgba(45,212,191,0.6)]' : 'bg-amber-400 animate-pulse'
@@ -291,8 +306,21 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
         </div>
 
         {/* Right: Actions, View Mode & Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* View Mode Switcher */}
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          {/* Mobile View Toggle (Write vs Read) */}
+          <button
+            onClick={() => setEditorMode(editorMode === 'preview' ? 'write' : 'preview')}
+            title={editorMode === 'preview' ? 'Switch to write note' : 'Switch to read preview'}
+            className="sm:hidden p-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-slate-300 hover:text-white flex items-center justify-center shrink-0 cursor-pointer"
+          >
+            {editorMode === 'preview' ? (
+              <Edit3 className="w-4 h-4 text-[#2DD4BF]" />
+            ) : (
+              <Eye className="w-4 h-4 text-[#2DD4BF]" />
+            )}
+          </button>
+
+          {/* Desktop View Mode Switcher */}
           <div className="hidden sm:inline-flex items-center p-1 rounded-xl bg-white/[0.04] border border-white/[0.08]">
             <button
               onClick={() => setEditorMode('write')}
@@ -632,18 +660,18 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
       </div>
 
       {/* BOTTOM FOOTER STATUS BAR */}
-      <footer className="h-11 px-6 bg-[#141416] border-t border-white/[0.06] flex items-center justify-between shrink-0 text-xs text-slate-400 font-medium z-20">
+      <footer className="h-auto py-2 px-3 sm:px-6 bg-[#141416] border-t border-white/[0.06] flex items-center justify-between gap-2 shrink-0 text-xs text-slate-400 font-medium z-20 flex-wrap">
         {/* Left: Word & Character Count */}
-        <div className="flex items-center gap-3">
-          <span className="font-jetbrains text-[11px] text-slate-400">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="font-jetbrains text-[10px] sm:text-[11px] text-slate-400">
             {wordCount} words
           </span>
-          <span className="text-slate-400">•</span>
-          <span className="font-jetbrains text-[11px] text-slate-400">
-            {charCount} characters
+          <span className="text-slate-500">•</span>
+          <span className="font-jetbrains text-[10px] sm:text-[11px] text-slate-400">
+            {charCount} chars
           </span>
-          <span className="text-slate-400">•</span>
-          <span className="font-jetbrains text-[11px] text-slate-400">
+          <span className="text-slate-500 hidden xs:inline">•</span>
+          <span className="font-jetbrains text-[10px] sm:text-[11px] text-slate-400 hidden xs:inline">
             {readTimeMinutes} min read
           </span>
         </div>
@@ -659,7 +687,7 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
                 ? 'Working offline. Tap to reconnect.'
                 : 'All notes are saved and ready'
             }
-            className={`flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-cabinet font-semibold transition-all cursor-pointer border ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-cabinet font-semibold transition-all cursor-pointer border ${
               syncStatus === 'offline'
                 ? 'bg-amber-500/10 text-amber-300 border-amber-500/25 hover:bg-amber-500/20'
                 : syncStatus === 'syncing'
@@ -677,15 +705,15 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
 
             <span className="tracking-tight">
               {syncStatus === 'offline'
-                ? 'Working offline • Saved on this device'
+                ? 'Offline'
                 : syncStatus === 'syncing'
-                ? 'Saving updates...'
-                : 'Saved to your device • Ready anytime'}
+                ? 'Saving...'
+                : 'Device Synced'}
             </span>
 
             {pendingCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-jetbrains">
-                {pendingCount} pending
+              <span className="px-1.5 py-0.2 rounded-full bg-amber-400/20 text-amber-300 text-[9px] font-jetbrains">
+                {pendingCount}
               </span>
             )}
           </div>
