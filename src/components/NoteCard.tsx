@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Note, NOTE_COLORS, NoteColor } from '../types';
-import { Pin, Pencil, Trash2, Copy, Check, Clock, CloudOff } from 'lucide-react';
+import { Pin, Pencil, Trash2, Copy, Check, Clock, CloudOff, Hash } from 'lucide-react';
 
 interface NoteCardProps {
   note: Note;
@@ -19,7 +19,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
-  const colorConfig = NOTE_COLORS[(note.color_tag as NoteColor) || 'default'] || NOTE_COLORS.default;
+  const colorConfig = NOTE_COLORS[(note.color_tag as NoteColor) || 'cyan'] || NOTE_COLORS.cyan || NOTE_COLORS.default;
 
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -48,41 +48,44 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     <article
       id={`note-card-${note.id}`}
       onClick={() => onEdit(note)}
-      className={`group relative rounded-xl border p-4 sm:p-5 transition-all duration-200 hover:shadow-md cursor-pointer flex flex-col justify-between ${
+      className={`group relative rounded-3xl backdrop-blur-xl border p-5 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)] cursor-pointer flex flex-col justify-between overflow-hidden ${
         colorConfig.cardBg
       } ${colorConfig.border} ${
-        note.is_pinned ? 'ring-1 ring-amber-400/60 dark:ring-amber-500/40 shadow-xs' : ''
+        note.is_pinned ? 'ring-2 ring-amber-400/80 shadow-[0_0_25px_rgba(250,204,21,0.25)]' : ''
       } ${isListView ? 'sm:flex-row sm:items-center sm:gap-6' : ''}`}
     >
-      <div className={`${isListView ? 'flex-1 min-w-0' : ''}`}>
+      {/* Subtle top-corner decorative highlight */}
+      <div className="absolute top-0 right-0 w-28 h-28 bg-white/5 rounded-full blur-2xl pointer-events-none -mr-8 -mt-8" />
+
+      <div className={`relative z-10 ${isListView ? 'flex-1 min-w-0' : ''}`}>
         {/* Top bar: Pin indicator + Action icons */}
-        <div className="flex items-start justify-between gap-2 mb-2.5">
-          <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-start justify-between gap-2 mb-3">
+          <div className="flex items-center gap-1.5 flex-wrap">
             {note.is_pinned && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 dark:text-amber-300 bg-amber-100/80 dark:bg-amber-900/50 px-2 py-0.5 rounded-md">
-                <Pin className="w-3 h-3 fill-current" />
+              <span className="inline-flex items-center gap-1 text-[11px] font-fredoka font-bold text-amber-950 bg-gradient-to-r from-amber-300 to-amber-400 px-2.5 py-0.5 rounded-full shadow-sm animate-pulse-glow">
+                <Pin className="w-3 h-3 fill-current stroke-[2.5]" />
                 Pinned
               </span>
             )}
             {note._syncStatus === 'pending' && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-stone-600 dark:text-stone-400 bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded">
-                <CloudOff className="w-2.5 h-2.5" />
-                Saved locally
+              <span className="inline-flex items-center gap-1 text-[10px] font-quicksand font-bold text-slate-300 bg-black/40 px-2 py-0.5 rounded-full border border-white/10">
+                <CloudOff className="w-2.5 h-2.5 text-amber-400" />
+                Local
               </span>
             )}
           </div>
 
-          {/* Quick Action buttons (hover or mobile tap) */}
+          {/* Quick Action buttons */}
           <div
-            className="flex items-center gap-1 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity"
+            className="flex items-center gap-1 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-all duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Pin Toggle */}
             <button
               onClick={() => onTogglePin(note.id)}
               title={note.is_pinned ? 'Unpin note' : 'Pin note to top'}
-              className={`p-1.5 rounded-md text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-100 hover:bg-stone-200/50 dark:hover:bg-stone-800 transition-colors cursor-pointer ${
-                note.is_pinned ? 'text-amber-600 dark:text-amber-400' : ''
+              className={`p-1.5 rounded-xl text-slate-400 hover:text-white bg-black/30 hover:bg-black/60 border border-white/10 transition-all cursor-pointer hover:scale-110 active:scale-95 ${
+                note.is_pinned ? 'text-amber-400 border-amber-400/40 bg-amber-400/15' : ''
               }`}
             >
               <Pin className={`w-3.5 h-3.5 ${note.is_pinned ? 'fill-current' : ''}`} />
@@ -91,17 +94,17 @@ export const NoteCard: React.FC<NoteCardProps> = ({
             {/* Copy Content */}
             <button
               onClick={handleCopy}
-              title="Copy note content"
-              className="p-1.5 rounded-md text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-100 hover:bg-stone-200/50 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+              title="Copy note text"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-white bg-black/30 hover:bg-black/60 border border-white/10 transition-all cursor-pointer hover:scale-110 active:scale-95"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
 
             {/* Edit */}
             <button
               onClick={() => onEdit(note)}
               title="Edit note"
-              className="p-1.5 rounded-md text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-100 hover:bg-stone-200/50 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-cyan-300 bg-black/30 hover:bg-black/60 border border-white/10 transition-all cursor-pointer hover:scale-110 active:scale-95"
             >
               <Pencil className="w-3.5 h-3.5" />
             </button>
@@ -110,7 +113,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
             <button
               onClick={() => onDelete(note)}
               title="Delete note"
-              className="p-1.5 rounded-md text-stone-500 hover:text-rose-600 dark:text-stone-400 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-rose-400 bg-black/30 hover:bg-rose-950/60 border border-white/10 transition-all cursor-pointer hover:scale-110 active:scale-95"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -118,37 +121,38 @@ export const NoteCard: React.FC<NoteCardProps> = ({
         </div>
 
         {/* Note Title */}
-        <h3 className="text-base font-semibold text-stone-900 dark:text-stone-100 mb-1.5 line-clamp-1 break-words">
-          {note.title || <span className="italic text-stone-400 dark:text-stone-500 font-normal">Untitled Note</span>}
+        <h3 className="font-fredoka text-lg font-bold text-white mb-2 line-clamp-1 break-words tracking-tight group-hover:text-cyan-200 transition-colors">
+          {note.title || <span className="italic text-slate-400 font-normal">Untitled Doodle</span>}
         </h3>
 
         {/* Note Body Preview */}
-        <p className={`text-sm text-stone-600 dark:text-stone-300 whitespace-pre-wrap break-words ${isListView ? 'line-clamp-2' : 'line-clamp-4'} mb-3`}>
-          {note.body || <span className="italic text-stone-400 dark:text-stone-500">No content</span>}
+        <p className={`font-nunito text-xs sm:text-sm text-slate-200/90 whitespace-pre-wrap break-words leading-relaxed ${isListView ? 'line-clamp-2' : 'line-clamp-4'} mb-4`}>
+          {note.body || <span className="italic text-slate-400/80">No notes written yet...</span>}
         </p>
 
         {/* Tags list */}
         {Array.isArray(note.tags) && note.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
+          <div className="flex flex-wrap gap-1.5 mb-3">
             {note.tags.map((tag, idx) => (
               <span
                 key={idx}
-                className="text-[11px] font-medium bg-stone-200/60 dark:bg-stone-800 text-stone-700 dark:text-stone-300 px-2 py-0.5 rounded"
+                className="inline-flex items-center gap-1 text-[11px] font-quicksand font-bold bg-white/10 hover:bg-white/20 text-slate-200 px-2.5 py-0.5 rounded-xl border border-white/10 transition-all"
               >
-                #{tag}
+                <Hash className="w-2.5 h-2.5 text-cyan-300" />
+                {tag}
               </span>
             ))}
           </div>
         )}
       </div>
 
-      {/* Footer Meta: Created Date */}
-      <div className="pt-2 border-t border-stone-200/60 dark:border-stone-800/60 flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400">
-        <span className="flex items-center gap-1">
-          <Clock className="w-3 h-3 text-stone-400" />
-          <span>Created {formatDate(note.created_at)}</span>
+      {/* Footer Meta: Date & Word Count */}
+      <div className="relative z-10 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300/80 font-quicksand font-semibold">
+        <span className="flex items-center gap-1.5">
+          <Clock className="w-3 h-3 text-cyan-300" />
+          <span>{formatDate(note.created_at)}</span>
         </span>
-        <span className="text-[10px] text-stone-400 dark:text-stone-500">
+        <span className="px-2 py-0.5 rounded-lg bg-black/30 border border-white/5 text-[10px] font-mono text-slate-300">
           {note.body ? `${note.body.trim().split(/\s+/).filter(Boolean).length} words` : '0 words'}
         </span>
       </div>

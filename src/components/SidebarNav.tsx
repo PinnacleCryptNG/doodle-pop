@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, SyncStatus, FolderItem, DEFAULT_FOLDERS } from '../types';
+import { User, SyncStatus, FolderItem, DEFAULT_FOLDERS, NoteColor, getThemeConfig } from '../types';
 import { BrandLogo } from './BrandLogo';
 import {
   FileText,
@@ -20,7 +20,10 @@ import {
   ChevronRight,
   BookOpen,
   X,
-  Check
+  Check,
+  Zap,
+  Compass,
+  Smile
 } from 'lucide-react';
 
 interface SidebarNavProps {
@@ -46,6 +49,7 @@ interface SidebarNavProps {
   onOpenCommandPalette: () => void;
   isMobile?: boolean;
   onCloseMobile?: () => void;
+  pageTheme?: NoteColor;
 }
 
 export const SidebarNav: React.FC<SidebarNavProps> = ({
@@ -70,15 +74,17 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
   onLogout,
   onOpenCommandPalette,
   isMobile = false,
-  onCloseMobile
+  onCloseMobile,
+  pageTheme = 'cyan'
 }) => {
+  const themeConfig = getThemeConfig(pageTheme);
   const [foldersOpen, setFoldersOpen] = useState(true);
   const [tagsOpen, setTagsOpen] = useState(true);
   const [isAddingFolder, setIsAddingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [newFolderIcon, setNewFolderIcon] = useState('📁');
 
-  const folderEmojiPresets = ['📁', '🚀', '🎨', '🎮', '🦄', '⚽', '🌟', '📚', '💡', '🎵'];
+  const folderEmojiPresets = ['📁', '🚀', '🎨', '🎮', '🦄', '⚽', '🌟', '📚', '💡', '🎵', '🍕', '🐱'];
 
   const handleSelectView = (v: string) => {
     onSelectView(v);
@@ -106,7 +112,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
     if (!trimmed) return;
 
     if (onAddFolder) {
-      onAddFolder(trimmed, newFolderIcon, '#2DD4BF');
+      onAddFolder(trimmed, newFolderIcon, '#38BDF8');
     }
     handleSelectFolder(trimmed);
     setNewFolderName('');
@@ -116,24 +122,24 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
   return (
     <aside
       id="main-sidebar"
-      className={`relative z-30 h-full bg-[#121212] border-r border-white/[0.08] flex flex-col justify-between transition-all duration-300 select-none ${
-        isMobile ? 'w-72 max-w-[85vw] shadow-2xl' : isCollapsed ? 'w-[68px]' : 'w-64 sm:w-72'
+      className={`relative z-30 h-full bg-[#16172B]/95 backdrop-blur-2xl border-r border-white/10 flex flex-col justify-between transition-all duration-300 select-none shadow-[10px_0_30px_rgba(0,0,0,0.4)] ${
+        isMobile ? 'w-72 max-w-[85vw] shadow-2xl' : isCollapsed ? 'w-[72px]' : 'w-64 sm:w-72'
       }`}
     >
       {/* Top Header & Brand */}
       <div className="flex flex-col">
         {/* Workspace Brand & Collapse Toggle */}
-        <div className="h-16 px-3.5 flex items-center justify-between border-b border-white/[0.06]">
+        <div className="h-16 px-4 flex items-center justify-between border-b border-white/10 bg-[#1A1B2F]/60">
           {(!isCollapsed || isMobile) && (
-            <div className="flex items-center gap-2.5 pl-1 overflow-hidden">
+            <div className="flex items-center gap-2.5 overflow-hidden">
               <BrandLogo size="md" />
               <div className="flex flex-col truncate">
-                <span className="font-outfit text-sm font-extrabold tracking-tight text-white flex items-center gap-1 leading-none">
-                  Doodle<span className="text-[#2DD4BF]">Pop</span>
-                  <span className="text-amber-400 text-xs">✨</span>
+                <span className="font-fredoka text-base font-bold tracking-tight text-white flex items-center gap-1.5 leading-none">
+                  Doodle<span className="text-[#38BDF8]">Pop</span>
+                  <span className="text-amber-300 text-xs animate-bounce">✨</span>
                 </span>
-                <span className="font-cabinet text-[10px] uppercase tracking-wider text-slate-400 font-bold mt-0.5">
-                  My Fun Notes
+                <span className="font-quicksand text-[10px] font-bold uppercase tracking-wider text-purple-300/80 mt-0.5">
+                  Creative Notes
                 </span>
               </div>
             </div>
@@ -143,8 +149,8 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
             <div className="w-full flex justify-center">
               <button
                 onClick={onToggleCollapse}
-                title="Open DoodlePop menu"
-                className="hover:scale-105 transition-transform cursor-pointer"
+                title="Expand DoodlePop menu"
+                className="hover:scale-110 active:scale-95 transition-transform cursor-pointer"
               >
                 <BrandLogo size="md" />
               </button>
@@ -155,7 +161,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
             <button
               onClick={onCloseMobile}
               title="Close menu"
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -164,8 +170,8 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
               <button
                 id="sidebar-collapse-toggle"
                 onClick={onToggleCollapse}
-                title="Close menu"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+                title="Collapse menu"
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer hover:scale-105"
               >
                 <PanelLeftClose className="w-4 h-4" />
               </button>
@@ -174,27 +180,37 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
         </div>
 
         {/* New Note Action Button */}
-        <div className="p-3 border-b border-white/[0.06]">
+        <div className="p-3 border-b border-white/10">
           <button
             id="sidebar-new-note-btn"
             onClick={handleNewNote}
-            className={`group relative w-full py-2.5 rounded-xl bg-gradient-to-r from-[#2DD4BF] to-[#14B8A6] hover:from-[#5EEAD4] hover:to-[#2DD4BF] text-slate-950 font-outfit font-semibold text-xs transition-all duration-200 shadow-[0_0_20px_rgba(45,212,191,0.25)] hover:shadow-[0_0_25px_rgba(45,212,191,0.4)] active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 ${
-              isCollapsed && !isMobile ? 'px-0' : 'px-3'
+            style={{
+              backgroundImage: themeConfig.buttonGradient,
+              boxShadow: `0 0 25px ${themeConfig.glow}`,
+            }}
+            className={`btn-bouncy group relative w-full py-3 rounded-2xl text-slate-950 font-fredoka font-bold text-sm transition-all duration-300 hover:brightness-110 active:scale-95 cursor-pointer flex items-center justify-center gap-2 ${
+              isCollapsed && !isMobile ? 'px-0' : 'px-4'
             }`}
             title="Make a new note"
           >
-            <Plus className="w-4 h-4 text-slate-950 stroke-[2.5] shrink-0 group-hover:rotate-90 transition-transform duration-200" />
-            {(!isCollapsed || isMobile) && <span className="font-bold tracking-tight">New Note</span>}
+            <Plus className="w-4 h-4 text-slate-950 stroke-[3] shrink-0 group-hover:rotate-90 transition-transform duration-300" />
+            {(!isCollapsed || isMobile) && (
+              <span className="tracking-tight flex items-center gap-1.5">
+                <span>New Note</span>
+                <Sparkles className="w-3.5 h-3.5 fill-slate-950" />
+              </span>
+            )}
           </button>
         </div>
 
         {/* Navigation Item Lists */}
-        <div className="px-2.5 py-3 space-y-5 overflow-y-auto max-h-[calc(100vh-260px)]">
+        <div className="px-3 py-3 space-y-5 overflow-y-auto max-h-[calc(100vh-270px)] scrollbar-thin">
           {/* Core Views */}
-          <div className="space-y-0.5">
+          <div className="space-y-1">
             {(!isCollapsed || isMobile) && (
-              <span className="px-2.5 mb-1.5 block font-cabinet text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                My Notes
+              <span className="px-2.5 mb-2 block font-fredoka text-[11px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                <Compass className="w-3 h-3 text-cyan-400" />
+                <span>Spaces</span>
               </span>
             )}
 
@@ -207,24 +223,20 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                 handleSelectFolder(null);
               }}
               title={`All Notes (${totalNotes})`}
-              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-2xl text-xs font-quicksand font-bold transition-all cursor-pointer ${
                 activeView === 'all' && !activeTag && !activeFolder
-                  ? 'bg-[#1E1E2E] text-white shadow-xs border border-white/[0.08]'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                  ? 'bg-gradient-to-r from-[#38BDF8]/20 to-[#C084FC]/20 text-white shadow-[0_0_20px_rgba(56,189,248,0.2)] border border-[#38BDF8]/40'
+                  : 'text-slate-300 hover:text-white hover:bg-white/5 hover:translate-x-0.5'
               } ${isCollapsed && !isMobile ? 'justify-center' : 'justify-between'}`}
             >
               <div className="flex items-center gap-2.5 truncate">
-                <FileText
-                  className={`w-4 h-4 shrink-0 ${
-                    activeView === 'all' && !activeTag && !activeFolder
-                      ? 'text-[#2DD4BF]'
-                      : 'text-slate-400'
-                  }`}
-                />
+                <div className={`p-1.5 rounded-xl ${activeView === 'all' && !activeTag && !activeFolder ? 'bg-[#38BDF8] text-slate-950 shadow-sm' : 'bg-white/5 text-cyan-300'}`}>
+                  <FileText className="w-3.5 h-3.5 shrink-0" />
+                </div>
                 {(!isCollapsed || isMobile) && <span className="truncate">All Notes</span>}
               </div>
               {(!isCollapsed || isMobile) && (
-                <span className="font-jetbrains text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400">
+                <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-500/30 shadow-xs">
                   {totalNotes}
                 </span>
               )}
@@ -239,24 +251,20 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                 handleSelectFolder(null);
               }}
               title={`Starred Notes (${pinnedCount})`}
-              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-2xl text-xs font-quicksand font-bold transition-all cursor-pointer ${
                 activeView === 'pinned' && !activeTag && !activeFolder
-                  ? 'bg-[#1E1E2E] text-white shadow-xs border border-white/[0.08]'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                  ? 'bg-gradient-to-r from-amber-500/20 to-rose-500/20 text-white shadow-[0_0_20px_rgba(250,204,21,0.2)] border border-amber-500/40'
+                  : 'text-slate-300 hover:text-white hover:bg-white/5 hover:translate-x-0.5'
               } ${isCollapsed && !isMobile ? 'justify-center' : 'justify-between'}`}
             >
               <div className="flex items-center gap-2.5 truncate">
-                <Star
-                  className={`w-4 h-4 shrink-0 ${
-                    activeView === 'pinned' && !activeTag && !activeFolder
-                      ? 'text-amber-400 fill-amber-400'
-                      : 'text-slate-400'
-                  }`}
-                />
-                {(!isCollapsed || isMobile) && <span className="truncate">Starred Notes</span>}
+                <div className={`p-1.5 rounded-xl ${activeView === 'pinned' && !activeTag && !activeFolder ? 'bg-amber-400 text-slate-950 shadow-sm' : 'bg-white/5 text-amber-300'}`}>
+                  <Star className="w-3.5 h-3.5 shrink-0 fill-current" />
+                </div>
+                {(!isCollapsed || isMobile) && <span className="truncate">Starred Favorites</span>}
               </div>
               {(!isCollapsed || isMobile) && (
-                <span className="font-jetbrains text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400">
+                <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-950/80 text-amber-300 border border-amber-500/30 shadow-xs">
                   {pinnedCount}
                 </span>
               )}
@@ -271,24 +279,22 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                 handleSelectFolder(null);
               }}
               title="Recent Notes"
-              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-2xl text-xs font-quicksand font-bold transition-all cursor-pointer ${
                 activeView === 'recent' && !activeTag && !activeFolder
-                  ? 'bg-[#1E1E2E] text-white shadow-xs border border-white/[0.08]'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                  ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white shadow-[0_0_20px_rgba(192,132,252,0.2)] border border-purple-500/40'
+                  : 'text-slate-300 hover:text-white hover:bg-white/5 hover:translate-x-0.5'
               } ${isCollapsed && !isMobile ? 'justify-center' : 'justify-start'}`}
             >
-              <Clock
-                className={`w-4 h-4 shrink-0 ${
-                  activeView === 'recent' ? 'text-[#2DD4BF]' : 'text-slate-400'
-                }`}
-              />
-              {(!isCollapsed || isMobile) && <span className="truncate">Recent Notes</span>}
+              <div className={`p-1.5 rounded-xl ${activeView === 'recent' && !activeTag && !activeFolder ? 'bg-[#C084FC] text-slate-950 shadow-sm' : 'bg-white/5 text-purple-300'}`}>
+                <Clock className="w-3.5 h-3.5 shrink-0" />
+              </div>
+              {(!isCollapsed || isMobile) && <span className="truncate">Recently Updated</span>}
             </button>
           </div>
 
           {/* Collapsed Mode Folders Quick Access */}
           {isCollapsed && !isMobile && (
-            <div className="pt-2 border-t border-white/[0.06] space-y-1">
+            <div className="pt-2 border-t border-white/10 space-y-1.5">
               {folders.map((folder) => {
                 const count = folderCounts[folder.id] ?? 0;
                 const isFolderActive = activeFolder === folder.id;
@@ -300,10 +306,10 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                       handleSelectTag(null);
                     }}
                     title={`${folder.label} (${count} notes)`}
-                    className={`w-full p-2 rounded-lg flex items-center justify-center text-sm transition-all cursor-pointer ${
+                    className={`w-full p-2.5 rounded-2xl flex items-center justify-center text-base transition-all cursor-pointer hover:scale-105 ${
                       isFolderActive
-                        ? 'bg-[#2DD4BF]/20 text-white ring-1 ring-[#2DD4BF]'
-                        : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
+                        ? 'bg-[#38BDF8]/25 text-white ring-2 ring-[#38BDF8] shadow-[0_0_15px_rgba(56,189,248,0.3)]'
+                        : 'text-slate-400 hover:text-white hover:bg-white/10'
                     }`}
                   >
                     <span>{folder.icon}</span>
@@ -315,18 +321,18 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
 
           {/* Folders (Expanded / Mobile) */}
           {(!isCollapsed || isMobile) && (
-            <div className="space-y-1">
-              <div className="flex items-center justify-between px-2.5 mb-1 text-slate-400">
+            <div className="space-y-1 pt-1">
+              <div className="flex items-center justify-between px-2.5 mb-1.5 text-slate-400">
                 <button
                   onClick={() => setFoldersOpen(!foldersOpen)}
-                  className="flex items-center gap-1.5 font-cabinet text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-300 cursor-pointer"
+                  className="flex items-center gap-1.5 font-fredoka text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-200 cursor-pointer"
                 >
                   {foldersOpen ? (
-                    <ChevronDown className="w-3 h-3 text-slate-400" />
+                    <ChevronDown className="w-3 h-3 text-purple-400" />
                   ) : (
-                    <ChevronRight className="w-3 h-3 text-slate-400" />
+                    <ChevronRight className="w-3 h-3 text-purple-400" />
                   )}
-                  <span>Folders</span>
+                  <span>Categories & Folders</span>
                 </button>
                 <button
                   id="add-folder-btn"
@@ -335,7 +341,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                     setFoldersOpen(true);
                   }}
                   title="Create a new folder"
-                  className="p-1 rounded-md text-slate-400 hover:text-[#2DD4BF] hover:bg-white/[0.06] transition-colors cursor-pointer flex items-center gap-1"
+                  className="p-1 rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-white/10 transition-all cursor-pointer flex items-center gap-1 hover:scale-105"
                 >
                   <Plus className="w-3.5 h-3.5" />
                 </button>
@@ -345,20 +351,21 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
               {isAddingFolder && (
                 <form
                   onSubmit={handleCreateCustomFolder}
-                  className="p-2.5 rounded-xl bg-[#1A1A26] border border-[#2DD4BF]/40 shadow-lg space-y-2 mb-2 animate-in fade-in zoom-in-95 duration-150"
+                  className="p-3 rounded-2xl bg-[#1F2038] border border-cyan-500/40 shadow-xl space-y-2.5 mb-2 animate-in fade-in zoom-in-95 duration-150"
                 >
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#2DD4BF]">
-                    New Folder
+                  <div className="text-[10px] font-fredoka font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-amber-300" />
+                    New Folder Category
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-base">{newFolderIcon}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg p-1 bg-white/5 rounded-xl">{newFolderIcon}</span>
                     <input
                       type="text"
                       value={newFolderName}
                       onChange={(e) => setNewFolderName(e.target.value)}
                       placeholder="Folder name..."
                       autoFocus
-                      className="flex-1 bg-[#121212] border border-white/[0.1] focus:border-[#2DD4BF] rounded-lg px-2 py-1 text-xs text-white placeholder-slate-500 focus:outline-hidden"
+                      className="flex-1 bg-[#121324] border border-white/15 focus:border-cyan-400 rounded-xl px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-hidden font-nunito"
                     />
                   </div>
                   {/* Quick emoji selection */}
@@ -368,8 +375,8 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                         type="button"
                         key={emoji}
                         onClick={() => setNewFolderIcon(emoji)}
-                        className={`text-xs p-1 rounded hover:bg-white/[0.1] transition-transform ${
-                          newFolderIcon === emoji ? 'scale-125 bg-white/[0.15]' : ''
+                        className={`text-sm p-1 rounded-xl hover:bg-white/15 transition-transform ${
+                          newFolderIcon === emoji ? 'scale-125 bg-cyan-500/30 border border-cyan-400/50' : ''
                         }`}
                       >
                         {emoji}
@@ -380,14 +387,14 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                     <button
                       type="button"
                       onClick={() => setIsAddingFolder(false)}
-                      className="px-2 py-1 rounded text-[10px] text-slate-400 hover:text-white"
+                      className="px-2.5 py-1 rounded-xl text-[11px] font-quicksand font-bold text-slate-400 hover:text-white cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={!newFolderName.trim()}
-                      className="px-2.5 py-1 rounded-md bg-[#2DD4BF] text-slate-950 font-bold text-[10px] flex items-center gap-1 disabled:opacity-50 hover:bg-[#5EEAD4] cursor-pointer"
+                      className="btn-bouncy px-3 py-1 rounded-xl bg-gradient-to-r from-cyan-400 to-purple-400 text-slate-950 font-fredoka font-bold text-[11px] flex items-center gap-1 disabled:opacity-50 cursor-pointer shadow-md"
                     >
                       <Check className="w-3 h-3 stroke-[3]" />
                       Add
@@ -397,7 +404,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
               )}
 
               {foldersOpen && (
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   {folders.map((folder) => {
                     const count = folderCounts[folder.id] ?? 0;
                     const isFolderActive = activeFolder === folder.id;
@@ -409,31 +416,75 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                           handleSelectFolder(isFolderActive ? null : folder.id);
                           handleSelectTag(null);
                         }}
-                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition-all cursor-pointer group ${
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-quicksand font-bold transition-all cursor-pointer group ${
                           isFolderActive
-                            ? 'bg-[#1E1E2E] text-white border border-[#2DD4BF]/40 shadow-xs font-semibold'
-                            : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                            ? 'bg-[#241B3F] text-white border border-[#C084FC]/50 shadow-[0_0_15px_rgba(192,132,252,0.25)] font-bold'
+                            : 'text-slate-300 hover:text-white hover:bg-white/5 hover:translate-x-0.5'
                         }`}
                       >
-                        <div className="flex items-center gap-2 truncate">
-                          <span className="text-sm shrink-0">{folder.icon}</span>
+                        <div className="flex items-center gap-2.5 truncate">
+                          <span className="text-base shrink-0 group-hover:scale-110 transition-transform">{folder.icon}</span>
                           <span className="truncate">{folder.label}</span>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
                           <span
-                            className={`font-jetbrains text-[10px] px-1.5 py-0.5 rounded transition-colors ${
+                            className={`font-mono text-[10px] px-2 py-0.5 rounded-full transition-colors ${
                               isFolderActive
-                                ? 'bg-[#2DD4BF]/20 text-[#2DD4BF] font-bold'
-                                : 'bg-white/[0.06] text-slate-400 group-hover:text-slate-300'
+                                ? 'bg-[#C084FC]/30 text-purple-200 border border-[#C084FC]/40 font-bold'
+                                : 'bg-white/5 text-slate-400 group-hover:text-slate-200'
                             }`}
                           >
                             {count}
                           </span>
                           <div
-                            className="w-1.5 h-1.5 rounded-full"
-                            style={{ backgroundColor: folder.color || '#2DD4BF' }}
+                            className="w-2 h-2 rounded-full ring-2 ring-white/20"
+                            style={{ backgroundColor: folder.color || '#38BDF8' }}
                           />
                         </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Tags Section (Expanded) */}
+          {(!isCollapsed || isMobile) && allTags.length > 0 && (
+            <div className="space-y-1 pt-1">
+              <div className="flex items-center justify-between px-2.5 mb-1.5 text-slate-400">
+                <button
+                  onClick={() => setTagsOpen(!tagsOpen)}
+                  className="flex items-center gap-1.5 font-fredoka text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-200 cursor-pointer"
+                >
+                  {tagsOpen ? (
+                    <ChevronDown className="w-3 h-3 text-cyan-400" />
+                  ) : (
+                    <ChevronRight className="w-3 h-3 text-cyan-400" />
+                  )}
+                  <span>Tags</span>
+                </button>
+              </div>
+
+              {tagsOpen && (
+                <div className="flex flex-wrap gap-1.5 px-1">
+                  {allTags.map((tag) => {
+                    const isTagActive = activeTag === tag;
+                    return (
+                      <button
+                        key={tag}
+                        onClick={() => {
+                          handleSelectTag(isTagActive ? null : tag);
+                          handleSelectFolder(null);
+                        }}
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-quicksand font-bold transition-all cursor-pointer ${
+                          isTagActive
+                            ? 'bg-gradient-to-r from-cyan-400 to-purple-400 text-slate-950 shadow-[0_0_15px_rgba(56,189,248,0.35)]'
+                            : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white border border-white/10'
+                        }`}
+                      >
+                        <Hash className="w-3 h-3" />
+                        <span>{tag}</span>
                       </button>
                     );
                   })}
@@ -445,18 +496,20 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
       </div>
 
       {/* Bottom Profile, Quick Status & Logout */}
-      <div className="p-3 border-t border-white/[0.06] bg-[#101010] space-y-2">
+      <div className="p-3 border-t border-white/10 bg-[#1A1B2F]/80 backdrop-blur-md space-y-2">
         {(!isCollapsed || isMobile) && (
           <div className="flex items-center justify-between px-1 py-1">
-            <div className="flex items-center gap-2 overflow-hidden">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#2DD4BF]/30 to-[#6366F1]/30 border border-white/[0.1] flex items-center justify-center text-[11px] font-bold text-white shrink-0">
-                {user.email.charAt(0).toUpperCase()}
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-[#38BDF8] via-[#C084FC] to-[#FACC15] p-[1.5px] shadow-[0_0_15px_rgba(56,189,248,0.3)] shrink-0">
+                <div className="w-full h-full bg-[#1A1B2F] rounded-[14px] flex items-center justify-center text-xs font-bold text-cyan-300">
+                  {user.email.charAt(0).toUpperCase()}
+                </div>
               </div>
               <div className="flex flex-col truncate">
-                <span className="font-outfit text-xs font-semibold text-white truncate">
+                <span className="font-fredoka text-xs font-bold text-white truncate">
                   {user.name || user.email.split('@')[0]}
                 </span>
-                <span className="font-jetbrains text-[10px] text-slate-400 truncate">
+                <span className="font-quicksand text-[10px] font-medium text-slate-400 truncate">
                   {user.email}
                 </span>
               </div>
@@ -466,7 +519,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
               id="sidebar-logout-btn"
               onClick={onLogout}
               title="Log out"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-slate-400 hover:text-rose-300 hover:bg-rose-500/20 transition-all cursor-pointer hover:scale-105"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -475,13 +528,15 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
 
         {isCollapsed && !isMobile && (
           <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#2DD4BF]/30 to-[#6366F1]/30 border border-white/[0.1] flex items-center justify-center text-xs font-bold text-white">
-              {user.email.charAt(0).toUpperCase()}
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#38BDF8] via-[#C084FC] to-[#FACC15] p-[1.5px] shadow-[0_0_15px_rgba(56,189,248,0.3)] flex items-center justify-center">
+              <div className="w-full h-full bg-[#1A1B2F] rounded-[14px] flex items-center justify-center text-xs font-bold text-cyan-300">
+                {user.email.charAt(0).toUpperCase()}
+              </div>
             </div>
             <button
               onClick={onLogout}
               title="Log out"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-slate-400 hover:text-rose-300 hover:bg-rose-500/20 transition-colors cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -491,3 +546,4 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
     </aside>
   );
 };
+

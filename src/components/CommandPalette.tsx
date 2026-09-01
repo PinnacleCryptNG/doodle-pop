@@ -7,7 +7,9 @@ import {
   FileText,
   RefreshCw,
   ArrowRight,
-  X
+  X,
+  Sparkles,
+  Zap
 } from 'lucide-react';
 
 interface CommandPaletteProps {
@@ -67,14 +69,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     : notes.slice(0, 5);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-150">
       <div
-        className="w-full max-w-xl bg-[#181824] border border-white/[0.12] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col"
+        className="w-full max-w-xl bg-[#1A1B2F]/95 border border-white/15 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col backdrop-blur-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Header Input */}
-        <div className="p-4 border-b border-white/[0.08] flex items-center gap-3 bg-[#1E1E2E]">
-          <Search className="w-5 h-5 text-[#2DD4BF] shrink-0" />
+        <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-[#20223D]/80">
+          <Search className="w-5 h-5 text-cyan-300 shrink-0" />
           <input
             type="text"
             autoFocus
@@ -83,22 +85,22 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            placeholder="Search notes or choose an action..."
-            className="w-full bg-transparent border-none text-sm text-white placeholder-slate-400 focus:outline-hidden font-sans"
+            placeholder="Search doodles or pick an action..."
+            className="w-full bg-transparent border-none text-sm font-fredoka text-white placeholder-slate-400 focus:outline-hidden"
           />
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-white/[0.08] cursor-pointer"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Action Commands List */}
-        <div className="max-h-96 overflow-y-auto p-2 space-y-1">
+        <div className="max-h-96 overflow-y-auto p-2.5 space-y-1.5 scrollbar-thin">
           {!query && (
-            <div className="px-3 py-1 text-[10px] font-cabinet font-bold uppercase tracking-wider text-slate-400">
-              Quick Actions
+            <div className="px-3 py-1 text-[11px] font-fredoka uppercase tracking-wider text-cyan-300 font-bold">
+              Quick Magic Actions
             </div>
           )}
 
@@ -109,20 +111,20 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onClose();
                   onNewNote();
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#2DD4BF]/10 text-left transition-colors group cursor-pointer"
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl hover:bg-cyan-500/15 border border-transparent hover:border-cyan-500/30 text-left transition-all group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-lg bg-[#2DD4BF]/15 flex items-center justify-center text-[#2DD4BF]">
-                    <Plus className="w-4 h-4" />
+                  <div className="w-8 h-8 rounded-xl bg-cyan-400/20 border border-cyan-400/30 flex items-center justify-center text-cyan-300 shadow-sm">
+                    <Plus className="w-4 h-4 stroke-[3]" />
                   </div>
                   <div>
-                    <span className="font-outfit text-xs font-semibold text-white group-hover:text-[#2DD4BF]">
-                      Make a new note
+                    <span className="font-fredoka text-sm font-bold text-white group-hover:text-cyan-200">
+                      Create a fresh new doodle
                     </span>
-                    <p className="text-[10px] text-slate-400">Start typing a fresh blank note</p>
+                    <p className="text-xs font-quicksand font-semibold text-slate-300">Start typing a blank colorful note</p>
                   </div>
                 </div>
-                <span className="font-jetbrains text-[10px] text-slate-400 px-1.5 py-0.5 rounded bg-white/[0.06]">
+                <span className="font-mono text-xs text-cyan-300 px-2 py-0.5 rounded-lg bg-white/10">
                   ⌘N
                 </span>
               </button>
@@ -132,17 +134,17 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onClose();
                   onFilterPinned();
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition-colors group cursor-pointer"
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl hover:bg-amber-500/15 border border-transparent hover:border-amber-500/30 text-left transition-all group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center text-amber-400">
-                    <Star className="w-4 h-4 fill-amber-400" />
+                  <div className="w-8 h-8 rounded-xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-amber-300 shadow-sm">
+                    <Star className="w-4 h-4 fill-amber-300" />
                   </div>
                   <div>
-                    <span className="font-outfit text-xs font-semibold text-white group-hover:text-amber-300">
-                      View Starred Notes
+                    <span className="font-fredoka text-sm font-bold text-white group-hover:text-amber-200">
+                      View Starred Favorites
                     </span>
-                    <p className="text-[10px] text-slate-400">See all your favorite notes</p>
+                    <p className="text-xs font-quicksand font-semibold text-slate-300">Check out your most loved notes</p>
                   </div>
                 </div>
               </button>
@@ -152,17 +154,17 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onClose();
                   onForceSync();
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/[0.06] text-left transition-colors group cursor-pointer"
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl hover:bg-purple-500/15 border border-transparent hover:border-purple-500/30 text-left transition-all group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-lg bg-teal-500/15 flex items-center justify-center text-[#2DD4BF]">
+                  <div className="w-8 h-8 rounded-xl bg-purple-400/20 border border-purple-400/30 flex items-center justify-center text-purple-300 shadow-sm">
                     <RefreshCw className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="font-outfit text-xs font-semibold text-white group-hover:text-[#2DD4BF]">
-                      Save and sync all notes
+                    <span className="font-fredoka text-sm font-bold text-white group-hover:text-purple-200">
+                      Save & Sync all notes
                     </span>
-                    <p className="text-[10px] text-slate-400">Check for latest updates and save changes</p>
+                    <p className="text-xs font-quicksand font-semibold text-slate-300">Instant cloud & local synchronization</p>
                   </div>
                 </div>
               </button>
@@ -172,8 +174,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {/* Note Search Results */}
           {filteredNotes.length > 0 && (
             <div className="pt-2">
-              <div className="px-3 py-1 text-[10px] font-cabinet font-bold uppercase tracking-wider text-slate-400">
-                Notes ({filteredNotes.length})
+              <div className="px-3 py-1 text-[11px] font-fredoka uppercase tracking-wider text-purple-300 font-bold">
+                Matching Doodles ({filteredNotes.length})
               </div>
               {filteredNotes.map((n) => (
                 <button
@@ -182,37 +184,40 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     onSelectNote(n);
                     onClose();
                   }}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-[#1E1E2E] text-left transition-colors group cursor-pointer"
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl hover:bg-[#20223D] border border-transparent hover:border-white/10 text-left transition-all group cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5 truncate">
-                    <FileText className="w-4 h-4 text-[#2DD4BF] shrink-0" />
-                    <span className="font-outfit text-xs font-semibold text-slate-200 group-hover:text-white truncate">
-                      {n.title || 'Untitled Note'}
+                    <FileText className="w-4 h-4 text-cyan-300 shrink-0" />
+                    <span className="font-fredoka text-xs font-bold text-slate-200 group-hover:text-white truncate">
+                      {n.title || 'Untitled Doodle'}
                     </span>
                   </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#2DD4BF] shrink-0" />
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-300 shrink-0" />
                 </button>
               ))}
             </div>
           )}
 
           {query && filteredNotes.length === 0 && (
-            <div className="py-8 text-center text-xs text-slate-400 font-sans">
-              No matching notes found for "{query}".
+            <div className="py-8 text-center text-xs text-slate-400 font-quicksand font-semibold">
+              No matching doodles found for &ldquo;{query}&rdquo;.
             </div>
           )}
         </div>
 
         {/* Footer Shortcut Hints */}
-        <div className="p-3 bg-[#121216] border-t border-white/[0.06] flex items-center justify-between text-[10px] font-jetbrains text-slate-400">
+        <div className="p-3.5 bg-[#141525] border-t border-white/10 flex items-center justify-between text-xs font-quicksand font-bold text-slate-400">
           <div className="flex items-center gap-3">
-            <span>↑ ↓ to move</span>
-            <span>↵ to pick</span>
-            <span>Esc to close</span>
+            <span>↑ ↓ navigate</span>
+            <span>↵ choose</span>
+            <span>Esc dismiss</span>
           </div>
-          <span className="text-[#2DD4BF] font-semibold">✨ DoodlePop Search</span>
+          <span className="text-cyan-300 font-fredoka flex items-center gap-1">
+            <Sparkles className="w-3.5 h-3.5" /> DoodlePop Search
+          </span>
         </div>
       </div>
     </div>
   );
 };
+

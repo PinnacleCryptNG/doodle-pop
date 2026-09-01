@@ -14,8 +14,10 @@ import {
   Mail,
   Lock,
   Sparkles,
-  UserPlus,
-  LogIn
+  Zap,
+  Star,
+  Heart,
+  Smile
 } from 'lucide-react';
 
 export const AuthView: React.FC = () => {
@@ -49,7 +51,7 @@ export const AuthView: React.FC = () => {
 
     if (mode === 'verify') {
       if (!verificationCode.trim()) {
-        setLocalError('Please enter the 6-digit confirmation code.');
+        setLocalError('Please enter the 6-digit magic confirmation code! 🪄');
         return;
       }
       setSubmitting(true);
@@ -85,7 +87,7 @@ export const AuthView: React.FC = () => {
         return;
       }
       if (password !== confirmPassword) {
-        setLocalError('Passwords do not match.');
+        setLocalError('Oops! Passwords do not match.');
         return;
       }
     }
@@ -136,7 +138,7 @@ export const AuthView: React.FC = () => {
         if (res.verificationCode) {
           setLatestCodeHint(res.verificationCode);
         }
-        setResendStatus('A fresh confirmation code has been sent to your email.');
+        setResendStatus('A fresh confirmation code has been sent to your inbox! ✨');
         setTimeout(() => setResendStatus(null), 6000);
       } else if (res.error) {
         setLocalError(res.error);
@@ -159,70 +161,89 @@ export const AuthView: React.FC = () => {
   const displayedError = localError || error;
 
   return (
-    <div className="relative min-h-screen bg-[#0F172A] text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 selection:bg-[#8B5CF6]/30 selection:text-violet-200 overflow-hidden font-['Inter',sans-serif]">
-      {/* Background Ambient Glow Orbs */}
+    <div className="relative min-h-screen bg-[#121324] text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 selection:bg-[#C084FC]/30 selection:text-purple-200 overflow-hidden font-nunito">
+      {/* Floating Ambient Aurora Glow Spheres */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-96 h-96 sm:w-[500px] sm:h-[500px] bg-[#8B5CF6]/20 rounded-full blur-[120px] mix-blend-screen" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 sm:w-[550px] sm:h-[550px] bg-[#06B6D4]/15 rounded-full blur-[140px] mix-blend-screen" />
+        {/* Cyan Aurora Orb */}
+        <div className="absolute -top-32 -left-32 w-[450px] h-[450px] bg-[#38BDF8]/20 rounded-full blur-[130px] animate-pulse-glow" />
+        {/* Vibrant Purple Aurora Orb */}
+        <div className="absolute top-1/4 -right-32 w-[520px] h-[520px] bg-[#C084FC]/20 rounded-full blur-[140px] animate-pulse-glow" style={{ animationDelay: '2s' }} />
+        {/* Sunny Yellow / Coral Glow Orb */}
+        <div className="absolute -bottom-32 left-1/3 w-[460px] h-[460px] bg-[#FACC15]/15 rounded-full blur-[130px] animate-pulse-glow" style={{ animationDelay: '4s' }} />
       </div>
 
-      {/* Main Container Card (Liquid Glassmorphism) */}
-      <main className="relative z-10 w-full max-w-md my-8">
+      {/* Decorative cosmic floating sparkles */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden hidden md:block">
+        <div className="absolute top-16 left-24 text-cyan-400/40 text-xl animate-float" style={{ animationDuration: '6s' }}>✨</div>
+        <div className="absolute top-28 right-32 text-purple-400/40 text-2xl animate-float" style={{ animationDuration: '5s', animationDelay: '1s' }}>⭐</div>
+        <div className="absolute bottom-24 left-32 text-amber-400/40 text-lg animate-float" style={{ animationDuration: '7s', animationDelay: '2s' }}>🎨</div>
+        <div className="absolute bottom-32 right-28 text-rose-400/40 text-xl animate-float" style={{ animationDuration: '4.5s', animationDelay: '0.5s' }}>🚀</div>
+      </div>
+
+      {/* Main Container Card (Playful Glassmorphism) */}
+      <main className="relative z-10 w-full max-w-md my-6">
         <div className="relative group">
-          {/* Subtle Outer Neon Violet Glow */}
-          <div className="absolute -inset-[1px] bg-gradient-to-b from-[#8B5CF6]/50 via-slate-700/30 to-[#06B6D4]/30 rounded-3xl blur-xs opacity-75 group-hover:opacity-100 transition duration-500" />
+          {/* Subtle Outer Neon Aurora Border */}
+          <div className="absolute -inset-[2px] bg-gradient-to-r from-[#38BDF8] via-[#C084FC] to-[#FACC15] rounded-[32px] blur-sm opacity-70 group-hover:opacity-100 transition duration-700" />
 
           {/* Frosted Glass Card Body */}
           <div
             id="auth-card"
-            className="relative bg-slate-900/70 backdrop-blur-2xl border border-white/10 rounded-3xl p-7 sm:p-9 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7),0_0_40px_-10px_rgba(139,92,246,0.18)]"
+            className="relative bg-[#1A1B2F]/85 backdrop-blur-2xl border border-white/15 rounded-[30px] p-7 sm:p-9 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.8),0_0_50px_rgba(56,189,248,0.15)]"
           >
-            {/* Header */}
+            {/* Header with Playful Animated Mascot */}
             {mode === 'verify' ? (
-              <div className="text-left mb-6">
-                <BrandLogo size="lg" className="mb-4" />
+              <div className="text-center mb-6">
+                <div className="flex justify-center mb-3">
+                  <BrandLogo size="xl" />
+                </div>
                 <h1
                   id="auth-card-title"
-                  className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl font-bold tracking-tight text-white"
+                  className="font-fredoka text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center justify-center gap-2"
                 >
-                  Verify your email
+                  Verify your email <Sparkles className="w-5 h-5 text-amber-300" />
                 </h1>
                 <p
                   id="auth-card-subtitle"
-                  className="mt-2 text-sm text-slate-400 leading-relaxed font-['Inter',sans-serif]"
+                  className="mt-2 text-sm text-slate-300 font-quicksand font-medium leading-relaxed"
                 >
                   We sent a 6-digit confirmation code to{' '}
-                  <span className="font-semibold text-slate-200">{pendingEmail || email}</span>.
+                  <span className="font-bold text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded-lg border border-cyan-500/30">{pendingEmail || email}</span>.
                 </p>
               </div>
             ) : (
-              <div className="text-left mb-5">
-                <div className="flex items-center gap-3 mb-4">
-                  <BrandLogo size="lg" />
-                  <div>
-                    <span className="font-outfit text-base font-extrabold text-white tracking-tight flex items-center gap-1">
-                      Doodle<span className="text-[#2DD4BF]">Pop</span>
-                      <span className="text-amber-400 text-xs">✨</span>
-                    </span>
-                    <span className="text-[11px] font-cabinet font-semibold uppercase tracking-wider text-slate-400 block">
-                      Your Fun Note Buddy
-                    </span>
-                  </div>
+              <div className="text-center mb-6">
+                {/* Floating Mascot */}
+                <div className="flex justify-center mb-3">
+                  <BrandLogo size="xl" />
+                </div>
+
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-cyan-500/15 via-purple-500/15 to-amber-500/15 border border-white/15 text-xs font-bold text-cyan-200 mb-2 shadow-xs">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" />
+                  <span className="font-quicksand">Your Fun, Creative Note Space</span>
                 </div>
 
                 <h1
                   id="auth-card-title"
-                  className="font-['Plus_Jakarta_Sans',sans-serif] text-2xl sm:text-[26px] font-bold tracking-tight text-white leading-tight"
+                  className="font-fredoka text-2xl sm:text-3xl font-bold tracking-tight text-white leading-tight"
                 >
-                  {mode === 'signup' ? 'Create an Account' : 'Welcome Back'}
+                  {mode === 'signup' ? (
+                    <span className="flex items-center justify-center gap-2">
+                      Join DoodlePop! <span className="text-amber-400">🚀</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      Welcome Back! <span className="text-cyan-400">✨</span>
+                    </span>
+                  )}
                 </h1>
                 <p
                   id="auth-card-subtitle"
-                  className="mt-1.5 text-sm text-slate-400 font-['Inter',sans-serif]"
+                  className="mt-1.5 text-xs sm:text-sm text-slate-300 font-quicksand font-semibold"
                 >
                   {mode === 'signup'
-                    ? 'Enter your email and choose a secure password to get started.'
-                    : 'Sign in with your email and password to access your notes.'}
+                    ? 'Start capturing doodles, ideas, and stories in full color!'
+                    : 'Sign in to jump straight into your colorful notes!'}
                 </p>
               </div>
             )}
@@ -231,10 +252,10 @@ export const AuthView: React.FC = () => {
             {displayedError && (
               <div
                 id="auth-error-alert"
-                className="mb-5 p-3.5 rounded-xl bg-rose-950/50 border border-rose-500/30 flex items-start gap-2.5 text-xs text-rose-200 shadow-sm"
+                className="mb-5 p-3.5 rounded-2xl bg-rose-950/70 border border-rose-500/40 flex items-start gap-2.5 text-xs text-rose-200 shadow-md animate-in fade-in slide-in-from-top-2"
               >
                 <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-                <span className="leading-snug">{displayedError}</span>
+                <span className="leading-snug font-medium">{displayedError}</span>
               </div>
             )}
 
@@ -242,10 +263,10 @@ export const AuthView: React.FC = () => {
             {successMessage && (
               <div
                 id="auth-success-alert"
-                className="mb-5 p-3.5 rounded-xl bg-emerald-950/50 border border-emerald-500/30 flex items-start gap-2.5 text-xs text-emerald-200 shadow-sm"
+                className="mb-5 p-3.5 rounded-2xl bg-emerald-950/70 border border-emerald-500/40 flex items-start gap-2.5 text-xs text-emerald-200 shadow-md animate-in fade-in slide-in-from-top-2"
               >
                 <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400 mt-0.5" />
-                <span className="leading-snug">{successMessage}</span>
+                <span className="leading-snug font-medium">{successMessage}</span>
               </div>
             )}
 
@@ -253,10 +274,10 @@ export const AuthView: React.FC = () => {
             {resendStatus && (
               <div
                 id="auth-resend-alert"
-                className="mb-5 p-3.5 rounded-xl bg-cyan-950/50 border border-cyan-500/30 flex items-start gap-2.5 text-xs text-cyan-200 shadow-sm"
+                className="mb-5 p-3.5 rounded-2xl bg-cyan-950/70 border border-cyan-500/40 flex items-start gap-2.5 text-xs text-cyan-200 shadow-md animate-in fade-in slide-in-from-top-2"
               >
                 <CheckCircle2 className="w-4 h-4 shrink-0 text-cyan-400 mt-0.5" />
-                <span className="leading-snug">{resendStatus}</span>
+                <span className="leading-snug font-medium">{resendStatus}</span>
               </div>
             )}
 
@@ -264,19 +285,19 @@ export const AuthView: React.FC = () => {
             {mode === 'verify' ? (
               <form onSubmit={handleSubmit} className="space-y-4">
                 {latestCodeHint && (
-                  <div className="p-3 bg-violet-950/40 border border-[#8B5CF6]/30 rounded-xl flex items-center justify-between gap-2 text-xs">
-                    <div className="flex items-center gap-2 text-slate-300 truncate">
-                      <KeyRound className="w-4 h-4 shrink-0 text-[#8B5CF6]" />
+                  <div className="p-3 bg-purple-950/50 border border-[#C084FC]/40 rounded-2xl flex items-center justify-between gap-2 text-xs shadow-inner">
+                    <div className="flex items-center gap-2 text-purple-200 truncate">
+                      <KeyRound className="w-4 h-4 shrink-0 text-[#C084FC]" />
                       <span className="truncate">
-                        Verification code: <strong className="font-mono text-white tracking-wider">{latestCodeHint}</strong>
+                        Confirmation code: <strong className="font-mono text-white tracking-wider font-bold">{latestCodeHint}</strong>
                       </span>
                     </div>
                     <button
                       type="button"
                       onClick={() => setVerificationCode(latestCodeHint)}
-                      className="px-2.5 py-1 text-[11px] font-semibold bg-[#8B5CF6]/20 hover:bg-[#8B5CF6]/30 border border-[#8B5CF6]/40 text-violet-200 rounded-md transition-colors cursor-pointer shrink-0"
+                      className="px-3 py-1 text-xs font-bold bg-[#C084FC]/25 hover:bg-[#C084FC]/40 border border-[#C084FC]/50 text-purple-100 rounded-xl transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95"
                     >
-                      Auto-fill
+                      Fill Code
                     </button>
                   </div>
                 )}
@@ -284,7 +305,7 @@ export const AuthView: React.FC = () => {
                 <div>
                   <label
                     htmlFor="verification-code"
-                    className="block text-xs font-medium uppercase tracking-wider text-slate-300 mb-2"
+                    className="block text-xs font-quicksand font-bold uppercase tracking-wider text-slate-300 mb-2"
                   >
                     6-Digit Confirmation Code
                   </label>
@@ -298,7 +319,7 @@ export const AuthView: React.FC = () => {
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
                     placeholder="123456"
-                    className="w-full px-4 py-3.5 text-center font-mono text-2xl tracking-[0.45em] font-semibold text-white bg-slate-950/70 border border-slate-700/80 rounded-xl placeholder-slate-600 focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/40 focus:shadow-[0_0_25px_rgba(139,92,246,0.3)] transition-all"
+                    className="w-full px-4 py-3.5 text-center font-mono text-2xl tracking-[0.45em] font-bold text-white bg-[#121324]/80 border-2 border-slate-700/80 rounded-2xl placeholder-slate-600 focus:outline-none focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/30 focus:shadow-[0_0_30px_rgba(56,189,248,0.35)] transition-all"
                   />
                 </div>
 
@@ -307,7 +328,7 @@ export const AuthView: React.FC = () => {
                     id="verify-submit-button"
                     type="submit"
                     disabled={submitting || verificationCode.length < 6}
-                    className="relative w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] hover:from-[#7C3AED] hover:to-[#0891B2] text-white font-['Plus_Jakarta_Sans',sans-serif] font-semibold text-sm transition-all duration-300 shadow-[0_0_30px_rgba(139,92,246,0.4)] hover:shadow-[0_0_40px_rgba(6,182,212,0.55)] active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2"
+                    className="btn-bouncy relative w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#38BDF8] via-[#818CF8] to-[#C084FC] hover:from-[#0284C7] hover:to-[#A855F7] text-white font-fredoka font-bold text-base transition-all duration-300 shadow-[0_0_30px_rgba(56,189,248,0.4)] hover:shadow-[0_0_40px_rgba(192,132,252,0.6)] disabled:opacity-50 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2"
                   >
                     {submitting ? (
                       <span className="flex items-center gap-2">
@@ -315,21 +336,24 @@ export const AuthView: React.FC = () => {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        <span>Verifying...</span>
+                        <span>Verifying Magic Code...</span>
                       </span>
                     ) : (
-                      'Verify & Continue'
+                      <span className="flex items-center gap-2">
+                        <span>Verify & Enter Workspace</span>
+                        <Sparkles className="w-4 h-4" />
+                      </span>
                     )}
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 text-xs">
+                <div className="flex items-center justify-between pt-3 text-xs font-quicksand font-bold">
                   <button
                     id="resend-code-button"
                     type="button"
                     onClick={handleResendCode}
                     disabled={resendingCode}
-                    className="font-medium text-slate-400 hover:text-slate-200 transition-colors cursor-pointer flex items-center gap-1.5"
+                    className="text-slate-300 hover:text-cyan-300 transition-colors cursor-pointer flex items-center gap-1.5 hover:scale-105"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${resendingCode ? 'animate-spin' : ''}`} />
                     {resendingCode ? 'Sending...' : 'Resend code'}
@@ -339,10 +363,10 @@ export const AuthView: React.FC = () => {
                     id="back-to-login-button"
                     type="button"
                     onClick={() => toggleMode('login')}
-                    className="font-medium text-slate-400 hover:text-slate-200 transition-colors cursor-pointer flex items-center gap-1"
+                    className="text-slate-300 hover:text-purple-300 transition-colors cursor-pointer flex items-center gap-1 hover:scale-105"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
-                    Back to Sign in
+                    Back to Sign In
                   </button>
                 </div>
               </form>
@@ -352,12 +376,12 @@ export const AuthView: React.FC = () => {
                 <div id="field-group-email">
                   <label
                     htmlFor="email"
-                    className="block text-xs font-medium text-slate-300 mb-1.5"
+                    className="block text-xs font-quicksand font-bold text-slate-200 mb-1.5"
                   >
                     Email Address
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                  <div className="relative group/input">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within/input:text-[#38BDF8] transition-colors">
                       <Mail className="w-4 h-4" />
                     </div>
                     <input
@@ -368,8 +392,8 @@ export const AuthView: React.FC = () => {
                       autoComplete="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="name@example.com"
-                      className="w-full pl-10 pr-4 py-3 text-sm text-slate-100 bg-slate-950/70 border border-slate-700/80 rounded-xl placeholder-slate-500 focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/40 focus:shadow-[0_0_20px_rgba(139,92,246,0.25)] transition-all font-['Inter',sans-serif]"
+                      placeholder="hello@doodlepop.app"
+                      className="w-full pl-10 pr-4 py-3 text-sm font-medium text-slate-100 bg-[#121324]/80 border border-slate-700/80 rounded-2xl placeholder-slate-500 focus:outline-none focus:border-[#38BDF8] focus:ring-4 focus:ring-[#38BDF8]/25 focus:shadow-[0_0_25px_rgba(56,189,248,0.25)] transition-all font-nunito"
                     />
                   </div>
                 </div>
@@ -379,16 +403,16 @@ export const AuthView: React.FC = () => {
                   <div className="flex items-center justify-between mb-1.5">
                     <label
                       htmlFor="password"
-                      className="block text-xs font-medium text-slate-300"
+                      className="block text-xs font-quicksand font-bold text-slate-200"
                     >
-                      {mode === 'signup' ? 'Password' : 'Password'}
+                      Password
                     </label>
                     {mode === 'signup' && (
-                      <span className="text-[11px] text-violet-300 font-medium">Min 8 characters</span>
+                      <span className="text-[11px] font-quicksand font-bold text-purple-300">Min 8 characters</span>
                     )}
                   </div>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                  <div className="relative group/input">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within/input:text-[#C084FC] transition-colors">
                       <Lock className="w-4 h-4" />
                     </div>
                     <input
@@ -399,14 +423,14 @@ export const AuthView: React.FC = () => {
                       autoComplete={mode === 'signup' ? 'new-password' : 'off'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder={mode === 'signup' ? 'Create a secure password' : 'Enter your password'}
-                      className="w-full pl-10 pr-11 py-3 text-sm text-slate-100 bg-slate-950/70 border border-slate-700/80 rounded-xl placeholder-slate-500 focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/40 focus:shadow-[0_0_20px_rgba(139,92,246,0.25)] transition-all font-['Inter',sans-serif]"
+                      placeholder={mode === 'signup' ? 'Choose a super secure password' : 'Enter your password'}
+                      className="w-full pl-10 pr-11 py-3 text-sm font-medium text-slate-100 bg-[#121324]/80 border border-slate-700/80 rounded-2xl placeholder-slate-500 focus:outline-none focus:border-[#C084FC] focus:ring-4 focus:ring-[#C084FC]/25 focus:shadow-[0_0_25px_rgba(192,132,252,0.25)] transition-all font-nunito"
                     />
                     <button
                       id="toggle-password-visibility"
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 cursor-pointer transition-colors"
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-cyan-300 cursor-pointer transition-colors"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -419,12 +443,12 @@ export const AuthView: React.FC = () => {
                   <div id="field-group-confirm-password">
                     <label
                       htmlFor="confirm-password"
-                      className="block text-xs font-medium text-slate-300 mb-1.5"
+                      className="block text-xs font-quicksand font-bold text-slate-200 mb-1.5"
                     >
                       Confirm Password
                     </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                    <div className="relative group/input">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within/input:text-[#FB7185] transition-colors">
                         <Lock className="w-4 h-4" />
                       </div>
                       <input
@@ -435,14 +459,14 @@ export const AuthView: React.FC = () => {
                         autoComplete="new-password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Re-type your password"
-                        className="w-full pl-10 pr-11 py-3 text-sm text-slate-100 bg-slate-950/70 border border-slate-700/80 rounded-xl placeholder-slate-500 focus:outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/40 focus:shadow-[0_0_20px_rgba(139,92,246,0.25)] transition-all font-['Inter',sans-serif]"
+                        placeholder="Re-enter password to match"
+                        className="w-full pl-10 pr-11 py-3 text-sm font-medium text-slate-100 bg-[#121324]/80 border border-slate-700/80 rounded-2xl placeholder-slate-500 focus:outline-none focus:border-[#FB7185] focus:ring-4 focus:ring-[#FB7185]/25 focus:shadow-[0_0_25px_rgba(251,113,133,0.25)] transition-all font-nunito"
                       />
                       <button
                         id="toggle-confirm-password-visibility"
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 cursor-pointer transition-colors"
+                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-rose-300 cursor-pointer transition-colors"
                         aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                       >
                         {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -451,13 +475,13 @@ export const AuthView: React.FC = () => {
                   </div>
                 )}
 
-                {/* Submit button */}
+                {/* Submit button with playful bouncy styling and dynamic glow */}
                 <div className="pt-2">
                   <button
                     id="auth-submit-btn"
                     type="submit"
                     disabled={submitting}
-                    className="relative w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] hover:from-[#7C3AED] hover:to-[#0891B2] text-white font-['Plus_Jakarta_Sans',sans-serif] font-semibold text-sm transition-all duration-300 shadow-[0_0_30px_rgba(139,92,246,0.45)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2"
+                    className="btn-bouncy relative w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#38BDF8] via-[#818CF8] to-[#C084FC] hover:from-[#0284C7] hover:to-[#9333EA] text-white font-fredoka font-bold text-base transition-all duration-300 shadow-[0_0_30px_rgba(56,189,248,0.45)] hover:shadow-[0_0_40px_rgba(192,132,252,0.65)] active:scale-95 disabled:opacity-60 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2"
                   >
                     {submitting ? (
                       <span className="flex items-center gap-2">
@@ -465,12 +489,18 @@ export const AuthView: React.FC = () => {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        <span>Processing...</span>
+                        <span>Opening Door...</span>
                       </span>
                     ) : mode === 'signup' ? (
-                      'Create Account'
+                      <span className="flex items-center gap-2">
+                        <span>Create My Account</span>
+                        <Sparkles className="w-4 h-4 text-amber-300" />
+                      </span>
                     ) : (
-                      'Sign In'
+                      <span className="flex items-center gap-2">
+                        <span>Sign In to DoodlePop</span>
+                        <Zap className="w-4 h-4 text-amber-300" />
+                      </span>
                     )}
                   </button>
                 </div>
@@ -478,27 +508,27 @@ export const AuthView: React.FC = () => {
                 {/* Switch between Sign In and Sign Up */}
                 <div className="text-center pt-2">
                   {mode === 'login' ? (
-                    <p className="text-xs text-slate-400">
-                      Don't have an account?{' '}
+                    <p className="text-xs text-slate-300 font-quicksand font-bold">
+                      New to DoodlePop?{' '}
                       <button
                         type="button"
                         id="switch-to-signup-btn"
                         onClick={() => toggleMode('signup')}
-                        className="font-semibold text-[#2DD4BF] hover:text-[#5EEAD4] underline underline-offset-2 transition-colors cursor-pointer"
+                        className="font-bold text-[#38BDF8] hover:text-[#7DD3FC] underline underline-offset-4 transition-colors cursor-pointer"
                       >
-                        Create an account
+                        Create an account ✨
                       </button>
                     </p>
                   ) : (
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-300 font-quicksand font-bold">
                       Already have an account?{' '}
                       <button
                         type="button"
                         id="switch-to-login-btn"
                         onClick={() => toggleMode('login')}
-                        className="font-semibold text-[#8B5CF6] hover:text-[#A78BFA] underline underline-offset-2 transition-colors cursor-pointer"
+                        className="font-bold text-[#C084FC] hover:text-[#D8B4FE] underline underline-offset-4 transition-colors cursor-pointer"
                       >
-                        Sign In
+                        Sign In 🚀
                       </button>
                     </p>
                   )}
@@ -508,7 +538,7 @@ export const AuthView: React.FC = () => {
                 <div className="pt-2">
                   <div className="relative flex py-2 items-center">
                     <div className="flex-grow border-t border-slate-700/60"></div>
-                    <span className="flex-shrink mx-3 text-[11px] font-medium text-slate-500 uppercase tracking-widest">
+                    <span className="flex-shrink mx-3 text-[11px] font-quicksand font-bold text-slate-400 uppercase tracking-widest">
                       or
                     </span>
                     <div className="flex-grow border-t border-slate-700/60"></div>
@@ -518,10 +548,10 @@ export const AuthView: React.FC = () => {
                     id="guest-login-button"
                     type="button"
                     onClick={() => guestLogin()}
-                    className="w-full py-2.5 px-4 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-600/50 hover:border-[#2DD4BF]/50 text-slate-200 hover:text-white font-medium text-xs transition-all flex items-center justify-center gap-2 cursor-pointer group shadow-sm"
+                    className="btn-bouncy w-full py-3 px-4 rounded-2xl bg-[#241B3F]/70 hover:bg-[#2F2156]/90 border border-[#C084FC]/30 hover:border-[#38BDF8]/60 text-slate-200 hover:text-white font-quicksand font-bold text-xs transition-all flex items-center justify-center gap-2.5 cursor-pointer group shadow-sm"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-[#2DD4BF] group-hover:scale-110 transition-transform" />
-                    <span>Quick Start as Guest (Offline Mode)</span>
+                    <Sparkles className="w-4 h-4 text-[#FACC15] group-hover:scale-125 transition-transform" />
+                    <span>Quick Play as Guest (Instant Access)</span>
                   </button>
                 </div>
               </form>
@@ -531,13 +561,13 @@ export const AuthView: React.FC = () => {
             {mode !== 'verify' && (
               <p
                 id="auth-legal-footer"
-                className="mt-6 text-center text-xs leading-relaxed text-slate-400"
+                className="mt-6 text-center text-xs leading-relaxed text-slate-400 font-quicksand"
               >
                 By continuing, you agree to our{' '}
                 <button
                   type="button"
                   onClick={() => setActiveModal('terms')}
-                  className="font-medium text-slate-300 underline underline-offset-2 hover:text-white transition-colors cursor-pointer"
+                  className="font-bold text-slate-300 underline underline-offset-2 hover:text-cyan-300 transition-colors cursor-pointer"
                 >
                   Terms
                 </button>{' '}
@@ -545,7 +575,7 @@ export const AuthView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setActiveModal('privacy')}
-                  className="font-medium text-slate-300 underline underline-offset-2 hover:text-white transition-colors cursor-pointer"
+                  className="font-bold text-slate-300 underline underline-offset-2 hover:text-cyan-300 transition-colors cursor-pointer"
                 >
                   Privacy Policy
                 </button>
@@ -558,27 +588,28 @@ export const AuthView: React.FC = () => {
 
       {/* Terms & Privacy Modal */}
       {activeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-          <div className="bg-slate-900/90 border border-slate-700/80 rounded-2xl max-w-md w-full p-6 shadow-2xl text-left backdrop-blur-xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="font-['Plus_Jakarta_Sans',sans-serif] text-base font-semibold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+          <div className="bg-[#1A1B2F]/95 border-2 border-white/15 rounded-3xl max-w-md w-full p-6 shadow-2xl text-left backdrop-blur-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-700/70">
+              <h3 className="font-fredoka text-lg font-bold text-white flex items-center gap-2">
                 {activeModal === 'terms' ? 'Terms of Service' : 'Privacy Policy'}
+                <Sparkles className="w-4 h-4 text-amber-400" />
               </h3>
               <button
                 onClick={() => setActiveModal(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="mt-4 text-xs text-slate-300 space-y-2.5 leading-relaxed max-h-60 overflow-y-auto pr-1">
+            <div className="mt-4 text-xs text-slate-300 space-y-2.5 leading-relaxed max-h-60 overflow-y-auto pr-1 font-nunito">
               {activeModal === 'terms' ? (
                 <>
                   <p>
-                    By using this application, you agree to standard responsible usage terms.
+                    By using DoodlePop, you agree to standard responsible usage terms.
                   </p>
                   <p>
-                    <strong>Data Ownership:</strong> You retain complete ownership of all notes and content you create.
+                    <strong>Data Ownership:</strong> You retain complete ownership of all notes, doodles, and content you create.
                   </p>
                 </>
               ) : (
@@ -587,17 +618,17 @@ export const AuthView: React.FC = () => {
                     Your notes and credentials are kept strictly private to your account.
                   </p>
                   <p>
-                    <strong>No Data Selling:</strong> We never sell or share your personal data or notes.
+                    <strong>No Data Selling:</strong> We never sell or share your personal data or notes with any third parties.
                   </p>
                 </>
               )}
             </div>
-            <div className="mt-6 pt-3 border-t border-slate-800 flex justify-end">
+            <div className="mt-6 pt-3 border-t border-slate-700/70 flex justify-end">
               <button
                 onClick={() => setActiveModal(null)}
-                className="px-4 py-2 text-xs font-semibold bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] text-white rounded-lg transition-all hover:opacity-90 cursor-pointer shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+                className="btn-bouncy px-5 py-2 text-xs font-bold bg-gradient-to-r from-[#38BDF8] to-[#C084FC] text-white rounded-xl transition-all cursor-pointer shadow-[0_0_20px_rgba(56,189,248,0.4)]"
               >
-                Understood
+                Understood! 👍
               </button>
             </div>
           </div>
@@ -606,3 +637,4 @@ export const AuthView: React.FC = () => {
     </div>
   );
 };
+

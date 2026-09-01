@@ -2,14 +2,31 @@
 
 @layer base {
   body {
-    font-family: 'Inter', sans-serif;
-    background-color: #121212;
-    color: #E2E8F0;
+    font-family: 'Nunito', 'Plus Jakarta Sans', sans-serif;
+    background-color: #121324;
+    color: #F1F5F9;
+    overflow-x: hidden;
   }
 }
 
+.font-quicksand {
+  font-family: 'Quicksand', 'Nunito', sans-serif;
+}
+
+.font-fredoka {
+  font-family: 'Fredoka', 'Quicksand', cursive, sans-serif;
+}
+
+.font-nunito {
+  font-family: 'Nunito', 'Plus Jakarta Sans', sans-serif;
+}
+
 .font-outfit {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-plus {
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .font-cabinet {
@@ -20,15 +37,69 @@
   font-family: 'JetBrains Mono', monospace;
 }
 
-.font-sora {
-  font-family: 'Sora', sans-serif;
+/* Playful Glassmorphism panels */
+.glass-panel {
+  background: rgba(26, 27, 47, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.font-space {
-  font-family: 'Space Grotesk', monospace, sans-serif;
+.glass-panel-subtle {
+  background: rgba(26, 27, 47, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Notion/Craft custom subtle scrollbar */
+.glass-panel-glow {
+  background: rgba(26, 27, 47, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+/* Floating animation for Mascot and aurora orbs */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1.5deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.08);
+  }
+}
+
+.animate-float {
+  animation: floatSlow 4s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 6s ease-in-out infinite;
+}
+
+/* Playful bouncy interactive transitions */
+.btn-bouncy {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.btn-bouncy:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+.btn-bouncy:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+/* Smooth custom subtle scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -39,37 +110,37 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.14);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(45, 212, 191, 0.3);
+  background: rgba(56, 189, 248, 0.45);
 }
 
 /* Markdown typography refinements in editor */
 .markdown-preview h1 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.75rem;
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: 1.85rem;
   font-weight: 700;
   margin-top: 1.25rem;
   margin-bottom: 0.75rem;
   color: #F8FAFC;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .markdown-preview h2 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.35rem;
-  font-weight: 600;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
   margin-top: 1rem;
   margin-bottom: 0.5rem;
   color: #F1F5F9;
 }
 
 .markdown-preview h3 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.15rem;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.2rem;
   font-weight: 600;
   margin-top: 0.75rem;
   margin-bottom: 0.35rem;
@@ -101,33 +172,33 @@
 }
 
 .markdown-preview blockquote {
-  border-left: 3px solid #2DD4BF;
+  border-left: 4px solid #38BDF8;
   padding-left: 1rem;
   margin: 1rem 0;
   color: #94A3B8;
   font-style: italic;
-  background: rgba(45, 212, 191, 0.04);
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  border-radius: 0 6px 6px 0;
+  background: rgba(56, 189, 248, 0.08);
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  border-radius: 0 12px 12px 0;
 }
 
 .markdown-preview code {
   font-family: 'JetBrains Mono', monospace;
-  background: #1E1E2E;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.15rem 0.4rem;
-  border-radius: 4px;
+  background: #1A1B2F;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
   font-size: 0.85em;
-  color: #2DD4BF;
+  color: #38BDF8;
 }
 
 .markdown-preview pre {
   font-family: 'JetBrains Mono', monospace;
-  background: #181825;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #131322;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow-x: auto;
   margin: 1rem 0;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { SyncStatus } from '../types';
-import { RefreshCw, Wifi, WifiOff, CheckCircle2, AlertCircle } from 'lucide-react';
+import { RefreshCw, Wifi, WifiOff, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 
 interface SyncBadgeProps {
   status: SyncStatus;
@@ -10,34 +10,34 @@ interface SyncBadgeProps {
 
 export const SyncBadge: React.FC<SyncBadgeProps> = ({ status, pendingCount, onForceSync }) => {
   let content = {
-    icon: <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />,
-    text: 'Saved',
-    style: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60',
+    icon: <Sparkles className="w-3.5 h-3.5 text-emerald-400" />,
+    text: 'Cloud Synced',
+    style: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.2)]',
   };
 
   if (status === 'syncing') {
     content = {
-      icon: <RefreshCw className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 animate-spin" />,
-      text: 'Saving...',
-      style: 'bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/60',
+      icon: <RefreshCw className="w-3.5 h-3.5 text-cyan-400 animate-spin" />,
+      text: 'Syncing...',
+      style: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30 shadow-[0_0_12px_rgba(56,189,248,0.2)]',
     };
   } else if (status === 'offline') {
     content = {
-      icon: <WifiOff className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />,
-      text: pendingCount > 0 ? `Offline (${pendingCount} saved)` : 'Offline',
-      style: 'bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60',
+      icon: <WifiOff className="w-3.5 h-3.5 text-amber-400" />,
+      text: pendingCount > 0 ? `Offline (${pendingCount} saved)` : 'Offline mode',
+      style: 'bg-amber-500/15 text-amber-300 border-amber-500/30 shadow-[0_0_12px_rgba(245,158,11,0.2)]',
     };
   } else if (status === 'error') {
     content = {
-      icon: <AlertCircle className="w-3.5 h-3.5 text-stone-600 dark:text-stone-400" />,
-      text: 'Saved on device',
-      style: 'bg-stone-100 text-stone-800 border-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700',
+      icon: <AlertCircle className="w-3.5 h-3.5 text-purple-400" />,
+      text: 'Saved locally',
+      style: 'bg-purple-500/15 text-purple-300 border-purple-500/30 shadow-[0_0_12px_rgba(168,85,247,0.2)]',
     };
   } else if (pendingCount > 0) {
     content = {
-      icon: <RefreshCw className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />,
+      icon: <RefreshCw className="w-3.5 h-3.5 text-amber-400 animate-spin" />,
       text: 'Saving changes...',
-      style: 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60',
+      style: 'bg-amber-500/15 text-amber-300 border-amber-500/30 shadow-[0_0_12px_rgba(245,158,11,0.2)]',
     };
   }
 
@@ -45,11 +45,12 @@ export const SyncBadge: React.FC<SyncBadgeProps> = ({ status, pendingCount, onFo
     <button
       id="sync-status-badge"
       onClick={onForceSync}
-      title="All changes are saved automatically"
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer hover:opacity-90 active:scale-95 ${content.style}`}
+      title="All changes are automatically synchronized"
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-quicksand font-bold border backdrop-blur-md transition-all cursor-pointer hover:scale-105 active:scale-95 ${content.style}`}
     >
       {content.icon}
       <span>{content.text}</span>
     </button>
   );
 };
+

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { useNotes } from './hooks/useNotes';
-import { Note, FolderItem, DEFAULT_FOLDERS } from './types';
+import { Note, FolderItem, DEFAULT_FOLDERS, NoteColor, NOTE_COLORS, getThemeConfig } from './types';
 import { SidebarNav } from './components/SidebarNav';
 import { NotesListPanel } from './components/NotesListPanel';
 import { WorkspaceEditor } from './components/WorkspaceEditor';
@@ -43,6 +43,45 @@ function NotesDashboard() {
   const [deletingNote, setDeletingNote] = useState<Note | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+
+  // Full-page user theme state
+  const [userTheme, setUserTheme] = useState<NoteColor>(() => {
+    try {
+      const saved = localStorage.getItem('doodlepop_theme');
+      if (saved && NOTE_COLORS[saved as NoteColor]) {
+        return saved as NoteColor;
+      }
+    } catch {}
+    return 'cyan';
+  });
+
+  // Current active theme from active note or user preference
+  const currentTheme: NoteColor = useMemo(() => {
+    if (activeNote?.color_tag && NOTE_COLORS[activeNote.color_tag as NoteColor]) {
+      return activeNote.color_tag as NoteColor;
+    }
+    return userTheme;
+  }, [activeNote?.color_tag, userTheme]);
+
+  const themeConfig = useMemo(() => getThemeConfig(currentTheme), [currentTheme]);
+
+  const handleThemeChange = (newColor: NoteColor) => {
+    setUserTheme(newColor);
+    try {
+      localStorage.setItem('doodlepop_theme', newColor);
+    } catch {}
+    if (activeNote) {
+      handleSaveNote({
+        id: activeNote.id,
+        title: activeNote.title,
+        body: activeNote.body,
+        is_pinned: activeNote.is_pinned,
+        color_tag: newColor,
+        tags: activeNote.tags,
+        folder: activeNote.folder,
+      });
+    }
+  };
 
   // Custom user-defined folders stored locally
   const [customFolders, setCustomFolders] = useState<FolderItem[]>(() => {
@@ -98,9 +137,7 @@ function NotesDashboard() {
   const folderCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     allFolders.forEach((f) => {
-      counts[f.id] = notes.filter(
-        (n) => n.folder === f.id || (Array.isArray(n.tags) && n.tags.includes(f.id.toLowerCase()))
-      ).length;
+      counts[f.id] = notes.filter((n) => n.folder === f.id).length;
     });
     return counts;
   }, [allFolders, notes]);
@@ -109,9 +146,7 @@ function NotesDashboard() {
   useEffect(() => {
     if (!activeNote && notes.length > 0) {
       if (activeFolder) {
-        const matching = notes.filter(
-          (n) => n.folder === activeFolder || (Array.isArray(n.tags) && n.tags.includes(activeFolder.toLowerCase()))
-        );
+        const matching = notes.filter((n) => n.folder === activeFolder);
         setActiveNote(matching[0] || null);
       } else {
         setActiveNote(notes[0]);
@@ -139,18 +174,18 @@ function NotesDashboard() {
 
   const handleCreateNewNote = async (overrideFolder?: string) => {
     const targetFolder = overrideFolder || activeFolder || 'Personal';
-    let folderColor = 'teal';
-    if (targetFolder === 'School & Work') folderColor = 'indigo';
+    let folderColor: NoteColor = 'cyan';
+    if (targetFolder === 'School & Work') folderColor = 'violet';
     else if (targetFolder === 'My Diary') folderColor = 'amber';
-    else if (targetFolder === 'Fun & Ideas') folderColor = 'rose';
+    else if (targetFolder === 'Fun & Ideas') folderColor = 'coral';
 
     const newNote = await createNote({
-      title: 'Untitled Note',
+      title: 'Untitled Doodle',
       body: '',
       is_pinned: false,
       color_tag: folderColor,
       folder: targetFolder,
-      tags: targetFolder !== 'Personal' ? [targetFolder.toLowerCase()] : [],
+      tags: [],
     });
     setActiveNote(newNote);
     setMobileView('editor');
@@ -162,12 +197,11 @@ function NotesDashboard() {
     setFilterTag(null);
     setActiveView('all');
     if (folderId) {
-      const matching = notes.filter(
-        (n) => n.folder === folderId || (Array.isArray(n.tags) && n.tags.includes(folderId.toLowerCase()))
-      );
+      const matching = notes.filter((n) => n.folder === folderId);
       if (matching.length > 0) {
         setActiveNote(matching[0]);
       } else {
+        // Show empty note ready in the editor
         setActiveNote(null);
       }
     } else {
@@ -240,10 +274,7 @@ function NotesDashboard() {
       return dayDiff <= 7;
     }
     if (activeFolder) {
-      return (
-        note.folder === activeFolder ||
-        (Array.isArray(note.tags) && note.tags.includes(activeFolder.toLowerCase()))
-      );
+      return note.folder === activeFolder;
     }
     return true;
   });
@@ -251,7 +282,14 @@ function NotesDashboard() {
   const pinnedNotesCount = notes.filter((n) => n.is_pinned).length;
 
   return (
-    <div className="h-screen w-screen bg-[#121212] text-slate-100 flex overflow-hidden font-sans relative">
+    <div
+      id="notes-app-root"
+      className="h-screen w-screen bg-[#0F0F13] text-slate-100 flex overflow-hidden font-sans relative transition-colors duration-500"
+      style={{
+        backgroundImage: themeConfig.pageGradient,
+        backgroundAttachment: 'fixed',
+      }}
+    >
       {/* 1. DESKTOP LEFT COLLAPSIBLE NAVIGATION BAR */}
       <div className="hidden md:flex h-full shrink-0">
         <SidebarNav
@@ -283,6 +321,7 @@ function NotesDashboard() {
           onNewNote={() => handleCreateNewNote()}
           onLogout={() => setShowLogoutConfirm(true)}
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+          pageTheme={currentTheme}
         />
       </div>
 
@@ -339,6 +378,7 @@ function NotesDashboard() {
               }}
               isMobile={true}
               onCloseMobile={() => setIsMobileSidebarOpen(false)}
+              pageTheme={currentTheme}
             />
           </div>
         </div>
@@ -369,6 +409,7 @@ function NotesDashboard() {
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
           onOpenSidebarMobile={() => setIsMobileSidebarOpen(true)}
           folders={allFolders}
+          pageTheme={currentTheme}
         />
       </div>
 
@@ -390,6 +431,8 @@ function NotesDashboard() {
           onBack={() => setMobileView('list')}
           activeFolder={activeFolder}
           folders={allFolders}
+          pageTheme={currentTheme}
+          onThemeChange={handleThemeChange}
         />
       </div>
 
