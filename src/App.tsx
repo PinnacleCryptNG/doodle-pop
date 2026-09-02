@@ -14,14 +14,12 @@ function NotesDashboard() {
   const {
     notes,
     rawNotesCount,
-    loading,
     searchQuery,
     setSearchQuery,
     sortBy,
     setSortBy,
     filterTag,
     setFilterTag,
-    onlyPinned,
     setOnlyPinned,
     allTags,
     syncStatus,
@@ -44,109 +42,72 @@ function NotesDashboard() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
-  // Full-page user theme state
-  const [userTheme, setUserTheme] = useState<NoteColor>(() => {
+  // Global Website Theme State
+  const [globalTheme, setGlobalTheme] = useState<NoteColor>(() => {
     try {
       const saved = localStorage.getItem('doodlepop_theme');
       if (saved && NOTE_COLORS[saved as NoteColor]) {
         return saved as NoteColor;
       }
     } catch {}
-    return 'cyan';
+    return 'obsidian';
   });
 
-  // Current active theme from active note or user preference
-  const currentTheme: NoteColor = useMemo(() => {
-    if (activeNote?.color_tag && NOTE_COLORS[activeNote.color_tag as NoteColor]) {
-      return activeNote.color_tag as NoteColor;
-    }
-    return userTheme;
-  }, [activeNote?.color_tag, userTheme]);
+  // Apply Theme CSS custom variables across the entire document
+  useEffect(() => {
+    const config = getThemeConfig(globalTheme);
+    const root = document.documentElement;
+    root.style.setProperty('--theme-primary', config.primary);
+    root.style.setProperty('--theme-hover', config.primaryHover);
+    root.style.setProperty('--theme-rgb', config.rgb || '14, 165, 233');
+    root.style.setProperty('--theme-glow', config.glow || 'rgba(14, 165, 233, 0.2)');
+    root.style.setProperty('--theme-bg-subtle', config.bgTint || 'rgba(14, 165, 233, 0.12)');
+    root.style.setProperty('--theme-border-subtle', config.borderTint || 'rgba(14, 165, 233, 0.3)');
+  }, [globalTheme]);
 
-  const themeConfig = useMemo(() => getThemeConfig(currentTheme), [currentTheme]);
-
-  const handleThemeChange = (newColor: NoteColor) => {
-    setUserTheme(newColor);
+  // Global Theme Changer (Updates whole app + current note + localStorage)
+  const handleThemeChange = (newTheme: NoteColor) => {
+    setGlobalTheme(newTheme);
     try {
-      localStorage.setItem('doodlepop_theme', newColor);
+      localStorage.setItem('doodlepop_theme', newTheme);
     } catch {}
+
     if (activeNote) {
-      handleSaveNote({
-        id: activeNote.id,
-        title: activeNote.title,
-        body: activeNote.body,
-        is_pinned: activeNote.is_pinned,
-        color_tag: newColor,
-        tags: activeNote.tags,
-        folder: activeNote.folder,
+      handleUpdateNote({
+        ...activeNote,
+        color_tag: newTheme,
       });
     }
   };
 
-  // Custom user-defined folders stored locally
-  const [customFolders, setCustomFolders] = useState<FolderItem[]>(() => {
-    try {
-      const raw = localStorage.getItem('doodlepop_custom_folders');
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  const handleAddFolder = (name: string, icon = '📁', color = '#2DD4BF') => {
-    const newFolder: FolderItem = {
-      id: name,
-      label: name,
-      icon,
-      color,
-    };
-    setCustomFolders((prev) => {
-      if (prev.some((f) => f.id.toLowerCase() === name.toLowerCase())) return prev;
-      const next = [...prev, newFolder];
-      try {
-        localStorage.setItem('doodlepop_custom_folders', JSON.stringify(next));
-      } catch {}
-      return next;
-    });
-    setActiveFolder(name);
-    setFilterTag(null);
+  // Home Click: Reset all filters to show All Notes and List view
+  const handleGoHome = () => {
     setActiveView('all');
+    setActiveFolder(null);
+    setFilterTag(null);
+    setSearchQuery('');
+    setOnlyPinned(false);
+    if (notes.length > 0) {
+      setActiveNote(notes[0]);
+    }
+    setMobileView('list');
+    setIsMobileSidebarOpen(false);
   };
 
-  // Combine default folders, custom user folders, and any folders found on notes
-  const allFolders = useMemo(() => {
-    const map = new Map<string, FolderItem>();
-    DEFAULT_FOLDERS.forEach((f) => map.set(f.id, f));
-    customFolders.forEach((f) => map.set(f.id, f));
-
-    notes.forEach((n) => {
-      if (n.folder && !map.has(n.folder)) {
-        map.set(n.folder, {
-          id: n.folder,
-          label: n.folder,
-          icon: '📁',
-          color: '#A78BFA',
-        });
-      }
-    });
-
-    return Array.from(map.values());
-  }, [customFolders, notes]);
-
-  // Compute live note counts per folder
+  // Compute live note counts for the 4 clean default folders
   const folderCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    allFolders.forEach((f) => {
-      counts[f.id] = notes.filter((n) => n.folder === f.id).length;
+    DEFAULT_FOLDERS.forEach((f) => {
+      counts[f.id] = notes.filter((n) => (n.folder || 'Personal') === f.id).length;
     });
     return counts;
-  }, [allFolders, notes]);
+  }, [notes]);
 
   // Automatically select the first note on initial load if none selected
   useEffect(() => {
     if (!activeNote && notes.length > 0) {
       if (activeFolder) {
-        const matching = notes.filter((n) => n.folder === activeFolder);
+        const matching = notes.filter((n) => (n.folder || 'Personal') === activeFolder);
         setActiveNote(matching[0] || null);
       } else {
         setActiveNote(notes[0]);
@@ -170,20 +131,16 @@ function NotesDashboard() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [user, activeFolder]);
+  }, [user, activeFolder, globalTheme]);
 
   const handleCreateNewNote = async (overrideFolder?: string) => {
     const targetFolder = overrideFolder || activeFolder || 'Personal';
-    let folderColor: NoteColor = 'cyan';
-    if (targetFolder === 'School & Work') folderColor = 'violet';
-    else if (targetFolder === 'My Diary') folderColor = 'amber';
-    else if (targetFolder === 'Fun & Ideas') folderColor = 'coral';
 
     const newNote = await createNote({
-      title: 'Untitled Doodle',
+      title: 'Untitled Note',
       body: '',
       is_pinned: false,
-      color_tag: folderColor,
+      color_tag: globalTheme,
       folder: targetFolder,
       tags: [],
     });
@@ -197,11 +154,10 @@ function NotesDashboard() {
     setFilterTag(null);
     setActiveView('all');
     if (folderId) {
-      const matching = notes.filter((n) => n.folder === folderId);
+      const matching = notes.filter((n) => (n.folder || 'Personal') === folderId);
       if (matching.length > 0) {
         setActiveNote(matching[0]);
       } else {
-        // Show empty note ready in the editor
         setActiveNote(null);
       }
     } else {
@@ -214,39 +170,17 @@ function NotesDashboard() {
     setMobileView('editor');
   };
 
-  const handleSaveNote = async (data: {
-    id?: string;
-    title: string;
-    body: string;
-    is_pinned: boolean;
-    color_tag: string;
-    tags: string[];
-    folder?: string;
-  }) => {
-    if (data.id) {
-      const updated = await updateNote(data.id, {
-        title: data.title,
-        body: data.body,
-        is_pinned: data.is_pinned,
-        color_tag: data.color_tag,
-        tags: data.tags,
-        folder: data.folder,
-      });
-      if (updated) {
-        setActiveNote(updated);
-      }
-    } else {
-      const created = await createNote({
-        title: data.title || 'Untitled Note',
-        body: data.body,
-        is_pinned: data.is_pinned,
-        color_tag: data.color_tag,
-        tags: data.tags,
-        folder: data.folder || activeFolder || 'Personal',
-      });
-      if (created) {
-        setActiveNote(created);
-      }
+  const handleUpdateNote = async (updatedNote: Note) => {
+    const updated = await updateNote(updatedNote.id, {
+      title: updatedNote.title,
+      body: updatedNote.body,
+      is_pinned: updatedNote.is_pinned,
+      color_tag: updatedNote.color_tag,
+      tags: updatedNote.tags,
+      folder: updatedNote.folder || 'Personal',
+    });
+    if (updated) {
+      setActiveNote(updated);
     }
   };
 
@@ -274,7 +208,7 @@ function NotesDashboard() {
       return dayDiff <= 7;
     }
     if (activeFolder) {
-      return note.folder === activeFolder;
+      return (note.folder || 'Personal') === activeFolder;
     }
     return true;
   });
@@ -284,11 +218,7 @@ function NotesDashboard() {
   return (
     <div
       id="notes-app-root"
-      className="h-screen w-screen bg-[#0F0F13] text-slate-100 flex overflow-hidden font-sans relative transition-colors duration-500"
-      style={{
-        backgroundImage: themeConfig.pageGradient,
-        backgroundAttachment: 'fixed',
-      }}
+      className="h-screen w-screen bg-[#0F1117] text-slate-100 flex overflow-hidden font-nunito relative select-none"
     >
       {/* 1. DESKTOP LEFT COLLAPSIBLE NAVIGATION BAR */}
       <div className="hidden md:flex h-full shrink-0">
@@ -310,9 +240,8 @@ function NotesDashboard() {
           }}
           activeFolder={activeFolder}
           onSelectFolder={handleSelectFolder}
-          folders={allFolders}
+          folders={DEFAULT_FOLDERS}
           folderCounts={folderCounts}
-          onAddFolder={handleAddFolder}
           allTags={allTags}
           totalNotes={rawNotesCount}
           pinnedCount={pinnedNotesCount}
@@ -321,7 +250,9 @@ function NotesDashboard() {
           onNewNote={() => handleCreateNewNote()}
           onLogout={() => setShowLogoutConfirm(true)}
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
-          pageTheme={currentTheme}
+          onGoHome={handleGoHome}
+          pageTheme={globalTheme}
+          onThemeChange={handleThemeChange}
         />
       </div>
 
@@ -331,7 +262,7 @@ function NotesDashboard() {
           {/* Backdrop */}
           <div
             onClick={() => setIsMobileSidebarOpen(false)}
-            className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity duration-200"
+            className="fixed inset-0 bg-black/75 backdrop-blur-xs transition-opacity duration-200"
           />
 
           {/* Drawer Content */}
@@ -359,9 +290,8 @@ function NotesDashboard() {
                 handleSelectFolder(f);
                 setIsMobileSidebarOpen(false);
               }}
-              folders={allFolders}
+              folders={DEFAULT_FOLDERS}
               folderCounts={folderCounts}
-              onAddFolder={handleAddFolder}
               allTags={allTags}
               totalNotes={rawNotesCount}
               pinnedCount={pinnedNotesCount}
@@ -376,9 +306,11 @@ function NotesDashboard() {
                 setIsMobileSidebarOpen(false);
                 setIsCommandPaletteOpen(true);
               }}
+              onGoHome={handleGoHome}
               isMobile={true}
               onCloseMobile={() => setIsMobileSidebarOpen(false)}
-              pageTheme={currentTheme}
+              pageTheme={globalTheme}
+              onThemeChange={handleThemeChange}
             />
           </div>
         </div>
@@ -408,8 +340,9 @@ function NotesDashboard() {
           onDeleteNote={(note) => setDeletingNote(note)}
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
           onOpenSidebarMobile={() => setIsMobileSidebarOpen(true)}
-          folders={allFolders}
-          pageTheme={currentTheme}
+          onGoHome={handleGoHome}
+          folders={DEFAULT_FOLDERS}
+          pageTheme={globalTheme}
         />
       </div>
 
@@ -421,17 +354,17 @@ function NotesDashboard() {
       >
         <WorkspaceEditor
           note={activeNote}
-          onSave={handleSaveNote}
+          onUpdate={handleUpdateNote}
           onDelete={(note) => setDeletingNote(note)}
           onTogglePin={togglePin}
           syncStatus={syncStatus}
           pendingCount={pendingCount}
           onForceSync={forceSync}
-          onNewNote={handleCreateNewNote}
-          onBack={() => setMobileView('list')}
-          activeFolder={activeFolder}
-          folders={allFolders}
-          pageTheme={currentTheme}
+          folders={DEFAULT_FOLDERS}
+          onBackToList={() => setMobileView('list')}
+          onGoHome={handleGoHome}
+          isMobile={mobileView === 'editor'}
+          pageTheme={globalTheme}
           onThemeChange={handleThemeChange}
         />
       </div>
@@ -483,10 +416,10 @@ function Main() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#121212] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0F1117] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-[#2DD4BF] border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs font-medium text-slate-400 font-jetbrains">Loading your workspace...</span>
+          <div className="w-8 h-8 border-2 border-sky-400 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-xs font-semibold text-slate-400 font-quicksand">Loading your workspace...</span>
         </div>
       </div>
     );

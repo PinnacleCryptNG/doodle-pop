@@ -1,9 +1,18 @@
 @import "tailwindcss";
 
+:root {
+  --theme-primary: #0EA5E9;
+  --theme-hover: #38BDF8;
+  --theme-rgb: 14, 165, 233;
+  --theme-glow: rgba(14, 165, 233, 0.2);
+  --theme-bg-subtle: rgba(14, 165, 233, 0.12);
+  --theme-border-subtle: rgba(14, 165, 233, 0.3);
+}
+
 @layer base {
   body {
     font-family: 'Nunito', 'Plus Jakarta Sans', sans-serif;
-    background-color: #121324;
+    background-color: #0F1117;
     color: #F1F5F9;
     overflow-x: hidden;
   }
@@ -37,66 +46,50 @@
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* Playful Glassmorphism panels */
-.glass-panel {
-  background: rgba(26, 27, 47, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* Dynamic theme helper classes */
+.theme-bg-primary {
+  background-color: var(--theme-primary);
+}
+.theme-bg-primary:hover {
+  background-color: var(--theme-hover);
+}
+.theme-text-primary {
+  color: var(--theme-primary);
+}
+.theme-border-primary {
+  border-color: var(--theme-primary);
+}
+.theme-border-subtle {
+  border-color: var(--theme-border-subtle);
+}
+.theme-bg-subtle {
+  background-color: var(--theme-bg-subtle);
+}
+.theme-ring-focus:focus {
+  border-color: var(--theme-primary) !important;
+  box-shadow: 0 0 0 2px var(--theme-glow);
 }
 
-.glass-panel-subtle {
-  background: rgba(26, 27, 47, 0.55);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+/* Crisp, refined panels */
+.glass-panel {
+  background-color: #181A24;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.glass-panel-glow {
-  background: rgba(26, 27, 47, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+.glass-panel-subtle {
+  background-color: #13141D;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Floating animation for Mascot and aurora orbs */
-@keyframes floatSlow {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-8px) rotate(1.5deg);
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.25;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(1.08);
-  }
-}
-
-.animate-float {
-  animation: floatSlow 4s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulseGlow 6s ease-in-out infinite;
-}
-
-/* Playful bouncy interactive transitions */
+/* Subtle, smooth interactive transitions */
 .btn-bouncy {
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 .btn-bouncy:hover {
-  transform: translateY(-2px) scale(1.02);
+  transform: translateY(-1px);
 }
 .btn-bouncy:active {
-  transform: translateY(1px) scale(0.97);
+  transform: translateY(1px);
 }
 
 /* Smooth custom subtle scrollbar */
@@ -110,18 +103,18 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(56, 189, 248, 0.45);
+  background: rgba(255, 255, 255, 0.22);
 }
 
 /* Markdown typography refinements in editor */
 .markdown-preview h1 {
   font-family: 'Fredoka', 'Quicksand', sans-serif;
-  font-size: 1.85rem;
+  font-size: 1.75rem;
   font-weight: 700;
   margin-top: 1.25rem;
   margin-bottom: 0.75rem;
@@ -131,7 +124,7 @@
 
 .markdown-preview h2 {
   font-family: 'Quicksand', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   font-weight: 700;
   margin-top: 1rem;
   margin-bottom: 0.5rem;
@@ -140,7 +133,7 @@
 
 .markdown-preview h3 {
   font-family: 'Quicksand', sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 600;
   margin-top: 0.75rem;
   margin-bottom: 0.35rem;
@@ -172,31 +165,31 @@
 }
 
 .markdown-preview blockquote {
-  border-left: 4px solid #38BDF8;
+  border-left: 3px solid var(--theme-primary, #0EA5E9);
   padding-left: 1rem;
   margin: 1rem 0;
   color: #94A3B8;
   font-style: italic;
-  background: rgba(56, 189, 248, 0.08);
+  background: var(--theme-bg-subtle, rgba(14, 165, 233, 0.08));
   padding-top: 0.4rem;
   padding-bottom: 0.4rem;
-  border-radius: 0 12px 12px 0;
+  border-radius: 0 8px 8px 0;
 }
 
 .markdown-preview code {
   font-family: 'JetBrains Mono', monospace;
-  background: #1A1B2F;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #13141F;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0.15rem 0.45rem;
   border-radius: 6px;
   font-size: 0.85em;
-  color: #38BDF8;
+  color: var(--theme-primary, #0EA5E9);
 }
 
 .markdown-preview pre {
   font-family: 'JetBrains Mono', monospace;
-  background: #131322;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #11121B;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 1rem;
   border-radius: 12px;
   overflow-x: auto;

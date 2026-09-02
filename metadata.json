@@ -1,6 +1,6 @@
 {
   "name": "DoodlePop Notes",
-  "description": "Super fun and easy notes app with automatic saving, offline access, and playful notes for all your great ideas!",
+  "description": "Exotic and professional workspace notes application with offline persistence, real-time synchronization, and markdown editing.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
