@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, SyncStatus, FolderItem, DEFAULT_FOLDERS, NoteColor, THEME_PALETTES, getThemeConfig } from '../types';
+import { User, SyncStatus, FolderItem, DEFAULT_FOLDERS, ThemeMode } from '../types';
 import { BrandLogo } from './BrandLogo';
 import { FolderIcon } from './FolderIcon';
 import {
@@ -14,8 +14,8 @@ import {
   ChevronDown,
   ChevronRight,
   X,
-  Palette,
-  Check
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface SidebarNavProps {
@@ -41,8 +41,11 @@ interface SidebarNavProps {
   onGoHome?: () => void;
   isMobile?: boolean;
   onCloseMobile?: () => void;
-  pageTheme?: NoteColor;
-  onThemeChange?: (theme: NoteColor) => void;
+  themeMode?: ThemeMode;
+  onToggleTheme?: (mode?: ThemeMode) => void;
+  // Backward compatibility
+  pageTheme?: any;
+  onThemeChange?: any;
 }
 
 export const SidebarNav: React.FC<SidebarNavProps> = ({
@@ -68,13 +71,13 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
   onGoHome,
   isMobile = false,
   onCloseMobile,
-  pageTheme = 'obsidian',
-  onThemeChange,
+  themeMode = 'dark',
+  onToggleTheme,
 }) => {
-  const themeConfig = getThemeConfig(pageTheme);
   const [foldersOpen, setFoldersOpen] = useState(true);
   const [tagsOpen, setTagsOpen] = useState(true);
-  const [showThemePicker, setShowThemePicker] = useState(false);
+
+  const isDark = themeMode === 'dark';
 
   const handleSelectView = (v: string) => {
     onSelectView(v);
@@ -110,14 +113,18 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
   return (
     <aside
       id="main-sidebar"
-      className={`relative z-30 h-full bg-[#141620] border-r border-slate-800 flex flex-col justify-between transition-all duration-200 select-none ${
-        isMobile ? 'w-72 max-w-[85vw] shadow-2xl' : isCollapsed ? 'w-[68px]' : 'w-64'
-      }`}
+      className={`relative z-30 h-full flex flex-col justify-between transition-colors duration-200 select-none border-r ${
+        isDark ? 'bg-[#141620] border-slate-800 text-slate-200' : 'bg-white border-slate-200 text-slate-800'
+      } ${isMobile ? 'w-72 max-w-[85vw] shadow-2xl' : isCollapsed ? 'w-[68px]' : 'w-64'}`}
     >
       {/* Top Header & Brand */}
       <div className="flex flex-col">
         {/* Workspace Brand & Collapse Toggle */}
-        <div className="h-14 px-4 flex items-center justify-between border-b border-slate-800 bg-[#141620]">
+        <div
+          className={`h-14 px-4 flex items-center justify-between border-b ${
+            isDark ? 'border-slate-800 bg-[#141620]' : 'border-slate-200 bg-white'
+          }`}
+        >
           {(!isCollapsed || isMobile) && (
             <div
               onClick={handleBrandClick}
@@ -135,12 +142,17 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
               <BrandLogo size="sm" onClick={handleBrandClick} />
               <div className="flex flex-col truncate">
                 <span
-                  className="font-fredoka text-sm font-bold tracking-tight text-white leading-none transition-colors"
-                  style={{ color: '#FFFFFF' }}
+                  className={`font-fredoka text-sm font-bold tracking-tight leading-none transition-colors ${
+                    isDark ? 'text-white' : 'text-slate-900'
+                  }`}
                 >
                   DoodlePop
                 </span>
-                <span className="font-quicksand text-[10px] font-medium text-slate-400 mt-0.5">
+                <span
+                  className={`font-quicksand text-[10px] font-medium mt-0.5 ${
+                    isDark ? 'text-slate-400' : 'text-slate-500'
+                  }`}
+                >
                   Personal Workspace
                 </span>
               </div>
@@ -163,7 +175,9 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
             <button
               onClick={onCloseMobile}
               title="Close menu"
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className={`p-2 rounded-lg transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center ${
+                isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+              }`}
             >
               <X className="w-4 h-4" />
             </button>
@@ -173,7 +187,9 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                 id="sidebar-collapse-toggle"
                 onClick={onToggleCollapse}
                 title="Collapse sidebar"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                  isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+                }`}
               >
                 <PanelLeftClose className="w-4 h-4" />
               </button>
@@ -182,27 +198,32 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
         </div>
 
         {/* New Note Action Button */}
-        <div className="p-3 border-b border-slate-800/80">
+        <div className={`p-3 border-b ${isDark ? 'border-slate-800/80' : 'border-slate-200'}`}>
           <button
             id="sidebar-new-note-btn"
             onClick={handleNewNote}
-            style={{ backgroundColor: themeConfig.primary }}
-            className={`group w-full py-2.5 rounded-xl text-slate-950 font-fredoka font-bold text-xs transition-opacity hover:opacity-90 cursor-pointer flex items-center justify-center gap-1.5 shadow-sm ${
-              isCollapsed && !isMobile ? 'px-0 min-h-[44px]' : 'px-3 min-h-[44px]'
-            }`}
+            className={`group w-full py-2.5 rounded-xl font-fredoka font-bold text-xs transition-opacity hover:opacity-90 cursor-pointer flex items-center justify-center gap-1.5 shadow-sm ${
+              isDark
+                ? 'bg-amber-400 hover:bg-amber-300 text-slate-950'
+                : 'bg-amber-500 hover:bg-amber-600 text-slate-950'
+            } ${isCollapsed && !isMobile ? 'px-0 min-h-[44px]' : 'px-3 min-h-[44px]'}`}
             title="Create new note"
           >
-            <Plus className="w-4 h-4 text-slate-950 stroke-[2.5] shrink-0" />
+            <Plus className="w-4 h-4 stroke-[2.5] shrink-0" />
             {(!isCollapsed || isMobile) && <span>New Note</span>}
           </button>
         </div>
 
         {/* Navigation Item Lists */}
-        <div className="px-2 py-3 space-y-4 overflow-y-auto max-h-[calc(100vh-250px)] scrollbar-thin">
+        <div className="px-2 py-3 space-y-4 overflow-y-auto max-h-[calc(100vh-230px)] scrollbar-thin">
           {/* Core Views */}
           <div className="space-y-0.5">
             {(!isCollapsed || isMobile) && (
-              <span className="px-2.5 mb-1.5 block font-quicksand text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <span
+                className={`px-2.5 mb-1.5 block font-quicksand text-[11px] font-bold uppercase tracking-wider ${
+                  isDark ? 'text-slate-400' : 'text-slate-500'
+                }`}
+              >
                 Views
               </span>
             )}
@@ -216,19 +237,14 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                 handleSelectFolder(null);
               }}
               title={`All Notes (${totalNotes})`}
-              style={
-                activeView === 'all' && !activeTag && !activeFolder
-                  ? {
-                      backgroundColor: themeConfig.glow,
-                      borderColor: themeConfig.primary,
-                      color: themeConfig.primaryHover,
-                    }
-                  : undefined
-              }
               className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-quicksand font-semibold transition-colors cursor-pointer min-h-[40px] border ${
                 activeView === 'all' && !activeTag && !activeFolder
-                  ? 'font-bold'
-                  : 'border-transparent text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  ? isDark
+                    ? 'bg-amber-500/15 text-amber-300 font-bold border-amber-500/30'
+                    : 'bg-amber-50 text-amber-900 font-bold border-amber-300'
+                  : isDark
+                  ? 'border-transparent text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               } ${isCollapsed && !isMobile ? 'justify-center' : 'justify-between'}`}
             >
               <div className="flex items-center gap-2 truncate">
@@ -236,7 +252,11 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                 {(!isCollapsed || isMobile) && <span className="truncate">All Notes</span>}
               </div>
               {(!isCollapsed || isMobile) && (
-                <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-300">
+                <span
+                  className={`font-mono text-[10px] px-1.5 py-0.5 rounded-md ${
+                    isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
                   {totalNotes}
                 </span>
               )}
@@ -253,16 +273,24 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
               title={`Starred Notes (${pinnedCount})`}
               className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-quicksand font-semibold transition-colors cursor-pointer min-h-[40px] border ${
                 activeView === 'pinned' && !activeTag && !activeFolder
-                  ? 'bg-amber-500/15 text-amber-300 font-bold border-amber-500/30'
-                  : 'border-transparent text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  ? isDark
+                    ? 'bg-amber-500/15 text-amber-300 font-bold border-amber-500/30'
+                    : 'bg-amber-50 text-amber-900 font-bold border-amber-300'
+                  : isDark
+                  ? 'border-transparent text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               } ${isCollapsed && !isMobile ? 'justify-center' : 'justify-between'}`}
             >
               <div className="flex items-center gap-2 truncate">
-                <Star className="w-4 h-4 shrink-0 fill-current" />
+                <Star className="w-4 h-4 shrink-0 fill-current text-amber-400" />
                 {(!isCollapsed || isMobile) && <span className="truncate">Starred</span>}
               </div>
               {(!isCollapsed || isMobile) && (
-                <span className="font-mono text-[10px] px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-300">
+                <span
+                  className={`font-mono text-[10px] px-1.5 py-0.5 rounded-md ${
+                    isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
                   {pinnedCount}
                 </span>
               )}
@@ -279,18 +307,22 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
               title="Recent Notes"
               className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-quicksand font-semibold transition-colors cursor-pointer min-h-[40px] border ${
                 activeView === 'recent' && !activeTag && !activeFolder
-                  ? 'bg-indigo-500/15 text-indigo-300 font-bold border-indigo-500/30'
-                  : 'border-transparent text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  ? isDark
+                    ? 'bg-indigo-500/15 text-indigo-300 font-bold border-indigo-500/30'
+                    : 'bg-indigo-50 text-indigo-900 font-bold border-indigo-300'
+                  : isDark
+                  ? 'border-transparent text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               } ${isCollapsed && !isMobile ? 'justify-center' : 'justify-start'}`}
             >
-              <Clock className="w-4 h-4 shrink-0" />
+              <Clock className="w-4 h-4 shrink-0 text-indigo-400" />
               {(!isCollapsed || isMobile) && <span className="truncate">Recent</span>}
             </button>
           </div>
 
-          {/* Folders (Simplified: Personal, School, Work, Archive) */}
+          {/* Folders (Personal, School, Work, Archive) */}
           {isCollapsed && !isMobile ? (
-            <div className="pt-2 border-t border-slate-800 space-y-1">
+            <div className={`pt-2 border-t space-y-1 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
               {DEFAULT_FOLDERS.map((folder) => {
                 const count = folderCounts[folder.id] ?? 0;
                 const isFolderActive = activeFolder === folder.id;
@@ -302,19 +334,14 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                       handleSelectTag(null);
                     }}
                     title={`${folder.label} (${count} notes)`}
-                    style={
-                      isFolderActive
-                        ? {
-                            backgroundColor: themeConfig.glow,
-                            borderColor: themeConfig.primary,
-                            color: themeConfig.primaryHover,
-                          }
-                        : undefined
-                    }
                     className={`w-full p-2.5 rounded-xl flex items-center justify-center transition-colors cursor-pointer min-h-[40px] border ${
                       isFolderActive
-                        ? 'font-bold'
-                        : 'border-transparent text-slate-400 hover:text-white hover:bg-slate-800/60'
+                        ? isDark
+                          ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 font-bold'
+                          : 'bg-amber-50 border-amber-300 text-amber-900 font-bold'
+                        : isDark
+                        ? 'border-transparent text-slate-400 hover:text-white hover:bg-slate-800/60'
+                        : 'border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-100'
                     }`}
                   >
                     <FolderIcon icon={folder.icon} className="w-4 h-4" />
@@ -323,11 +350,13 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
               })}
             </div>
           ) : (
-            <div className="space-y-0.5 pt-1 border-t border-slate-800/60">
-              <div className="flex items-center justify-between px-2.5 mb-1.5 text-slate-400">
+            <div className={`space-y-0.5 pt-1 border-t ${isDark ? 'border-slate-800/60' : 'border-slate-200'}`}>
+              <div className="flex items-center justify-between px-2.5 mb-1.5">
                 <button
                   onClick={() => setFoldersOpen(!foldersOpen)}
-                  className="flex items-center gap-1.5 font-quicksand text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-200 cursor-pointer"
+                  className={`flex items-center gap-1.5 font-quicksand text-[11px] font-bold uppercase tracking-wider cursor-pointer ${
+                    isDark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-800'
+                  }`}
                 >
                   {foldersOpen ? (
                     <ChevronDown className="w-3 h-3 text-slate-400" />
@@ -351,33 +380,36 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                           handleSelectFolder(isFolderActive ? null : folder.id);
                           handleSelectTag(null);
                         }}
-                        style={
-                          isFolderActive
-                            ? {
-                                backgroundColor: themeConfig.glow,
-                                borderColor: themeConfig.primary,
-                                color: themeConfig.primaryHover,
-                              }
-                            : undefined
-                        }
                         className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-quicksand font-semibold transition-colors cursor-pointer min-h-[38px] border ${
                           isFolderActive
-                            ? 'font-bold'
-                            : 'border-transparent text-slate-300 hover:text-white hover:bg-slate-800/60'
+                            ? isDark
+                              ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 font-bold'
+                              : 'bg-amber-50 border-amber-300 text-amber-900 font-bold'
+                            : isDark
+                            ? 'border-transparent text-slate-300 hover:text-white hover:bg-slate-800/60'
+                            : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                         }`}
                       >
                         <div className="flex items-center gap-2 truncate">
                           <FolderIcon
                             icon={folder.icon}
-                            className="w-4 h-4 shrink-0 text-slate-400"
+                            className={`w-4 h-4 shrink-0 ${
+                              isFolderActive
+                                ? isDark ? 'text-amber-300' : 'text-amber-600'
+                                : isDark ? 'text-slate-400' : 'text-slate-500'
+                            }`}
                           />
                           <span className="truncate">{folder.label}</span>
                         </div>
                         <span
                           className={`font-mono text-[10px] px-1.5 py-0.5 rounded-md ${
                             isFolderActive
-                              ? 'bg-slate-800/90 text-slate-200 font-bold'
-                              : 'bg-slate-800/80 text-slate-400'
+                              ? isDark
+                                ? 'bg-slate-800/90 text-slate-200 font-bold'
+                                : 'bg-white text-amber-900 font-bold shadow-2xs'
+                              : isDark
+                              ? 'bg-slate-800/80 text-slate-400'
+                              : 'bg-slate-100 text-slate-500'
                           }`}
                         >
                           {count}
@@ -392,11 +424,13 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
 
           {/* Tags Section (Expanded) */}
           {(!isCollapsed || isMobile) && allTags.length > 0 && (
-            <div className="space-y-1 pt-1 border-t border-slate-800/60">
-              <div className="flex items-center justify-between px-2.5 mb-1 text-slate-400">
+            <div className={`space-y-1 pt-1 border-t ${isDark ? 'border-slate-800/60' : 'border-slate-200'}`}>
+              <div className="flex items-center justify-between px-2.5 mb-1">
                 <button
                   onClick={() => setTagsOpen(!tagsOpen)}
-                  className="flex items-center gap-1.5 font-quicksand text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-200 cursor-pointer"
+                  className={`flex items-center gap-1.5 font-quicksand text-[11px] font-bold uppercase tracking-wider cursor-pointer ${
+                    isDark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-800'
+                  }`}
                 >
                   {tagsOpen ? (
                     <ChevronDown className="w-3 h-3 text-slate-400" />
@@ -418,19 +452,14 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
                           handleSelectTag(isTagActive ? null : tag);
                           handleSelectFolder(null);
                         }}
-                        style={
-                          isTagActive
-                            ? {
-                                backgroundColor: themeConfig.glow,
-                                borderColor: themeConfig.primary,
-                                color: themeConfig.primaryHover,
-                              }
-                            : undefined
-                        }
                         className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-quicksand transition-colors cursor-pointer min-h-[28px] border ${
                           isTagActive
-                            ? 'font-bold'
-                            : 'bg-slate-800/80 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-slate-700/60'
+                            ? isDark
+                              ? 'bg-amber-500/15 text-amber-300 font-bold border-amber-500/40'
+                              : 'bg-amber-50 text-amber-900 font-bold border-amber-300'
+                            : isDark
+                            ? 'bg-slate-800/80 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-slate-700/60'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 border-slate-200'
                         }`}
                       >
                         <Hash className="w-3 h-3" />
@@ -445,77 +474,83 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
         </div>
       </div>
 
-      {/* Bottom Workspace Theme Switcher & Profile Section */}
-      <div className="p-2.5 border-t border-slate-800 bg-[#141620] space-y-2">
-        {/* Global Website Theme Switcher */}
-        {(!isCollapsed || isMobile) && onThemeChange && (
-          <div className="px-1 py-1 rounded-xl bg-slate-900/60 border border-slate-800/80">
-            <div className="flex items-center justify-between px-1.5 py-0.5 mb-1">
-              <span className="font-quicksand text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-                <Palette className="w-3 h-3 text-slate-400" />
-                <span>Site Theme</span>
-              </span>
-              <span className="text-[10px] text-slate-400 font-semibold">{themeConfig.label}</span>
-            </div>
-            <div className="flex items-center justify-between gap-1 px-1">
-              {THEME_PALETTES.map((palette) => {
-                const isCurrent = pageTheme === palette.id;
-                return (
+      {/* Bottom Theme Mode Switcher & Profile Section */}
+      <div
+        className={`p-2.5 border-t space-y-2.5 ${
+          isDark ? 'border-slate-800 bg-[#141620]' : 'border-slate-200 bg-slate-50'
+        }`}
+      >
+        {/* Dark & Light Theme Switcher */}
+        {onToggleTheme && (
+          <div>
+            {!isCollapsed || isMobile ? (
+              <div
+                className={`p-1 rounded-xl flex items-center justify-between border ${
+                  isDark
+                    ? 'bg-slate-900/80 border-slate-800'
+                    : 'bg-white border-slate-200 shadow-2xs'
+                }`}
+              >
+                <span
+                  className={`text-[11px] font-quicksand font-bold px-2 flex items-center gap-1.5 ${
+                    isDark ? 'text-slate-400' : 'text-slate-600'
+                  }`}
+                >
+                  {isDark ? (
+                    <Moon className="w-3.5 h-3.5 text-indigo-400" />
+                  ) : (
+                    <Sun className="w-3.5 h-3.5 text-amber-500" />
+                  )}
+                  <span>Theme</span>
+                </span>
+                <div
+                  className={`flex items-center p-0.5 rounded-lg ${
+                    isDark ? 'bg-slate-800/90' : 'bg-slate-100'
+                  }`}
+                >
                   <button
-                    key={palette.id}
-                    onClick={() => onThemeChange(palette.id)}
-                    title={`Switch website theme to ${palette.label}`}
-                    className={`w-6 h-6 rounded-full flex items-center justify-center transition-transform cursor-pointer ${
-                      isCurrent
-                        ? 'ring-2 ring-white scale-110 shadow-md'
-                        : 'hover:scale-105 opacity-80 hover:opacity-100'
+                    onClick={() => onToggleTheme('light')}
+                    title="Switch to light mode"
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-quicksand transition-all cursor-pointer ${
+                      !isDark
+                        ? 'bg-white text-slate-900 shadow-xs font-bold'
+                        : 'text-slate-400 hover:text-white'
                     }`}
-                    style={{ backgroundColor: palette.primary }}
                   >
-                    {isCurrent && <Check className="w-3 h-3 text-slate-950 stroke-[3]" />}
+                    <Sun className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Light</span>
                   </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Collapsed Mode Theme Switcher */}
-        {isCollapsed && !isMobile && onThemeChange && (
-          <div className="relative flex justify-center">
-            <button
-              onClick={() => setShowThemePicker(!showThemePicker)}
-              title={`Current Theme: ${themeConfig.label}. Click to change theme.`}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-            >
-              <Palette className="w-4 h-4" style={{ color: themeConfig.primary }} />
-            </button>
-
-            {showThemePicker && (
-              <div className="absolute bottom-full left-full ml-2 mb-2 w-44 bg-[#1a1d2e] border border-slate-700 rounded-xl shadow-2xl p-2 z-50 space-y-1 animate-in fade-in">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1 border-b border-slate-800 pb-1">
-                  Site Theme
+                  <button
+                    onClick={() => onToggleTheme('dark')}
+                    title="Switch to dark mode"
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-quicksand transition-all cursor-pointer ${
+                      isDark
+                        ? 'bg-slate-900 text-white shadow-xs font-bold border border-slate-700/50'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    <Moon className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Dark</span>
+                  </button>
                 </div>
-                {THEME_PALETTES.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => {
-                      onThemeChange(p.id);
-                      setShowThemePicker(false);
-                    }}
-                    className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-quicksand font-semibold transition-colors cursor-pointer ${
-                      pageTheme === p.id
-                        ? 'bg-slate-800 text-white font-bold'
-                        : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
-                    }`}
-                  >
-                    <span
-                      className="w-3.5 h-3.5 rounded-full shrink-0"
-                      style={{ backgroundColor: p.primary }}
-                    />
-                    <span>{p.label}</span>
-                  </button>
-                ))}
+              </div>
+            ) : (
+              <div className="flex justify-center">
+                <button
+                  onClick={() => onToggleTheme(isDark ? 'light' : 'dark')}
+                  title={isDark ? 'Switch to Light theme' : 'Switch to Dark theme'}
+                  className={`p-2 rounded-xl transition-colors cursor-pointer ${
+                    isDark
+                      ? 'text-slate-400 hover:text-amber-400 hover:bg-slate-800'
+                      : 'text-slate-600 hover:text-indigo-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {isDark ? (
+                    <Sun className="w-4 h-4 text-amber-400" />
+                  ) : (
+                    <Moon className="w-4 h-4 text-indigo-600" />
+                  )}
+                </button>
               </div>
             )}
           </div>
@@ -523,19 +558,30 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
 
         {/* Profile & Logout */}
         {(!isCollapsed || isMobile) ? (
-          <div className="flex items-center justify-between px-1 py-1">
+          <div className="flex items-center justify-between px-1 py-0.5">
             <div className="flex items-center gap-2 overflow-hidden">
               <div
-                className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold shrink-0"
-                style={{ color: themeConfig.primaryHover }}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 border ${
+                  isDark
+                    ? 'bg-slate-800 border-slate-700 text-amber-400'
+                    : 'bg-white border-slate-300 text-amber-600 shadow-2xs'
+                }`}
               >
                 {user.email.charAt(0).toUpperCase()}
               </div>
               <div className="flex flex-col truncate">
-                <span className="font-fredoka text-xs font-bold text-slate-200 truncate">
+                <span
+                  className={`font-fredoka text-xs font-bold truncate ${
+                    isDark ? 'text-slate-200' : 'text-slate-900'
+                  }`}
+                >
                   {user.name || user.email.split('@')[0]}
                 </span>
-                <span className="font-quicksand text-[10px] text-slate-400 truncate">
+                <span
+                  className={`font-quicksand text-[10px] truncate ${
+                    isDark ? 'text-slate-400' : 'text-slate-500'
+                  }`}
+                >
                   {user.email}
                 </span>
               </div>
@@ -545,7 +591,11 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
               id="sidebar-logout-btn"
               onClick={onLogout}
               title="Log out"
-              className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center"
+              className={`p-2 rounded-lg transition-colors cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center ${
+                isDark
+                  ? 'text-slate-400 hover:text-rose-400 hover:bg-slate-800'
+                  : 'text-slate-500 hover:text-rose-600 hover:bg-slate-200'
+              }`}
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -553,15 +603,22 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
         ) : (
           <div className="flex flex-col items-center gap-2">
             <div
-              className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold"
-              style={{ color: themeConfig.primaryHover }}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold border ${
+                isDark
+                  ? 'bg-slate-800 border-slate-700 text-amber-400'
+                  : 'bg-white border-slate-300 text-amber-600 shadow-2xs'
+              }`}
             >
               {user.email.charAt(0).toUpperCase()}
             </div>
             <button
               onClick={onLogout}
               title="Log out"
-              className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors cursor-pointer"
+              className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                isDark
+                  ? 'text-slate-400 hover:text-rose-400 hover:bg-slate-800'
+                  : 'text-slate-500 hover:text-rose-600 hover:bg-slate-200'
+              }`}
             >
               <LogOut className="w-4 h-4" />
             </button>

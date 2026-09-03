@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import { DOODLEPOP_LOGO } from '../assets/logo';
-import { Layers } from 'lucide-react';
+import React from 'react';
 
 interface BrandLogoProps {
   className?: string;
@@ -10,27 +8,44 @@ interface BrandLogoProps {
   onClick?: () => void;
 }
 
-const sizeMap = {
-  sm: 'w-8 h-8 rounded-lg',
-  md: 'w-10 h-10 rounded-xl',
-  lg: 'w-14 h-14 rounded-xl',
-  xl: 'w-20 h-20 rounded-2xl',
-  '2xl': 'w-28 h-28 rounded-2xl',
+const sizeConfig = {
+  sm: {
+    container: 'w-8 h-8 rounded-lg',
+    iconSize: 'text-xl',
+  },
+  md: {
+    container: 'w-10 h-10 rounded-xl',
+    iconSize: 'text-2xl',
+  },
+  lg: {
+    container: 'w-14 h-14 rounded-2xl',
+    iconSize: 'text-3xl',
+  },
+  xl: {
+    container: 'w-20 h-20 rounded-2xl',
+    iconSize: 'text-5xl',
+  },
+  '2xl': {
+    container: 'w-28 h-28 rounded-3xl',
+    iconSize: 'text-7xl',
+  },
 };
 
 export const BrandLogo: React.FC<BrandLogoProps> = ({
   className = '',
   size = 'md',
-  alt = 'DoodlePop Logo',
+  alt = 'DoodlePop Notebook',
   animated = false,
   onClick,
 }) => {
-  const [hasError, setHasError] = useState(false);
+  const current = sizeConfig[size] || sizeConfig.md;
 
   return (
     <div
       onClick={onClick}
-      className={`relative inline-block ${onClick ? 'cursor-pointer' : ''}`}
+      className={`relative inline-flex items-center justify-center shrink-0 ${
+        onClick ? 'cursor-pointer' : ''
+      }`}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={
@@ -43,30 +58,22 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
             }
           : undefined
       }
+      title={alt}
     >
-      {/* Main Mascot Badge Frame */}
+      {/* Notebook Badge Frame */}
       <div
-        className={`relative overflow-hidden shrink-0 border border-slate-700/70 shadow-xs bg-[#181A24] flex items-center justify-center transition-transform duration-200 ${
-          onClick ? 'hover:border-sky-500/60 active:scale-95' : ''
-        } ${animated ? 'hover:scale-105' : ''} ${sizeMap[size]} ${className}`}
+        className={`relative overflow-hidden shrink-0 flex items-center justify-center transition-all duration-200 select-none bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/25 dark:border-amber-500/30 shadow-2xs ${
+          onClick ? 'hover:scale-105 active:scale-95 hover:border-amber-500/50' : ''
+        } ${animated ? 'hover:scale-105' : ''} ${current.container} ${className}`}
       >
-        {!hasError ? (
-          <img
-            src={DOODLEPOP_LOGO}
-            alt={alt}
-            className="w-full h-full object-cover select-none"
-            loading="eager"
-            referrerPolicy="no-referrer"
-            onError={() => setHasError(true)}
-          />
-        ) : (
-          <div className="w-full h-full bg-[#181A24] flex items-center justify-center text-sky-400 font-bold">
-            <Layers className="w-1/2 h-1/2 text-sky-400" />
-          </div>
-        )}
+        <span
+          className={`leading-none filter drop-shadow-xs transition-transform duration-200 transform -rotate-3 group-hover:rotate-0 ${current.iconSize}`}
+          role="img"
+          aria-label="Notebook"
+        >
+          📒
+        </span>
       </div>
     </div>
   );
 };
-
-

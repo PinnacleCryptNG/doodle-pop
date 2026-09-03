@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { useNotes } from './hooks/useNotes';
-import { Note, FolderItem, DEFAULT_FOLDERS, NoteColor, NOTE_COLORS, getThemeConfig } from './types';
+import { Note, FolderItem, DEFAULT_FOLDERS, ThemeMode } from './types';
 import { SidebarNav } from './components/SidebarNav';
 import { NotesListPanel } from './components/NotesListPanel';
 import { WorkspaceEditor } from './components/WorkspaceEditor';
@@ -42,42 +42,50 @@ function NotesDashboard() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
-  // Global Website Theme State
-  const [globalTheme, setGlobalTheme] = useState<NoteColor>(() => {
+  // Global Theme Mode: 'dark' | 'light'
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
     try {
-      const saved = localStorage.getItem('doodlepop_theme');
-      if (saved && NOTE_COLORS[saved as NoteColor]) {
-        return saved as NoteColor;
+      const saved = localStorage.getItem('doodlepop_theme_mode');
+      if (saved === 'light' || saved === 'dark') {
+        return saved;
       }
     } catch {}
-    return 'obsidian';
+    return 'dark';
   });
 
-  // Apply Theme CSS custom variables across the entire document
+  // Apply Dark/Light mode class and CSS variables to document root
   useEffect(() => {
-    const config = getThemeConfig(globalTheme);
     const root = document.documentElement;
-    root.style.setProperty('--theme-primary', config.primary);
-    root.style.setProperty('--theme-hover', config.primaryHover);
-    root.style.setProperty('--theme-rgb', config.rgb || '14, 165, 233');
-    root.style.setProperty('--theme-glow', config.glow || 'rgba(14, 165, 233, 0.2)');
-    root.style.setProperty('--theme-bg-subtle', config.bgTint || 'rgba(14, 165, 233, 0.12)');
-    root.style.setProperty('--theme-border-subtle', config.borderTint || 'rgba(14, 165, 233, 0.3)');
-  }, [globalTheme]);
-
-  // Global Theme Changer (Updates whole app + current note + localStorage)
-  const handleThemeChange = (newTheme: NoteColor) => {
-    setGlobalTheme(newTheme);
-    try {
-      localStorage.setItem('doodlepop_theme', newTheme);
-    } catch {}
-
-    if (activeNote) {
-      handleUpdateNote({
-        ...activeNote,
-        color_tag: newTheme,
-      });
+    if (themeMode === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
+      root.style.colorScheme = 'dark';
+      root.style.setProperty('--theme-primary', '#F59E0B');
+      root.style.setProperty('--theme-hover', '#FBBF24');
+      root.style.setProperty('--theme-rgb', '245, 158, 11');
+      root.style.setProperty('--theme-glow', 'rgba(245, 158, 11, 0.2)');
+      root.style.setProperty('--theme-bg-subtle', 'rgba(245, 158, 11, 0.12)');
+      root.style.setProperty('--theme-border-subtle', 'rgba(245, 158, 11, 0.3)');
+    } else {
+      root.classList.add('light');
+      root.classList.remove('dark');
+      root.style.colorScheme = 'light';
+      root.style.setProperty('--theme-primary', '#D97706');
+      root.style.setProperty('--theme-hover', '#B45309');
+      root.style.setProperty('--theme-rgb', '217, 119, 6');
+      root.style.setProperty('--theme-glow', 'rgba(217, 119, 6, 0.2)');
+      root.style.setProperty('--theme-bg-subtle', 'rgba(217, 119, 6, 0.1)');
+      root.style.setProperty('--theme-border-subtle', 'rgba(217, 119, 6, 0.25)');
     }
+  }, [themeMode]);
+
+  // Handle Theme Toggle
+  const handleToggleTheme = (mode?: ThemeMode) => {
+    const nextMode: ThemeMode = mode || (themeMode === 'dark' ? 'light' : 'dark');
+    setThemeMode(nextMode);
+    try {
+      localStorage.setItem('doodlepop_theme_mode', nextMode);
+    } catch {}
   };
 
   // Home Click: Reset all filters to show All Notes and List view
@@ -131,7 +139,7 @@ function NotesDashboard() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [user, activeFolder, globalTheme]);
+  }, [user, activeFolder]);
 
   const handleCreateNewNote = async (overrideFolder?: string) => {
     const targetFolder = overrideFolder || activeFolder || 'Personal';
@@ -140,7 +148,6 @@ function NotesDashboard() {
       title: 'Untitled Note',
       body: '',
       is_pinned: false,
-      color_tag: globalTheme,
       folder: targetFolder,
       tags: [],
     });
@@ -175,7 +182,6 @@ function NotesDashboard() {
       title: updatedNote.title,
       body: updatedNote.body,
       is_pinned: updatedNote.is_pinned,
-      color_tag: updatedNote.color_tag,
       tags: updatedNote.tags,
       folder: updatedNote.folder || 'Personal',
     });
@@ -218,7 +224,9 @@ function NotesDashboard() {
   return (
     <div
       id="notes-app-root"
-      className="h-screen w-screen bg-[#0F1117] text-slate-100 flex overflow-hidden font-nunito relative select-none"
+      className={`h-screen w-screen flex overflow-hidden font-nunito relative select-none transition-colors duration-200 ${
+        themeMode === 'dark' ? 'bg-[#0F1117] text-slate-100' : 'bg-slate-50 text-slate-900'
+      }`}
     >
       {/* 1. DESKTOP LEFT COLLAPSIBLE NAVIGATION BAR */}
       <div className="hidden md:flex h-full shrink-0">
@@ -251,8 +259,8 @@ function NotesDashboard() {
           onLogout={() => setShowLogoutConfirm(true)}
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
           onGoHome={handleGoHome}
-          pageTheme={globalTheme}
-          onThemeChange={handleThemeChange}
+          themeMode={themeMode}
+          onToggleTheme={handleToggleTheme}
         />
       </div>
 
@@ -309,8 +317,8 @@ function NotesDashboard() {
               onGoHome={handleGoHome}
               isMobile={true}
               onCloseMobile={() => setIsMobileSidebarOpen(false)}
-              pageTheme={globalTheme}
-              onThemeChange={handleThemeChange}
+              themeMode={themeMode}
+              onToggleTheme={handleToggleTheme}
             />
           </div>
         </div>
@@ -342,7 +350,7 @@ function NotesDashboard() {
           onOpenSidebarMobile={() => setIsMobileSidebarOpen(true)}
           onGoHome={handleGoHome}
           folders={DEFAULT_FOLDERS}
-          pageTheme={globalTheme}
+          themeMode={themeMode}
         />
       </div>
 
@@ -364,8 +372,7 @@ function NotesDashboard() {
           onBackToList={() => setMobileView('list')}
           onGoHome={handleGoHome}
           isMobile={mobileView === 'editor'}
-          pageTheme={globalTheme}
-          onThemeChange={handleThemeChange}
+          themeMode={themeMode}
         />
       </div>
 
@@ -381,6 +388,8 @@ function NotesDashboard() {
         onNewNote={handleCreateNewNote}
         onFilterPinned={() => setActiveView('pinned')}
         onForceSync={forceSync}
+        themeMode={themeMode}
+        onToggleTheme={handleToggleTheme}
       />
 
       {/* Delete Confirmation Modal */}
@@ -418,7 +427,7 @@ function Main() {
     return (
       <div className="min-h-screen bg-[#0F1117] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-sky-400 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
           <span className="text-xs font-semibold text-slate-400 font-quicksand">Loading your workspace...</span>
         </div>
       </div>

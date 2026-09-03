@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, Sparkles } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -24,29 +24,29 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in"
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in"
       onClick={onCancel}
     >
       <div
         id="confirm-modal-dialog"
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md bg-[#1a1d2e] border border-slate-700 rounded-2xl p-6 shadow-2xl"
+        className="w-full max-w-md bg-white dark:bg-[#1a1d2e] border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-2xl transition-colors"
       >
         <div className="flex items-start gap-4">
           <div
             className={`p-3 rounded-xl shrink-0 ${
               isDestructive
-                ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
             }`}
           >
             <AlertTriangle className="w-5 h-5 stroke-[2]" />
           </div>
           <div className="flex-1">
-            <h3 className="text-base font-fredoka font-bold text-white mb-1.5">
+            <h3 className="text-base font-fredoka font-bold text-slate-900 dark:text-white mb-1.5">
               {title}
             </h3>
-            <p className="text-xs sm:text-sm font-quicksand text-slate-300 leading-relaxed mb-6">
+            <p className="text-xs sm:text-sm font-quicksand text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
               {message}
             </p>
 
@@ -54,7 +54,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
               <button
                 type="button"
                 onClick={onCancel}
-                className="px-3.5 py-2 text-xs font-quicksand font-semibold text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                className="px-3.5 py-2 text-xs font-quicksand font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -65,7 +65,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 className={`px-4 py-2 text-xs font-quicksand font-bold rounded-xl transition-colors cursor-pointer ${
                   isDestructive
                     ? 'bg-rose-600 hover:bg-rose-500 text-white'
-                    : 'bg-sky-500 hover:bg-sky-400 text-white'
+                    : 'bg-amber-500 hover:bg-amber-600 text-slate-950'
                 }`}
               >
                 {confirmLabel}
@@ -77,4 +77,3 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
     </div>
   );
 };
-

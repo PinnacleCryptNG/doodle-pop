@@ -50,6 +50,8 @@ export interface Note {
   _syncStatus?: 'synced' | 'pending' | 'error';
 }
 
+export type ThemeMode = 'dark' | 'light';
+
 export type SyncStatus = 'online' | 'offline' | 'syncing' | 'synced' | 'error';
 
 export interface SyncAction {

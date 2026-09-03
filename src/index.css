@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --theme-primary: #0EA5E9;
-  --theme-hover: #38BDF8;
-  --theme-rgb: 14, 165, 233;
-  --theme-glow: rgba(14, 165, 233, 0.2);
-  --theme-bg-subtle: rgba(14, 165, 233, 0.12);
-  --theme-border-subtle: rgba(14, 165, 233, 0.3);
+  --theme-primary: #F59E0B;
+  --theme-hover: #FBBF24;
+  --theme-rgb: 245, 158, 11;
+  --theme-glow: rgba(245, 158, 11, 0.2);
+  --theme-bg-subtle: rgba(245, 158, 11, 0.12);
+  --theme-border-subtle: rgba(245, 158, 11, 0.3);
 }
 
 @layer base {
@@ -15,6 +15,17 @@
     background-color: #0F1117;
     color: #F1F5F9;
     overflow-x: hidden;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  html.light body {
+    background-color: #F8FAFC;
+    color: #0F172A;
+  }
+
+  html.dark body {
+    background-color: #0F1117;
+    color: #F1F5F9;
   }
 }
 
@@ -75,10 +86,18 @@
   background-color: #181A24;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
+html.light .glass-panel {
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+}
 
 .glass-panel-subtle {
   background-color: #13141D;
   border: 1px solid rgba(255, 255, 255, 0.06);
+}
+html.light .glass-panel-subtle {
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
 }
 
 /* Subtle, smooth interactive transitions */
@@ -111,6 +130,14 @@
   background: rgba(255, 255, 255, 0.22);
 }
 
+html.light ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.28);
+}
+
 /* Markdown typography refinements in editor */
 .markdown-preview h1 {
   font-family: 'Fredoka', 'Quicksand', sans-serif;
@@ -121,6 +148,9 @@
   color: #F8FAFC;
   letter-spacing: -0.01em;
 }
+html.light .markdown-preview h1 {
+  color: #0F172A;
+}
 
 .markdown-preview h2 {
   font-family: 'Quicksand', sans-serif;
@@ -129,6 +159,9 @@
   margin-top: 1rem;
   margin-bottom: 0.5rem;
   color: #F1F5F9;
+}
+html.light .markdown-preview h2 {
+  color: #1E293B;
 }
 
 .markdown-preview h3 {
@@ -139,11 +172,17 @@
   margin-bottom: 0.35rem;
   color: #E2E8F0;
 }
+html.light .markdown-preview h3 {
+  color: #334155;
+}
 
 .markdown-preview p {
   margin-bottom: 0.75rem;
   line-height: 1.7;
   color: #CBD5E1;
+}
+html.light .markdown-preview p {
+  color: #334155;
 }
 
 .markdown-preview ul {
@@ -152,6 +191,9 @@
   margin-bottom: 0.75rem;
   color: #CBD5E1;
 }
+html.light .markdown-preview ul {
+  color: #334155;
+}
 
 .markdown-preview ol {
   list-style-type: decimal;
@@ -159,21 +201,28 @@
   margin-bottom: 0.75rem;
   color: #CBD5E1;
 }
+html.light .markdown-preview ol {
+  color: #334155;
+}
 
 .markdown-preview li {
   margin-bottom: 0.25rem;
 }
 
 .markdown-preview blockquote {
-  border-left: 3px solid var(--theme-primary, #0EA5E9);
+  border-left: 3px solid var(--theme-primary, #F59E0B);
   padding-left: 1rem;
   margin: 1rem 0;
   color: #94A3B8;
   font-style: italic;
-  background: var(--theme-bg-subtle, rgba(14, 165, 233, 0.08));
+  background: var(--theme-bg-subtle, rgba(245, 158, 11, 0.08));
   padding-top: 0.4rem;
   padding-bottom: 0.4rem;
   border-radius: 0 8px 8px 0;
+}
+html.light .markdown-preview blockquote {
+  color: #475569;
+  background: rgba(245, 158, 11, 0.08);
 }
 
 .markdown-preview code {
@@ -183,7 +232,12 @@
   padding: 0.15rem 0.45rem;
   border-radius: 6px;
   font-size: 0.85em;
-  color: var(--theme-primary, #0EA5E9);
+  color: var(--theme-primary, #F59E0B);
+}
+html.light .markdown-preview code {
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #D97706;
 }
 
 .markdown-preview pre {
@@ -195,10 +249,17 @@
   overflow-x: auto;
   margin: 1rem 0;
 }
+html.light .markdown-preview pre {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+}
 
 .markdown-preview pre code {
   background: transparent;
   border: none;
   padding: 0;
   color: #E2E8F0;
+}
+html.light .markdown-preview pre code {
+  color: #1E293B;
 }

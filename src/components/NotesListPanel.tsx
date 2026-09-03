@@ -1,5 +1,5 @@
 import React from 'react';
-import { Note, SortOption, NOTE_COLORS, NoteColor, FolderItem, DEFAULT_FOLDERS, getThemeConfig } from '../types';
+import { Note, SortOption, FolderItem, DEFAULT_FOLDERS, ThemeMode } from '../types';
 import { FolderIcon } from './FolderIcon';
 import {
   Search,
@@ -33,7 +33,8 @@ interface NotesListPanelProps {
   onOpenSidebarMobile?: () => void;
   onGoHome?: () => void;
   folders?: FolderItem[];
-  pageTheme?: NoteColor;
+  themeMode?: ThemeMode;
+  pageTheme?: any;
 }
 
 export const NotesListPanel: React.FC<NotesListPanelProps> = ({
@@ -55,11 +56,11 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
   onOpenSidebarMobile,
   onGoHome,
   folders = DEFAULT_FOLDERS,
-  pageTheme = 'obsidian',
+  themeMode = 'dark',
 }) => {
-  const themeConfig = getThemeConfig(pageTheme);
   const [viewStyle, setViewStyle] = React.useState<'preview' | 'compact'>('preview');
 
+  const isDark = themeMode === 'dark';
   const currentFolderObj = folders.find((f) => f.id === activeFolder);
 
   // Separate pinned and unpinned notes
@@ -68,15 +69,16 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
 
   const formatRelativeTime = (dateStr: string) => {
     try {
-      const date = new Date(dateStr);
+      const d = new Date(dateStr);
       const now = new Date();
-      const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
+      const diffSecs = Math.floor((now.getTime() - d.getTime()) / 1000);
 
-      if (diffSec < 60) return 'Just now';
-      if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
-      if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
-      if (diffSec < 604800) return `${Math.floor(diffSec / 86400)}d ago`;
-      return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      if (diffSecs < 60) return 'Just now';
+      if (diffSecs < 3600) return `${Math.floor(diffSecs / 60)}m ago`;
+      if (diffSecs < 86400) return `${Math.floor(diffSecs / 3600)}h ago`;
+      if (diffSecs < 604800) return `${Math.floor(diffSecs / 86400)}d ago`;
+
+      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     } catch {
       return '';
     }
@@ -94,10 +96,16 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
   return (
     <div
       id="notes-list-panel"
-      className="w-full md:w-80 lg:w-96 h-full bg-[#151722] border-r border-slate-800 flex flex-col shrink-0 select-none overflow-hidden"
+      className={`w-full md:w-80 lg:w-96 h-full border-r flex flex-col shrink-0 select-none overflow-hidden transition-colors duration-200 ${
+        isDark ? 'bg-[#151722] border-slate-800' : 'bg-slate-50 border-slate-200'
+      }`}
     >
       {/* Top Header & Search Bar */}
-      <div className="p-3.5 sm:p-4 border-b border-slate-800 space-y-3 bg-[#181a27] shrink-0">
+      <div
+        className={`p-3.5 sm:p-4 border-b space-y-3 shrink-0 ${
+          isDark ? 'border-slate-800 bg-[#181a27]' : 'border-slate-200 bg-white'
+        }`}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
             {onOpenSidebarMobile && (
@@ -105,9 +113,13 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                 type="button"
                 onClick={onOpenSidebarMobile}
                 title="Open categories and folders"
-                className="md:hidden p-2 -ml-1 rounded-xl text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className={`md:hidden p-2 -ml-1 rounded-xl transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center ${
+                  isDark
+                    ? 'text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700'
+                    : 'text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200'
+                }`}
               >
-                <Menu className="w-5 h-5" style={{ color: themeConfig.primaryHover }} />
+                <Menu className="w-5 h-5 text-amber-500" />
               </button>
             )}
             <div
@@ -127,25 +139,41 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                 <div className="flex items-center gap-1.5 truncate">
                   <FolderIcon
                     icon={currentFolderObj?.icon}
-                    className="w-4 h-4 shrink-0"
+                    className="w-4 h-4 shrink-0 text-amber-500"
                   />
                   <h2
-                    className="font-fredoka text-base sm:text-lg font-bold tracking-tight truncate transition-colors text-white"
+                    className={`font-fredoka text-base sm:text-lg font-bold tracking-tight truncate transition-colors ${
+                      isDark ? 'text-white' : 'text-slate-900'
+                    }`}
                   >
                     {activeFolder}
                   </h2>
                 </div>
               ) : activeTag ? (
-                <h2 className="font-fredoka text-base sm:text-lg font-bold text-white tracking-tight truncate transition-colors">
+                <h2
+                  className={`font-fredoka text-base sm:text-lg font-bold tracking-tight truncate transition-colors ${
+                    isDark ? 'text-white' : 'text-slate-900'
+                  }`}
+                >
                   #{activeTag}
                 </h2>
               ) : (
-                <h2 className="font-fredoka text-base sm:text-lg font-bold text-white tracking-tight truncate transition-colors">
+                <h2
+                  className={`font-fredoka text-base sm:text-lg font-bold tracking-tight truncate transition-colors ${
+                    isDark ? 'text-white' : 'text-slate-900'
+                  }`}
+                >
                   Notes
                 </h2>
               )}
             </div>
-            <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700 font-semibold">
+            <span
+              className={`font-mono text-xs px-2 py-0.5 rounded-md border font-semibold ${
+                isDark
+                  ? 'bg-slate-800 text-slate-300 border-slate-700'
+                  : 'bg-slate-100 text-slate-600 border-slate-200'
+              }`}
+            >
               {notes.length}
             </span>
           </div>
@@ -155,7 +183,11 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
             <button
               onClick={() => setViewStyle(viewStyle === 'preview' ? 'compact' : 'preview')}
               title={viewStyle === 'preview' ? 'Show compact list' : 'Show preview cards'}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700/60 transition-colors cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center"
+              className={`p-1.5 rounded-xl border transition-colors cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center ${
+                isDark
+                  ? 'text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 border-slate-700/60'
+                  : 'text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border-slate-200'
+              }`}
             >
               {viewStyle === 'preview' ? (
                 <ListIcon className="w-4 h-4" />
@@ -168,46 +200,67 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
             <div className="relative group">
               <button
                 title="Sort notes"
-                className="p-1.5 rounded-xl text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700/60 transition-colors cursor-pointer flex items-center justify-center min-h-[36px] min-w-[36px]"
+                className={`p-1.5 rounded-xl border transition-colors cursor-pointer flex items-center justify-center min-h-[36px] min-w-[36px] ${
+                  isDark
+                    ? 'text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 border-slate-700/60'
+                    : 'text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border-slate-200'
+                }`}
               >
                 <ArrowUpDown className="w-4 h-4" />
               </button>
-              <div className="absolute right-0 mt-2 w-48 bg-[#1a1d2e] border border-slate-700 rounded-xl shadow-xl p-1.5 z-50 hidden group-hover:block">
-                <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <div
+                className={`absolute right-0 mt-2 w-48 border rounded-xl shadow-xl p-1.5 z-50 hidden group-hover:block animate-in fade-in ${
+                  isDark ? 'bg-[#1a1d2e] border-slate-700' : 'bg-white border-slate-200'
+                }`}
+              >
+                <div
+                  className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider border-b ${
+                    isDark ? 'text-slate-400 border-slate-800' : 'text-slate-500 border-slate-100'
+                  }`}
+                >
                   Sort Order
                 </div>
                 <button
                   onClick={() => onSortChange('created_desc')}
-                  style={sortBy === 'created_desc' ? { color: themeConfig.primaryHover } : undefined}
                   className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-quicksand font-semibold transition-colors cursor-pointer ${
                     sortBy === 'created_desc'
-                      ? 'font-bold bg-slate-800'
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      ? isDark
+                        ? 'font-bold bg-slate-800 text-amber-400'
+                        : 'font-bold bg-amber-50 text-amber-900'
+                      : isDark
+                      ? 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
                   Newest first
                 </button>
                 <button
                   onClick={() => onSortChange('updated_desc')}
-                  style={sortBy === 'updated_desc' ? { color: themeConfig.primaryHover } : undefined}
                   className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-quicksand font-semibold transition-colors cursor-pointer ${
                     sortBy === 'updated_desc'
-                      ? 'font-bold bg-slate-800'
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      ? isDark
+                        ? 'font-bold bg-slate-800 text-amber-400'
+                        : 'font-bold bg-amber-50 text-amber-900'
+                      : isDark
+                      ? 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
                   Recently edited
                 </button>
                 <button
                   onClick={() => onSortChange('title_asc')}
-                  style={sortBy === 'title_asc' ? { color: themeConfig.primaryHover } : undefined}
                   className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-quicksand font-semibold transition-colors cursor-pointer ${
                     sortBy === 'title_asc'
-                      ? 'font-bold bg-slate-800'
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      ? isDark
+                        ? 'font-bold bg-slate-800 text-amber-400'
+                        : 'font-bold bg-amber-50 text-amber-900'
+                      : isDark
+                      ? 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
-                  Alphabetical (A - Z)
+                  Title (A-Z)
                 </button>
               </div>
             </div>
@@ -215,9 +268,12 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
             {/* Quick New Note Button */}
             <button
               onClick={() => onNewNote(activeFolder || undefined)}
-              title={activeFolder ? `New note in ${activeFolder}` : 'Create note'}
-              style={{ backgroundColor: themeConfig.primary }}
-              className="p-2 rounded-xl text-slate-950 hover:opacity-90 transition-opacity cursor-pointer shadow-sm min-h-[36px] min-w-[36px] flex items-center justify-center font-bold"
+              title="New note"
+              className={`p-1.5 rounded-xl font-fredoka font-bold transition-opacity cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center shadow-xs ${
+                isDark
+                  ? 'bg-amber-400 hover:bg-amber-300 text-slate-950'
+                  : 'bg-amber-500 hover:bg-amber-600 text-slate-950'
+              }`}
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
             </button>
@@ -226,27 +282,35 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
 
         {/* Search Bar */}
         <div className="relative flex items-center">
-          <Search className="absolute left-3 w-4 h-4 text-slate-400 pointer-events-none" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
           <input
             id="notes-search-input"
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search notes & tags..."
-            className="w-full bg-[#12131c] border border-slate-700/80 rounded-xl pl-9 pr-14 py-2 text-xs text-white placeholder-slate-500 font-nunito transition-colors theme-ring-focus"
+            placeholder="Search notes, tags (#), contents..."
+            className={`w-full pl-9 pr-8 py-2 rounded-xl text-xs font-quicksand border focus:outline-hidden transition-all ${
+              isDark
+                ? 'bg-slate-800/90 text-white placeholder-slate-400 border-slate-700/80 focus:border-amber-400'
+                : 'bg-slate-100 text-slate-900 placeholder-slate-400 border-slate-200 focus:border-amber-500'
+            }`}
           />
           {searchQuery ? (
             <button
               onClick={() => onSearchChange('')}
-              className="absolute right-2.5 p-1 text-slate-400 hover:text-white cursor-pointer"
+              className="absolute right-2.5 text-slate-400 hover:text-white cursor-pointer p-0.5"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           ) : (
             <button
               onClick={onOpenCommandPalette}
-              title="Search shortcut"
-              className="absolute right-2.5 px-1.5 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-400 hover:text-white transition-colors"
+              title="Open command palette (Cmd+K)"
+              className={`absolute right-2 text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                isDark
+                  ? 'bg-slate-900 text-slate-400 border-slate-700'
+                  : 'bg-white text-slate-500 border-slate-200 shadow-2xs'
+              }`}
             >
               ⌘K
             </button>
@@ -257,26 +321,44 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
         {(activeTag || activeFolder || searchQuery) && (
           <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
             {activeFolder && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 text-[11px] font-quicksand font-semibold border border-slate-700">
-                <FolderIcon icon={currentFolderObj?.icon} className="w-3 h-3 text-slate-400" />
+              <span
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-quicksand font-semibold border ${
+                  isDark
+                    ? 'bg-slate-800 text-slate-300 border-slate-700'
+                    : 'bg-white text-slate-700 border-slate-200 shadow-2xs'
+                }`}
+              >
+                <FolderIcon icon={currentFolderObj?.icon} className="w-3 h-3 text-amber-500" />
                 <span>{activeFolder}</span>
-                <button onClick={onClearFolder} className="hover:text-rose-400 ml-0.5 cursor-pointer">
+                <button onClick={onClearFolder} className="hover:text-rose-500 ml-0.5 cursor-pointer">
                   <X className="w-3 h-3" />
                 </button>
               </span>
             )}
             {activeTag && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 text-[11px] font-quicksand font-semibold border border-slate-700">
+              <span
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-quicksand font-semibold border ${
+                  isDark
+                    ? 'bg-slate-800 text-slate-300 border-slate-700'
+                    : 'bg-white text-slate-700 border-slate-200 shadow-2xs'
+                }`}
+              >
                 <span>#{activeTag}</span>
-                <button onClick={onClearTag} className="hover:text-rose-400 ml-0.5 cursor-pointer">
+                <button onClick={onClearTag} className="hover:text-rose-500 ml-0.5 cursor-pointer">
                   <X className="w-3 h-3" />
                 </button>
               </span>
             )}
             {searchQuery && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 text-[11px] font-quicksand font-semibold border border-slate-700">
+              <span
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-quicksand font-semibold border ${
+                  isDark
+                    ? 'bg-slate-800 text-slate-300 border-slate-700'
+                    : 'bg-white text-slate-700 border-slate-200 shadow-2xs'
+                }`}
+              >
                 <span>&ldquo;{searchQuery}&rdquo;</span>
-                <button onClick={() => onSearchChange('')} className="hover:text-rose-400 ml-0.5 cursor-pointer">
+                <button onClick={() => onSearchChange('')} className="hover:text-rose-500 ml-0.5 cursor-pointer">
                   <X className="w-3 h-3" />
                 </button>
               </span>
@@ -290,15 +372,18 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
         {notes.length === 0 ? (
           <div className="h-64 flex flex-col items-center justify-center text-center px-4">
             <div
-              className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center mb-3"
-              style={{ color: themeConfig.primaryHover }}
+              className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 border ${
+                isDark
+                  ? 'bg-slate-800 border-slate-700 text-amber-400'
+                  : 'bg-white border-slate-200 text-amber-600 shadow-2xs'
+              }`}
             >
               <FolderIcon icon={currentFolderObj?.icon || 'folder'} className="w-6 h-6" />
             </div>
-            <h3 className="font-fredoka text-sm font-bold text-white">
+            <h3 className={`font-fredoka text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {activeFolder ? `No notes in ${activeFolder}` : 'No notes found'}
             </h3>
-            <p className="font-quicksand text-xs text-slate-400 mt-1 max-w-[220px] leading-relaxed">
+            <p className={`font-quicksand text-xs mt-1 max-w-[220px] leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
               {searchQuery || activeTag
                 ? 'Try adjusting your search query or clear the filter.'
                 : activeFolder
@@ -307,8 +392,11 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
             </p>
             <button
               onClick={() => onNewNote(activeFolder || undefined)}
-              style={{ backgroundColor: themeConfig.primary }}
-              className="mt-3 px-4 py-2 rounded-xl text-slate-950 font-quicksand font-bold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+              className={`mt-3 px-4 py-2 rounded-xl font-quicksand font-bold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer hover:opacity-90 transition-opacity ${
+                isDark
+                  ? 'bg-amber-400 text-slate-950'
+                  : 'bg-amber-500 text-slate-950'
+              }`}
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>{activeFolder ? `Add in ${activeFolder}` : 'New Note'}</span>
@@ -320,42 +408,39 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
             {pinnedNotes.length > 0 && (
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1 px-1">
-                  <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                  <span className="font-quicksand text-[11px] font-bold uppercase tracking-wider text-amber-400">
+                  <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                  <span className="font-quicksand text-[11px] font-bold uppercase tracking-wider text-amber-500">
                     Starred ({pinnedNotes.length})
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 gap-1.5">
                   {pinnedNotes.map((note) => {
-                    const colorStyle = NOTE_COLORS[note.color_tag as NoteColor] || NOTE_COLORS.obsidian || NOTE_COLORS.default;
                     const isActive = activeNoteId === note.id;
 
                     return (
                       <div
                         key={note.id}
                         onClick={() => onSelectNote(note)}
-                        style={
-                          isActive
-                            ? {
-                                borderColor: themeConfig.primary,
-                                backgroundColor: '#202436',
-                              }
-                            : undefined
-                        }
                         className={`group relative p-3 rounded-xl transition-all duration-150 cursor-pointer border ${
                           isActive
-                            ? 'shadow-sm'
-                            : 'bg-[#1a1d2e] hover:bg-[#202436] border-slate-800 hover:border-slate-700'
+                            ? isDark
+                              ? 'bg-[#202436] border-amber-400/80 shadow-xs'
+                              : 'bg-amber-50/90 border-amber-400 shadow-xs'
+                            : isDark
+                            ? 'bg-[#1a1d2e] hover:bg-[#202436] border-slate-800 hover:border-slate-700'
+                            : 'bg-white hover:bg-slate-100/80 border-slate-200 hover:border-slate-300 shadow-2xs'
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <div
-                              className="w-2 h-2 rounded-full shrink-0"
-                              style={{ backgroundColor: colorStyle.primary }}
-                            />
-                            <h4 className="font-fredoka text-xs sm:text-sm font-bold text-white truncate transition-colors">
+                          <div className="min-w-0 flex-1">
+                            <h4
+                              className={`font-fredoka text-xs sm:text-sm font-bold truncate transition-colors ${
+                                isActive
+                                  ? isDark ? 'text-white' : 'text-amber-950'
+                                  : isDark ? 'text-white' : 'text-slate-900'
+                              }`}
+                            >
                               {note.title || 'Untitled Note'}
                             </h4>
                           </div>
@@ -367,9 +452,9 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                                 onTogglePin(note.id, true);
                               }}
                               title="Unstar note"
-                              className="p-1 rounded-md text-amber-400 hover:bg-slate-800 transition-colors cursor-pointer"
+                              className="p-1 rounded-md text-amber-500 hover:bg-amber-500/10 transition-colors cursor-pointer"
                             >
-                              <Star className="w-3.5 h-3.5 fill-amber-400" />
+                              <Star className="w-3.5 h-3.5 fill-amber-500" />
                             </button>
                             <button
                               onClick={(e) => {
@@ -377,7 +462,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                                 onDeleteNote(note);
                               }}
                               title="Delete note"
-                              className="md:opacity-0 group-hover:opacity-100 p-1 rounded-md text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 transition-all cursor-pointer"
+                              className="md:opacity-0 group-hover:opacity-100 p-1 rounded-md text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -385,13 +470,21 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                         </div>
 
                         {note.body && (
-                          <p className="font-nunito text-xs text-slate-300 line-clamp-2 mt-1 leading-relaxed">
+                          <p
+                            className={`font-nunito text-xs line-clamp-2 mt-1 leading-relaxed ${
+                              isDark ? 'text-slate-300' : 'text-slate-600'
+                            }`}
+                          >
                             {note.body.replace(/[#*`_~]/g, '')}
                           </p>
                         )}
 
-                        <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-800 text-[10px] text-slate-400 font-quicksand">
-                          <span>{note.folder || 'Personal'}</span>
+                        <div
+                          className={`flex items-center justify-between mt-2 pt-1.5 border-t text-[10px] font-quicksand ${
+                            isDark ? 'border-slate-800 text-slate-400' : 'border-slate-100 text-slate-500'
+                          }`}
+                        >
+                          <span className="font-medium">{note.folder || 'Personal'}</span>
                           <span className="font-mono">{formatRelativeTime(note.updated_at || note.created_at)}</span>
                         </div>
                       </div>
@@ -405,14 +498,17 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
             <div className="space-y-1.5">
               {pinnedNotes.length > 0 && regularNotes.length > 0 && (
                 <div className="flex items-center gap-1.5 px-1 pt-1.5">
-                  <span className="font-quicksand text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <span
+                    className={`font-quicksand text-[11px] font-bold uppercase tracking-wider ${
+                      isDark ? 'text-slate-400' : 'text-slate-500'
+                    }`}
+                  >
                     All Notes ({regularNotes.length})
                   </span>
                 </div>
               )}
 
               {regularNotes.map((note) => {
-                const colorStyle = NOTE_COLORS[note.color_tag as NoteColor] || NOTE_COLORS.obsidian || NOTE_COLORS.default;
                 const isActive = activeNoteId === note.id;
 
                 if (viewStyle === 'compact') {
@@ -420,30 +516,24 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                     <div
                       key={note.id}
                       onClick={() => onSelectNote(note)}
-                      style={
-                        isActive
-                          ? {
-                              borderColor: themeConfig.primary,
-                              backgroundColor: '#202436',
-                            }
-                          : undefined
-                      }
                       className={`group flex items-center justify-between px-3 py-2 rounded-xl transition-all cursor-pointer border ${
                         isActive
-                          ? 'text-white'
-                          : 'bg-[#1a1d2e] hover:bg-[#202436] border-slate-800 hover:border-slate-700'
+                          ? isDark
+                            ? 'bg-[#202436] border-amber-400/80 text-white'
+                            : 'bg-amber-50/90 border-amber-400 text-amber-950'
+                          : isDark
+                          ? 'bg-[#1a1d2e] hover:bg-[#202436] border-slate-800 hover:border-slate-700 text-slate-200'
+                          : 'bg-white hover:bg-slate-100/80 border-slate-200 hover:border-slate-300 text-slate-800 shadow-2xs'
                       }`}
                     >
-                      <div className="flex items-center gap-2 truncate">
-                        <div
-                          className="w-2 h-2 rounded-full shrink-0"
-                          style={{ backgroundColor: colorStyle.primary }}
-                        />
-                        <span className="font-fredoka text-xs font-semibold text-slate-200 truncate group-hover:text-white">
-                          {note.title || 'Untitled Note'}
-                        </span>
-                      </div>
-                      <span className="font-mono text-[10px] text-slate-400 shrink-0 ml-2">
+                      <span className="font-fredoka text-xs font-semibold truncate group-hover:text-amber-500 transition-colors">
+                        {note.title || 'Untitled Note'}
+                      </span>
+                      <span
+                        className={`font-mono text-[10px] shrink-0 ml-2 ${
+                          isDark ? 'text-slate-400' : 'text-slate-500'
+                        }`}
+                      >
                         {formatRelativeTime(note.updated_at || note.created_at)}
                       </span>
                     </div>
@@ -454,27 +544,25 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                   <div
                     key={note.id}
                     onClick={() => onSelectNote(note)}
-                    style={
-                      isActive
-                        ? {
-                            borderColor: themeConfig.primary,
-                            backgroundColor: '#202436',
-                          }
-                        : undefined
-                    }
                     className={`group relative p-3 rounded-xl transition-all duration-150 cursor-pointer border ${
                       isActive
-                        ? 'shadow-sm'
-                        : 'bg-[#1a1d2e] hover:bg-[#202436] border-slate-800 hover:border-slate-700'
+                        ? isDark
+                          ? 'bg-[#202436] border-amber-400/80 shadow-xs'
+                          : 'bg-amber-50/90 border-amber-400 shadow-xs'
+                        : isDark
+                        ? 'bg-[#1a1d2e] hover:bg-[#202436] border-slate-800 hover:border-slate-700'
+                        : 'bg-white hover:bg-slate-100/80 border-slate-200 hover:border-slate-300 shadow-2xs'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div
-                          className="w-2 h-2 rounded-full shrink-0"
-                          style={{ backgroundColor: colorStyle.primary }}
-                        />
-                        <h4 className="font-fredoka text-xs sm:text-sm font-bold text-slate-200 truncate transition-colors">
+                      <div className="min-w-0 flex-1">
+                        <h4
+                          className={`font-fredoka text-xs sm:text-sm font-bold truncate transition-colors ${
+                            isActive
+                              ? isDark ? 'text-white' : 'text-amber-950'
+                              : isDark ? 'text-white' : 'text-slate-900'
+                          }`}
+                        >
                           {note.title || 'Untitled Note'}
                         </h4>
                       </div>
@@ -486,7 +574,11 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                             onTogglePin(note.id, false);
                           }}
                           title="Star note"
-                          className="md:opacity-0 group-hover:opacity-100 p-1 rounded-md text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition-all cursor-pointer"
+                          className={`p-1 rounded-md transition-colors cursor-pointer ${
+                            isDark
+                              ? 'text-slate-500 hover:text-amber-400 hover:bg-slate-800'
+                              : 'text-slate-400 hover:text-amber-500 hover:bg-slate-100'
+                          }`}
                         >
                           <Star className="w-3.5 h-3.5" />
                         </button>
@@ -496,7 +588,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                             onDeleteNote(note);
                           }}
                           title="Delete note"
-                          className="md:opacity-0 group-hover:opacity-100 p-1 rounded-md text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 transition-all cursor-pointer"
+                          className="md:opacity-0 group-hover:opacity-100 p-1 rounded-md text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -504,13 +596,21 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
                     </div>
 
                     {note.body && (
-                      <p className="font-nunito text-xs text-slate-300 line-clamp-2 mt-1 leading-relaxed">
+                      <p
+                        className={`font-nunito text-xs line-clamp-2 mt-1 leading-relaxed ${
+                          isDark ? 'text-slate-300' : 'text-slate-600'
+                        }`}
+                      >
                         {note.body.replace(/[#*`_~]/g, '')}
                       </p>
                     )}
 
-                    <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-800 text-[10px] text-slate-400 font-quicksand">
-                      <span>{note.folder || 'Personal'}</span>
+                    <div
+                      className={`flex items-center justify-between mt-2 pt-1.5 border-t text-[10px] font-quicksand ${
+                        isDark ? 'border-slate-800 text-slate-400' : 'border-slate-100 text-slate-500'
+                      }`}
+                    >
+                      <span className="font-medium">{note.folder || 'Personal'}</span>
                       <span className="font-mono">{formatRelativeTime(note.updated_at || note.created_at)}</span>
                     </div>
                   </div>

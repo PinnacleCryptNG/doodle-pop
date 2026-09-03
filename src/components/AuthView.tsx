@@ -201,7 +201,7 @@ export const AuthView: React.FC = () => {
                 className="mt-1 text-xs text-slate-400 font-quicksand font-medium"
               >
                 {mode === 'signup'
-                  ? 'Organize thoughts, doodles, and colorful notes.'
+                  ? 'Organize your thoughts, tasks, and ideas in one place.'
                   : 'Sign in to access your notes and workspace.'}
               </p>
             </div>
