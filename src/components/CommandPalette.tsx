@@ -72,16 +72,19 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     : notes.slice(0, 5);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-slate-950/75 backdrop-blur-xs animate-in fade-in duration-150">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-start justify-center pt-10 sm:pt-20 px-3 sm:px-4 bg-slate-950/75 backdrop-blur-xs animate-in fade-in duration-150 safe-area-top safe-area-bottom overflow-y-auto"
+    >
       <div
-        className={`w-full max-w-xl border rounded-2xl shadow-2xl overflow-hidden flex flex-col ${
+        className={`w-full max-w-xl border rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto sm:my-0 ${
           isDark ? 'bg-[#1a1d2e] border-slate-700' : 'bg-white border-slate-200'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Header Input */}
         <div
-          className={`p-3.5 border-b flex items-center gap-2.5 ${
+          className={`p-3 sm:p-3.5 border-b flex items-center gap-2.5 shrink-0 ${
             isDark ? 'border-slate-800 bg-[#141620]' : 'border-slate-200 bg-slate-50'
           }`}
         >
@@ -98,7 +101,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           />
           <button
             onClick={onClose}
-            className={`p-1 rounded-lg transition-colors cursor-pointer ${
+            className={`p-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
               isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
             }`}
           >
@@ -107,7 +110,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         </div>
 
         {/* Action Commands List */}
-        <div className="max-h-96 overflow-y-auto p-2 space-y-1 scrollbar-thin">
+        <div className="max-h-[60vh] sm:max-h-96 overflow-y-auto p-2 space-y-1 scrollbar-thin">
           {!query && (
             <div
               className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
@@ -269,16 +272,16 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
         {/* Footer Shortcut Hints */}
         <div
-          className={`p-2.5 border-t flex items-center justify-between text-[11px] font-quicksand ${
+          className={`px-3 py-2 sm:py-2.5 border-t flex items-center justify-between text-[11px] font-quicksand shrink-0 ${
             isDark ? 'bg-[#141620] border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-500'
           }`}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px]">
             <span>↑ ↓ navigate</span>
-            <span>↵ choose</span>
-            <span>Esc dismiss</span>
+            <span className="hidden xs:inline">↵ select</span>
+            <span>Esc close</span>
           </div>
-          <span className="font-medium">Command Menu</span>
+          <span className="font-medium text-[10px] sm:text-[11px]">Command Menu</span>
         </div>
       </div>
     </div>

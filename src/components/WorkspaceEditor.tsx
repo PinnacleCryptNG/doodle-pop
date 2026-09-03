@@ -256,24 +256,24 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
     >
       {/* TOP WORKSPACE HEADER */}
       <header
-        className={`h-14 px-4 sm:px-6 border-b flex items-center justify-between gap-3 shrink-0 z-20 ${
+        className={`h-14 px-3 sm:px-5 border-b flex items-center justify-between gap-2 shrink-0 z-20 ${
           isDark ? 'bg-[#141620] border-slate-800' : 'bg-white border-slate-200'
         }`}
       >
         {/* Left: Back (mobile) + Folder Selector + Pin */}
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
           {onBackToList && (
             <button
               onClick={onBackToList}
               title="Back to notes list"
-              className={`md:hidden p-2 -ml-2 rounded-xl transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center gap-1.5 text-xs font-quicksand font-bold shrink-0 ${
+              className={`md:hidden p-2 -ml-1 rounded-xl transition-colors cursor-pointer min-h-[38px] min-w-[38px] flex items-center justify-center gap-1 text-xs font-quicksand font-bold shrink-0 ${
                 isDark
                   ? 'text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700'
                   : 'text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200'
               }`}
             >
-              <ArrowLeft className="w-4 h-4 text-amber-500" />
-              <span>Notes</span>
+              <ArrowLeft className="w-4 h-4 text-amber-500 shrink-0" />
+              <span className="hidden xs:inline">Notes</span>
             </button>
           )}
 
@@ -282,15 +282,15 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
             <button
               onClick={() => setShowFolderDropdown(!showFolderDropdown)}
               title="Change note folder"
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-quicksand font-bold transition-colors cursor-pointer min-h-[36px] ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-quicksand font-bold transition-colors cursor-pointer min-h-[36px] max-w-[120px] sm:max-w-[160px] ${
                 isDark
                   ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700/80'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200'
               }`}
             >
-              <FolderIcon icon={currentFolderObj?.icon} className="w-3.5 h-3.5 text-amber-500" />
-              <span className="truncate max-w-[110px] sm:max-w-[150px]">{folder || 'Personal'}</span>
-              <ChevronDown className="w-3 h-3 text-slate-400" />
+              <FolderIcon icon={currentFolderObj?.icon} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span className="truncate">{folder || 'Personal'}</span>
+              <ChevronDown className="w-3 h-3 text-slate-400 shrink-0" />
             </button>
 
             {showFolderDropdown && (
@@ -334,7 +334,7 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
           <button
             onClick={() => onTogglePin(note.id, note.is_pinned)}
             title={note.is_pinned ? 'Unstar note' : 'Star note'}
-            className={`p-2 rounded-xl transition-colors cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center border ${
+            className={`p-2 rounded-xl transition-colors cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center border shrink-0 ${
               note.is_pinned
                 ? 'bg-amber-500/15 text-amber-500 border-amber-500/30'
                 : isDark
@@ -347,7 +347,7 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
         </div>
 
         {/* Right: View Modes & Action Tools */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 shrink-0">
           {/* Mode Switcher (Write / Split / Preview) */}
           <div
             className={`flex items-center p-0.5 rounded-xl border shrink-0 ${
@@ -357,7 +357,7 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
             <button
               onClick={() => setEditorMode('write')}
               title="Editor Only (Write)"
-              className={`p-1.5 rounded-lg text-xs font-quicksand font-bold transition-all cursor-pointer flex items-center gap-1 ${
+              className={`px-2 py-1.5 rounded-lg text-xs font-quicksand font-bold transition-all cursor-pointer flex items-center gap-1 ${
                 editorMode === 'write'
                   ? isDark
                     ? 'bg-slate-900 text-white shadow-xs'
@@ -374,7 +374,9 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
             <button
               onClick={() => setEditorMode('split')}
               title="Split View (Editor + Live Preview)"
-              className={`hidden md:flex items-center gap-1 p-1.5 rounded-lg text-xs font-quicksand font-bold transition-all cursor-pointer ${
+              className={`hidden xl:flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-quicksand font-bold transition-all cursor-pointer ${
+                isZenMode ? '!flex' : ''
+              } ${
                 editorMode === 'split'
                   ? isDark
                     ? 'bg-slate-900 text-white shadow-xs'
@@ -391,7 +393,7 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
             <button
               onClick={() => setEditorMode('preview')}
               title="Markdown Preview"
-              className={`p-1.5 rounded-lg text-xs font-quicksand font-bold transition-all cursor-pointer flex items-center gap-1 ${
+              className={`px-2 py-1.5 rounded-lg text-xs font-quicksand font-bold transition-all cursor-pointer flex items-center gap-1 ${
                 editorMode === 'preview'
                   ? isDark
                     ? 'bg-slate-900 text-white shadow-xs'
@@ -406,8 +408,8 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
             </button>
           </div>
 
-          {/* Desktop Direct Quick Actions */}
-          <div className="hidden lg:flex items-center gap-1.5 shrink-0">
+          {/* Desktop Direct Quick Actions (Only on >= xl to prevent crowding on tablet / desktop-mode mobile) */}
+          <div className="hidden xl:flex items-center gap-1.5 shrink-0">
             <button
               onClick={handleCopyMarkdown}
               title="Copy markdown content"
@@ -453,8 +455,8 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
             </button>
           </div>
 
-          {/* Compact More Menu for Mobile & Tablet */}
-          <div className="relative lg:hidden shrink-0" ref={moreMenuRef}>
+          {/* Compact More Menu for Mobile, Tablet & Desktop Mode on Mobile */}
+          <div className="relative xl:hidden shrink-0" ref={moreMenuRef}>
             <button
               onClick={() => setShowMoreMenu(!showMoreMenu)}
               title="More options"
@@ -533,9 +535,10 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
       {/* MARKDOWN FORMATTING TOOLBAR */}
       {editorMode !== 'preview' && (
         <div
-          className={`px-4 py-1.5 border-b flex items-center gap-1 overflow-x-auto scrollbar-none shrink-0 z-10 ${
+          className={`px-3 sm:px-4 py-1.5 border-b flex items-center gap-0.5 sm:gap-1 overflow-x-auto scrollbar-none shrink-0 z-10 select-none ${
             isDark ? 'bg-[#12131C] border-slate-800/80' : 'bg-slate-100/70 border-slate-200'
           }`}
+          style={{ WebkitOverflowScrolling: 'touch' }}
         >
           <button
             onClick={() => insertMarkdown('**', '**', 'bold text')}
@@ -739,26 +742,26 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
 
       {/* BOTTOM WORKSPACE STATUS BAR */}
       <footer
-        className={`h-9 px-4 sm:px-6 border-t flex items-center justify-between text-[11px] font-quicksand shrink-0 z-20 ${
+        className={`h-9 px-3 sm:px-6 border-t flex items-center justify-between text-[11px] font-quicksand shrink-0 z-20 safe-area-bottom ${
           isDark ? 'bg-[#141620] border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-500'
         }`}
       >
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 font-medium">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 truncate">
+          <span className="flex items-center gap-1.5 font-medium truncate">
             {syncStatus === 'syncing' ? (
               <>
-                <RefreshCw className="w-3 h-3 text-sky-400 animate-spin" />
-                <span>Syncing note...</span>
+                <RefreshCw className="w-3 h-3 text-sky-400 animate-spin shrink-0" />
+                <span className="truncate">Syncing note...</span>
               </>
             ) : syncStatus === 'offline' ? (
               <>
-                <CloudOff className="w-3 h-3 text-amber-500" />
-                <span>Offline mode</span>
+                <CloudOff className="w-3 h-3 text-amber-500 shrink-0" />
+                <span className="truncate">Offline mode</span>
               </>
             ) : (
               <>
-                <Cloud className="w-3 h-3 text-emerald-500" />
-                <span>Saved locally & cloud</span>
+                <Cloud className="w-3 h-3 text-emerald-500 shrink-0" />
+                <span className="truncate">Saved locally & cloud</span>
               </>
             )}
           </span>
@@ -766,17 +769,17 @@ export const WorkspaceEditor: React.FC<WorkspaceEditorProps> = ({
           {pendingCount > 0 && (
             <button
               onClick={onForceSync}
-              className="text-amber-500 hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-amber-500 hover:underline flex items-center gap-1 cursor-pointer shrink-0"
             >
               <span>({pendingCount} pending)</span>
             </button>
           )}
         </div>
 
-        <div className="flex items-center gap-3 font-mono text-[10px]">
+        <div className="flex items-center gap-2 sm:gap-3 font-mono text-[10px] shrink-0 ml-2">
           <span>{wordCount} words</span>
           <span className="hidden sm:inline">{charCount} chars</span>
-          <span className="hidden sm:inline">{readTimeMinutes} min read</span>
+          <span className="hidden md:inline">{readTimeMinutes} min read</span>
         </div>
       </footer>
     </main>

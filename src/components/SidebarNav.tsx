@@ -113,12 +113,12 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
   return (
     <aside
       id="main-sidebar"
-      className={`relative z-30 h-full flex flex-col justify-between transition-colors duration-200 select-none border-r ${
+      className={`relative z-30 h-full flex flex-col transition-colors duration-200 select-none border-r ${
         isDark ? 'bg-[#141620] border-slate-800 text-slate-200' : 'bg-white border-slate-200 text-slate-800'
-      } ${isMobile ? 'w-72 max-w-[85vw] shadow-2xl' : isCollapsed ? 'w-[68px]' : 'w-64'}`}
+      } ${isMobile ? 'w-72 max-w-[85vw] shadow-2xl' : isCollapsed ? 'w-[68px]' : 'w-60 lg:w-64'}`}
     >
-      {/* Top Header & Brand */}
-      <div className="flex flex-col">
+      {/* Top Header & Brand (shrink-0) */}
+      <div className="shrink-0">
         {/* Workspace Brand & Collapse Toggle */}
         <div
           className={`h-14 px-4 flex items-center justify-between border-b ${
@@ -213,9 +213,10 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
             {(!isCollapsed || isMobile) && <span>New Note</span>}
           </button>
         </div>
+      </div>
 
-        {/* Navigation Item Lists */}
-        <div className="px-2 py-3 space-y-4 overflow-y-auto max-h-[calc(100vh-230px)] scrollbar-thin">
+      {/* Middle Scrollable Navigation Item Lists (flex-1 min-h-0) */}
+      <div className="flex-1 min-h-0 px-2 py-3 space-y-4 overflow-y-auto scrollbar-thin">
           {/* Core Views */}
           <div className="space-y-0.5">
             {(!isCollapsed || isMobile) && (
@@ -472,11 +473,10 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
             </div>
           )}
         </div>
-      </div>
 
-      {/* Bottom Theme Mode Switcher & Profile Section */}
+      {/* Bottom Theme Mode Switcher & Profile Section (shrink-0) */}
       <div
-        className={`p-2.5 border-t space-y-2.5 ${
+        className={`shrink-0 p-2.5 border-t space-y-2.5 safe-area-bottom ${
           isDark ? 'border-slate-800 bg-[#141620]' : 'border-slate-200 bg-slate-50'
         }`}
       >

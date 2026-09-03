@@ -96,24 +96,24 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
   return (
     <div
       id="notes-list-panel"
-      className={`w-full md:w-80 lg:w-96 h-full border-r flex flex-col shrink-0 select-none overflow-hidden transition-colors duration-200 ${
+      className={`w-full md:w-64 lg:w-72 xl:w-80 h-full border-r flex flex-col shrink-0 select-none overflow-hidden transition-colors duration-200 ${
         isDark ? 'bg-[#151722] border-slate-800' : 'bg-slate-50 border-slate-200'
       }`}
     >
       {/* Top Header & Search Bar */}
       <div
-        className={`p-3.5 sm:p-4 border-b space-y-3 shrink-0 ${
+        className={`p-3 sm:p-4 border-b space-y-3 shrink-0 ${
           isDark ? 'border-slate-800 bg-[#181a27]' : 'border-slate-200 bg-white'
         }`}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
             {onOpenSidebarMobile && (
               <button
                 type="button"
                 onClick={onOpenSidebarMobile}
                 title="Open categories and folders"
-                className={`md:hidden p-2 -ml-1 rounded-xl transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center ${
+                className={`md:hidden p-2 -ml-1 rounded-xl transition-colors cursor-pointer min-h-[40px] min-w-[40px] flex items-center justify-center shrink-0 ${
                   isDark
                     ? 'text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700'
                     : 'text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200'
@@ -127,7 +127,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
               role="button"
               tabIndex={0}
               title="Click to view all notes (Home)"
-              className="flex items-center gap-2 cursor-pointer group truncate"
+              className="flex items-center gap-2 cursor-pointer group truncate min-w-0"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
@@ -136,7 +136,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
               }}
             >
               {activeFolder ? (
-                <div className="flex items-center gap-1.5 truncate">
+                <div className="flex items-center gap-1.5 truncate min-w-0">
                   <FolderIcon
                     icon={currentFolderObj?.icon}
                     className="w-4 h-4 shrink-0 text-amber-500"
@@ -168,7 +168,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
               )}
             </div>
             <span
-              className={`font-mono text-xs px-2 py-0.5 rounded-md border font-semibold ${
+              className={`font-mono text-xs px-2 py-0.5 rounded-md border font-semibold shrink-0 ${
                 isDark
                   ? 'bg-slate-800 text-slate-300 border-slate-700'
                   : 'bg-slate-100 text-slate-600 border-slate-200'
@@ -178,7 +178,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
             {/* View style toggle */}
             <button
               onClick={() => setViewStyle(viewStyle === 'preview' ? 'compact' : 'preview')}
@@ -471,7 +471,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
 
                         {note.body && (
                           <p
-                            className={`font-nunito text-xs line-clamp-2 mt-1 leading-relaxed ${
+                            className={`font-nunito text-xs line-clamp-2 mt-1 leading-relaxed break-words ${
                               isDark ? 'text-slate-300' : 'text-slate-600'
                             }`}
                           >
@@ -597,7 +597,7 @@ export const NotesListPanel: React.FC<NotesListPanelProps> = ({
 
                     {note.body && (
                       <p
-                        className={`font-nunito text-xs line-clamp-2 mt-1 leading-relaxed ${
+                        className={`font-nunito text-xs line-clamp-2 mt-1 leading-relaxed break-words ${
                           isDark ? 'text-slate-300' : 'text-slate-600'
                         }`}
                       >

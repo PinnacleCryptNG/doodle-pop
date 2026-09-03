@@ -263,3 +263,54 @@ html.light .markdown-preview pre {
 html.light .markdown-preview pre code {
   color: #1E293B;
 }
+
+/* Prevent iOS Safari auto-zoom on input focus */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Word break and responsive image/table containment for markdown */
+.markdown-preview {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.markdown-preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.markdown-preview table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.markdown-preview th,
+.markdown-preview td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+html.light .markdown-preview th,
+html.light .markdown-preview td {
+  border: 1px solid #E2E8F0;
+}
+
+/* Safe Area Insets for notched phones */
+.safe-area-bottom {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+}
+
+.safe-area-top {
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+}

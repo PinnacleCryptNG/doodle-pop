@@ -157,9 +157,9 @@ export const AuthView: React.FC = () => {
   const displayedError = localError || error;
 
   return (
-    <div className="relative min-h-screen bg-[#0F1117] text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 selection:bg-sky-500/30 selection:text-sky-200 overflow-hidden font-nunito">
+    <div className="relative min-h-screen min-h-[100dvh] bg-[#0F1117] text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 selection:bg-amber-500/30 selection:text-amber-200 overflow-y-auto font-nunito safe-area-top safe-area-bottom">
       {/* Main Container Card */}
-      <main className="relative z-10 w-full max-w-md my-6">
+      <main className="relative z-10 w-full max-w-md my-auto sm:my-6">
         <div
           id="auth-card"
           className="relative bg-[#181A24] border border-slate-800 rounded-2xl p-7 sm:p-8 shadow-xl"

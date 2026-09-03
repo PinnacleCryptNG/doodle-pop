@@ -224,7 +224,7 @@ function NotesDashboard() {
   return (
     <div
       id="notes-app-root"
-      className={`h-screen w-screen flex overflow-hidden font-nunito relative select-none transition-colors duration-200 ${
+      className={`h-screen h-[100dvh] w-full max-w-full flex overflow-hidden font-nunito relative select-none transition-colors duration-200 ${
         themeMode === 'dark' ? 'bg-[#0F1117] text-slate-100' : 'bg-slate-50 text-slate-900'
       }`}
     >
@@ -274,7 +274,7 @@ function NotesDashboard() {
           />
 
           {/* Drawer Content */}
-          <div className="relative z-10 h-full max-w-[85vw] shadow-2xl animate-in slide-in-from-left duration-200">
+          <div className="relative z-10 h-full w-72 max-w-[85vw] shadow-2xl animate-in slide-in-from-left duration-200">
             <SidebarNav
               user={user!}
               isCollapsed={false}
@@ -326,7 +326,7 @@ function NotesDashboard() {
 
       {/* 2. MIDDLE LIST PANEL FOR NOTES / FOLDERS / PINNED */}
       <div
-        className={`h-full ${
+        className={`h-full shrink-0 ${
           mobileView === 'list' ? 'flex w-full md:w-auto' : 'hidden md:flex'
         }`}
       >
@@ -356,7 +356,7 @@ function NotesDashboard() {
 
       {/* 3. MAIN WORKSPACE / EDITOR CANVAS */}
       <div
-        className={`h-full flex-1 overflow-hidden ${
+        className={`h-full flex-1 min-w-0 overflow-hidden ${
           mobileView === 'editor' ? 'flex w-full' : 'hidden md:flex'
         }`}
       >
