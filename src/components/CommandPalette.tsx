@@ -9,7 +9,9 @@ import {
   ArrowRight,
   X,
   Sun,
-  Moon
+  Moon,
+  PanelLeftClose,
+  PanelLeftOpen
 } from 'lucide-react';
 
 interface CommandPaletteProps {
@@ -22,6 +24,8 @@ interface CommandPaletteProps {
   onForceSync: () => void;
   themeMode?: ThemeMode;
   onToggleTheme?: () => void;
+  isSidebarCollapsed?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
@@ -34,6 +38,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   onForceSync,
   themeMode = 'dark',
   onToggleTheme,
+  isSidebarCollapsed,
+  onToggleSidebar,
 }) => {
   const [query, setQuery] = useState('');
   const isDark = themeMode === 'dark';
@@ -201,6 +207,43 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       </p>
                     </div>
                   </div>
+                </button>
+              )}
+
+              {onToggleSidebar && (
+                <button
+                  onClick={() => {
+                    onClose();
+                    onToggleSidebar();
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-colors group cursor-pointer ${
+                    isDark ? 'hover:bg-slate-800/80 text-white' : 'hover:bg-slate-100 text-slate-900'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-500">
+                      {isSidebarCollapsed ? (
+                        <PanelLeftOpen className="w-3.5 h-3.5" />
+                      ) : (
+                        <PanelLeftClose className="w-3.5 h-3.5" />
+                      )}
+                    </div>
+                    <div>
+                      <span className="font-quicksand text-xs font-bold group-hover:text-amber-500 transition-colors">
+                        {isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+                      </span>
+                      <p className={`text-[11px] font-quicksand ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                        Toggle desktop navigation sidebar
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={`font-mono text-[10px] px-1.5 py-0.5 rounded-md border ${
+                      isDark ? 'bg-slate-800 text-slate-400 border-slate-700' : 'bg-slate-100 text-slate-500 border-slate-200'
+                    }`}
+                  >
+                    ⌘B
+                  </span>
                 </button>
               )}
 

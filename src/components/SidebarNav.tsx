@@ -113,7 +113,7 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
   return (
     <aside
       id="main-sidebar"
-      className={`relative z-30 h-full flex flex-col transition-colors duration-200 select-none border-r ${
+      className={`relative z-30 h-full flex flex-col transition-all duration-200 select-none border-r ${
         isDark ? 'bg-[#141620] border-slate-800 text-slate-200' : 'bg-white border-slate-200 text-slate-800'
       } ${isMobile ? 'w-72 max-w-[85vw] shadow-2xl' : isCollapsed ? 'w-[68px]' : 'w-60 lg:w-64'}`}
     >
@@ -159,19 +159,23 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
             </div>
           )}
 
-          {isCollapsed && !isMobile && (
-            <div className="w-full flex justify-center">
+          {isCollapsed && !isMobile ? (
+            <div className="w-full flex items-center justify-center">
               <button
-                onClick={handleBrandClick}
-                title="DoodlePop Notes - Go to Home"
-                className="hover:opacity-80 transition-opacity cursor-pointer p-1"
+                id="sidebar-uncollapse-toggle"
+                onClick={onToggleCollapse}
+                title="Expand sidebar"
+                aria-label="Expand sidebar"
+                className={`p-2 rounded-xl transition-all cursor-pointer min-h-[40px] min-w-[40px] flex items-center justify-center group ${
+                  isDark
+                    ? 'text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700/80 hover:border-amber-500/50 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 hover:border-amber-500/50 shadow-xs'
+                }`}
               >
-                <BrandLogo size="sm" onClick={handleBrandClick} />
+                <PanelLeftOpen className="w-5 h-5 text-amber-500 group-hover:scale-110 transition-transform" />
               </button>
             </div>
-          )}
-
-          {isMobile ? (
+          ) : isMobile ? (
             <button
               onClick={onCloseMobile}
               title="Close menu"
@@ -182,18 +186,17 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
               <X className="w-4 h-4" />
             </button>
           ) : (
-            !isCollapsed && (
-              <button
-                id="sidebar-collapse-toggle"
-                onClick={onToggleCollapse}
-                title="Collapse sidebar"
-                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                  isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <PanelLeftClose className="w-4 h-4" />
-              </button>
-            )
+            <button
+              id="sidebar-collapse-toggle"
+              onClick={onToggleCollapse}
+              title="Collapse sidebar"
+              aria-label="Collapse sidebar"
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <PanelLeftClose className="w-4 h-4" />
+            </button>
           )}
         </div>
 

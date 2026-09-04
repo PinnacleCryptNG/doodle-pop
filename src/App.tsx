@@ -125,7 +125,7 @@ function NotesDashboard() {
     }
   }, [notes, activeFolder]);
 
-  // Global Keyboard Shortcuts (Cmd+N, Cmd+K)
+  // Global Keyboard Shortcuts (Cmd+N, Cmd+K, Cmd+B)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'n') {
@@ -135,6 +135,11 @@ function NotesDashboard() {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         setIsCommandPaletteOpen((prev) => !prev);
+      }
+      const isEditing = ['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName);
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b' && !isEditing) {
+        e.preventDefault();
+        setIsSidebarCollapsed((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -390,6 +395,8 @@ function NotesDashboard() {
         onForceSync={forceSync}
         themeMode={themeMode}
         onToggleTheme={handleToggleTheme}
+        isSidebarCollapsed={isSidebarCollapsed}
+        onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
       />
 
       {/* Delete Confirmation Modal */}
